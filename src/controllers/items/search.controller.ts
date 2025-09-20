@@ -29,6 +29,7 @@ export class SearchItemsController {
         data: result.items,
       });
     } catch (error) {
+      console.error(error);
       // TODO: Add proper error handling
       return reply.status(500).send({
         success: false,

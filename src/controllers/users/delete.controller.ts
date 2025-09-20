@@ -24,6 +24,7 @@ export class DeleteUserController {
         message: 'User deleted successfully',
       });
     } catch (error) {
+      console.error(error);
       // TODO: Add proper error handling
       return reply.status(500).send({
         success: false,

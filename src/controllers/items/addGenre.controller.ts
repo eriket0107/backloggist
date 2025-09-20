@@ -26,6 +26,7 @@ export class AddGenreToItemController {
         message: 'Genre added to item successfully',
       });
     } catch (error) {
+      console.error(error);
       // TODO: Add proper error handling
       return reply.status(500).send({
         success: false,
