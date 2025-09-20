@@ -1,4 +1,4 @@
-import { UserItem } from '@/types/index.js';
+import { UserItem, Logger } from '@/types/index.js';
 import { UserItemsRepository } from '@/repositories/userItems.repository.js';
 
 export interface AddItemToBacklogRequest {
@@ -12,7 +12,10 @@ export interface AddItemToBacklogResponse {
 }
 
 export class AddItemToBacklogUseCase {
-  constructor(private userItemsRepository: UserItemsRepository) { }
+  constructor(
+    private userItemsRepository: UserItemsRepository,
+    private logger: Logger
+  ) { }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async execute(request: AddItemToBacklogRequest): Promise<AddItemToBacklogResponse> {
     // TODO: Add business logic here

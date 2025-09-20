@@ -1,3 +1,4 @@
+import { Logger } from '@/types/index.js';
 import { ItemsRepository } from '@/repositories/items.repository.js';
 
 export interface DeleteItemRequest {
@@ -9,7 +10,10 @@ export interface DeleteItemResponse {
 }
 
 export class DeleteItemUseCase {
-  constructor(private itemsRepository: ItemsRepository) { }
+  constructor(
+    private itemsRepository: ItemsRepository,
+    private logger: Logger
+  ) { }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async execute(request: DeleteItemRequest): Promise<DeleteItemResponse> {
     // TODO: Add business logic here

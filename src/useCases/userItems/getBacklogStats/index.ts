@@ -1,3 +1,4 @@
+import { Logger } from '@/types/index.js';
 import { UserItemsRepository } from '@/repositories/userItems.repository.js';
 
 export interface GetUserBacklogStatsRequest {
@@ -14,7 +15,10 @@ export interface GetUserBacklogStatsResponse {
 }
 
 export class GetUserBacklogStatsUseCase {
-  constructor(private userItemsRepository: UserItemsRepository) {}
+  constructor(
+    private userItemsRepository: UserItemsRepository,
+    private logger: Logger
+  ) { }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async execute(_request: GetUserBacklogStatsRequest): Promise<GetUserBacklogStatsResponse> {
@@ -22,7 +26,7 @@ export class GetUserBacklogStatsUseCase {
     // - Validate user exists
     // - Get backlog statistics
     // - Calculate completion percentages
-    
+
     throw new Error('Not implemented');
   }
 }

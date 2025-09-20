@@ -1,4 +1,4 @@
-import { User } from '@/types/index.js';
+import { User, Logger } from '@/types/index.js';
 import { UsersRepository } from '@/repositories/users.repository.js';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
@@ -11,7 +11,10 @@ export interface FindAllUsersResponse {
 }
 
 export class FindAllUsersUseCase {
-  constructor(private usersRepository: UsersRepository) { }
+  constructor(
+    private usersRepository: UsersRepository,
+    private logger: Logger
+  ) { }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async execute(request: FindAllUsersRequest): Promise<FindAllUsersResponse> {
     // TODO: Add business logic here

@@ -1,4 +1,4 @@
-import { Item, Genre } from '@/types/index.js';
+import { Item, Genre, Logger } from '@/types/index.js';
 import { ItemsRepository } from '@/repositories/items.repository.js';
 
 export interface GetItemWithGenresRequest {
@@ -10,7 +10,10 @@ export interface GetItemWithGenresResponse {
 }
 
 export class GetItemWithGenresUseCase {
-  constructor(private itemsRepository: ItemsRepository) { }
+  constructor(
+    private itemsRepository: ItemsRepository,
+    private logger: Logger
+  ) { }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async execute(request: GetItemWithGenresRequest): Promise<GetItemWithGenresResponse> {

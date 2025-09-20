@@ -1,4 +1,4 @@
-import { User } from '@/types/index.js';
+import { User, Logger } from '@/types/index.js';
 import { UsersRepository } from '@/repositories/users.repository.js';
 
 export interface FindUserByEmailRequest {
@@ -10,7 +10,10 @@ export interface FindUserByEmailResponse {
 }
 
 export class FindUserByEmailUseCase {
-  constructor(private usersRepository: UsersRepository) { }
+  constructor(
+    private usersRepository: UsersRepository,
+    private logger: Logger
+  ) { }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async execute(request: FindUserByEmailRequest): Promise<FindUserByEmailResponse> {
     // TODO: Add business logic here

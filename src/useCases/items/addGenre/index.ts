@@ -1,3 +1,4 @@
+import { Logger } from '@/types/index.js';
 import { ItemsRepository } from '@/repositories/items.repository.js';
 
 export interface AddGenreToItemRequest {
@@ -10,7 +11,10 @@ export interface AddGenreToItemResponse {
 }
 
 export class AddGenreToItemUseCase {
-  constructor(private itemsRepository: ItemsRepository) { }
+  constructor(
+    private itemsRepository: ItemsRepository,
+    private logger: Logger
+  ) { }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async execute(_request: AddGenreToItemRequest): Promise<AddGenreToItemResponse> {

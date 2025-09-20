@@ -1,4 +1,4 @@
-import { User } from '@/types/index.js';
+import { User, Logger } from '@/types/index.js';
 import { UsersRepository } from '@/repositories/users.repository.js';
 
 export interface UpdateUserRequest {
@@ -13,7 +13,10 @@ export interface UpdateUserResponse {
 }
 
 export class UpdateUserUseCase {
-  constructor(private usersRepository: UsersRepository) { }
+  constructor(
+    private usersRepository: UsersRepository,
+    private logger: Logger
+  ) { }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async execute(request: UpdateUserRequest): Promise<UpdateUserResponse> {
     // TODO: Add business logic here
