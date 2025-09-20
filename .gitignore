@@ -62,3 +62,6 @@ src/uploads/*
 
 # ENV
 .env
+
+# DB
+db/index.db
