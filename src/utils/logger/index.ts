@@ -18,44 +18,45 @@ export class Logger {
     }
 
     const timestamp = new Date().toISOString();
-    const logEntry = `${timestamp} [${level.toUpperCase()}] [${entity}] ${message}\n`;
+    const logEntry = `[${entity}] | [${level.toUpperCase()}] | ${timestamp} | ${message}\n`;
 
     fs.appendFileSync(logFile, logEntry);
   }
 
-  info(entity: string, message: string) {
-    this.writeLog(entity, 'info', message);
-    this.fastify.log.info(`[${entity}] ${message}`);
-  }
-
-  warn(entity: string, message: string) {
-    this.writeLog(entity, 'warn', message);
-    this.fastify.log.warn(`[${entity}] ${message}`);
-  }
-
-  error(entity: string, message: string) {
-    this.writeLog(entity, 'error', message);
-    this.fastify.log.error(`[${entity}] ${message}`);
-  }
-
-  debug(entity: string, message: string) {
-    this.writeLog(entity, 'debug', message);
-    this.fastify.log.debug(`[${entity}] ${message}`);
-  }
-
-  fatal(entity: string, message: string) {
-    this.writeLog(entity, 'fatal', message);
-    this.fastify.log.fatal(`[${entity}] ${message}`);
+  createEntityLogger(entity: string) {
+    return {
+      info: (message: string) => {
+        this.writeLog(entity, 'info', message);
+        this.fastify.log.info(`[${entity}] ${message}`);
+      },
+      warn: (message: string) => {
+        this.writeLog(entity, 'warn', message);
+        this.fastify.log.warn(`[${entity}] ${message}`);
+      },
+      error: (message: string) => {
+        this.writeLog(entity, 'error', message);
+        this.fastify.log.error(`[${entity}] ${message}`);
+      },
+      debug: (message: string) => {
+        this.writeLog(entity, 'debug', message);
+        this.fastify.log.debug(`[${entity}] ${message}`);
+      },
+      fatal: (message: string) => {
+        this.writeLog(entity, 'fatal', message);
+        this.fastify.log.fatal(`[${entity}] ${message}`);
+      },
+    };
   }
 }
 
-export const logger = (entity: string, fastify: FastifyInstance) => {
-  const loggerInstance = new Logger(fastify);
-  return {
-    info: (message: string) => loggerInstance.info(entity, message),
-    warn: (message: string) => loggerInstance.warn(entity, message),
-    error: (message: string) => loggerInstance.error(entity, message),
-    debug: (message: string) => loggerInstance.debug(entity, message),
-    fatal: (message: string) => loggerInstance.fatal(entity, message),
-  };
-};
+declare module "fastify" {
+  interface FastifyInstance {
+    logger: (entity: string) => {
+      info: (message: string) => void;
+      warn: (message: string) => void;
+      error: (message: string) => void;
+      debug: (message: string) => void;
+      fatal: (message: string) => void;
+    };
+  }
+}

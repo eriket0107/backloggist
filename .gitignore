@@ -57,11 +57,14 @@ profile*
 *clinic*
 *flamegraph*
 
-# Uploads 
+# uploads 
 src/uploads/*
 
-# ENV
+# env
 .env
 
-# DB
+# db
 db/index.db
+
+# build
+dist/

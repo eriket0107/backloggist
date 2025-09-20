@@ -3,11 +3,10 @@ import { app } from "@/app";
 import { writeFile } from "node:fs/promises";
 import path, { resolve } from "node:path";
 import { env } from "env";
-import { logger } from "@/utils/logger";
 
 const dirname = path.resolve("./");
 
-const serverLogger = logger('server', app);
+const serverLogger = app.logger('server');
 app.listen({ port: env.PORT }, (err, port) => {
   if (err) {
     serverLogger.error(`${err}`);

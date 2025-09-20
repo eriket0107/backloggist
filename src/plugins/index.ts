@@ -5,10 +5,12 @@ import { registerFiles } from "./files";
 import { registerSwagger } from "./swagger";
 import { registerErrorHandler } from "./error";
 import { registerFileSystem } from "./filesystem";
+import { registerLogger } from "./logger";
 import { registerRoutes } from "@/routes";
 
 export const registerAllPlugins = (app: FastifyInstance) => {
-  registerFileSystem(app);
+  registerLogger(app);
+  registerFileSystem();
   registerCors(app);
   registerAuth(app);
   registerFiles(app);

@@ -1,10 +1,9 @@
 import { ZodError } from "zod";
 import { env } from "env";
 import type { FastifyError, FastifyReply, FastifyRequest, FastifyInstance } from "fastify";
-import { logger } from "../utils/logger";
 
 export const registerErrorHandler = (app: FastifyInstance) => {
-  const errorLogger = logger("errorHandler", app);
+  const errorLogger = app.logger("errorHandler");
 
   const errorHandler = (
     error: FastifyError,

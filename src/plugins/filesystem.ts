@@ -1,7 +1,5 @@
 import { env } from "env";
 import fs from "node:fs";
-import { logger } from "../utils/logger";
-import { FastifyInstance } from "fastify";
 
 const __dirname = process.cwd();
 
@@ -19,20 +17,26 @@ export const ensureDatabaseExists = () => {
 };
 
 export const ensureLogIndex = () => {
-  if (!fs.existsSync(`${__dirname}/logs/index.txt`)) {
-    fs.writeFileSync(`${__dirname}/logs/index.txt`, "");
+  const logsDir = `${__dirname}/logs`;
+
+  // Ensure logs directory exists first
+  if (!fs.existsSync(logsDir)) {
+    fs.mkdirSync(logsDir, { recursive: true });
+  }
+
+  if (!fs.existsSync(`${logsDir}/index.txt`)) {
+    fs.writeFileSync(`${logsDir}/index.txt`, "");
   } else {
-    const files = fs.readdirSync(`${__dirname}/logs`)
-      .filter(file => file.endsWith('.txt'))
-    fs.writeFileSync(`${__dirname}/logs/index.txt`, files.join('\n').replaceAll('.txt', ''))
+    const files = fs.readdirSync(logsDir)
+      .filter(file => file !== 'index.txt' && file.endsWith('.txt'))
+    fs.writeFileSync(`${logsDir}/index.txt`, files.join('\n').replaceAll('.txt', ''))
   }
 }
 
-export const registerFileSystem = (app: FastifyInstance) => {
-  const fsLogger = logger("filesystem", app);
-  fsLogger.info("Initializing filesystem...");
+export const registerFileSystem = () => {
+  console.log("Initializing filesystem...");
   ensureDirectoriesExist();
   ensureDatabaseExists();
   ensureLogIndex()
-  fsLogger.info("Filesystem initialization complete");
+  console.log("Filesystem initialization complete");
 };
