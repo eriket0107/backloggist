@@ -2,7 +2,6 @@ import { Item, ItemType } from '@/types/index.js';
 import { ItemsRepository } from '@/repositories/items.repository.js';
 
 export interface CreateItemRequest {
-  id: string;
   title: string;
   type: ItemType;
   note?: string;
