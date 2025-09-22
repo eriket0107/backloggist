@@ -1,17 +1,15 @@
 import { Item, NewItem, ItemType, Genre } from "../types/index.js";
 
 export interface ItemsRepository {
-  // Core CRUD
   create(data: Omit<NewItem, 'id'>): Promise<Item>;
   findById(id: string): Promise<Item | null>;
   findByType(type: ItemType): Promise<Item[]>;
   findByTitle(title: string): Promise<Item[]>;
-  update(id: string, data: Partial<Omit<NewItem, 'id'>>): Promise<Item>;
+  update(id: string, data: Partial<Omit<NewItem, 'id'>>): Promise<Item | undefined>;
   delete(id: string): Promise<void>;
   findAll(): Promise<Item[]>;
   search(query: string): Promise<Item[]>;
 
-  // Genre relationships
   addGenreToItem(itemId: string, genreId: string): Promise<void>;
   removeGenreFromItem(itemId: string, genreId: string): Promise<void>;
   getItemGenres(itemId: string): Promise<Genre[]>;

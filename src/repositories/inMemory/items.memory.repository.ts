@@ -11,13 +11,12 @@ interface ItemGenreRelation {
 export class ItemsInMemoryRepository implements ItemsRepository {
   private items: Item[] = [];
   private itemGenres: ItemGenreRelation[] = [];
-  private genres: Genre[] = []; // We'll need access to genres for relationships
+  private genres: Genre[] = [];
 
   constructor(genres: Genre[] = []) {
     this.genres = genres;
   }
 
-  // Core CRUD
   async create(data: Omit<NewItem, 'id'>): Promise<Item> {
     const item: Item = {
       id: randomUUID(),
@@ -46,10 +45,10 @@ export class ItemsInMemoryRepository implements ItemsRepository {
     );
   }
 
-  async update(id: string, data: Partial<Omit<NewItem, 'id'>>): Promise<Item> {
+  async update(id: string, data: Partial<Omit<NewItem, 'id'>>): Promise<Item | undefined> {
     const itemIndex = this.items.findIndex(i => i.id === id);
     if (itemIndex === -1) {
-      throw new Error(`Item with id ${id} not found`);
+      return undefined;
     }
 
     const updatedItem = {
@@ -64,10 +63,9 @@ export class ItemsInMemoryRepository implements ItemsRepository {
   async delete(id: string): Promise<void> {
     const itemIndex = this.items.findIndex(i => i.id === id);
     if (itemIndex === -1) {
-      throw new Error(`Item with id ${id} not found`);
+      return undefined;
     }
 
-    // Also remove all genre relationships
     this.itemGenres = this.itemGenres.filter(ig => ig.itemId !== id);
     this.items.splice(itemIndex, 1);
   }
@@ -84,15 +82,13 @@ export class ItemsInMemoryRepository implements ItemsRepository {
     );
   }
 
-  // Genre relationships
   async addGenreToItem(itemId: string, genreId: string): Promise<void> {
-    // Check if relationship already exists
     const existingRelation = this.itemGenres.find(
       ig => ig.itemId === itemId && ig.genreId === genreId
     );
 
     if (existingRelation) {
-      return; // Already exists
+      return undefined;
     }
 
     const relation: ItemGenreRelation = {
@@ -141,16 +137,13 @@ export class ItemsInMemoryRepository implements ItemsRepository {
   }
 
   async updateItemGenres(itemId: string, genreIds: string[]): Promise<void> {
-    // Remove all existing genre relationships for this item
     this.itemGenres = this.itemGenres.filter(ig => ig.itemId !== itemId);
 
-    // Add new relationships
     for (const genreId of genreIds) {
       await this.addGenreToItem(itemId, genreId);
     }
   }
 
-  // Helper method to set genres (for testing/setup)
   setGenres(genres: Genre[]): void {
     this.genres = genres;
   }

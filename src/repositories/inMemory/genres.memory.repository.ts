@@ -27,10 +27,10 @@ export class GenresInMemoryRepository implements GenresRepository {
     return genre || null;
   }
 
-  async update(id: string, data: Partial<Omit<NewGenre, 'id'>>): Promise<Genre> {
+  async update(id: string, data: Partial<Omit<NewGenre, 'id'>>): Promise<Genre | undefined> {
     const genreIndex = this.genres.findIndex(g => g.id === id);
     if (genreIndex === -1) {
-      throw new Error(`Genre with id ${id} not found`);
+      return undefined;
     }
 
     const updatedGenre = {
@@ -45,7 +45,7 @@ export class GenresInMemoryRepository implements GenresRepository {
   async delete(id: string): Promise<void> {
     const genreIndex = this.genres.findIndex(g => g.id === id);
     if (genreIndex === -1) {
-      throw new Error(`Genre with id ${id} not found`);
+      return undefined;
     }
 
     this.genres.splice(genreIndex, 1);

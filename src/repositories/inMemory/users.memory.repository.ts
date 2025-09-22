@@ -28,10 +28,10 @@ export class UsersInMemoryRepository implements UsersRepository {
     return user || null;
   }
 
-  async update(id: string, data: Partial<Omit<NewUser, 'id'>>): Promise<User> {
+  async update(id: string, data: Partial<Omit<NewUser, 'id'>>): Promise<User | undefined> {
     const userIndex = this.users.findIndex(u => u.id === id);
     if (userIndex === -1) {
-      throw new Error(`User with id ${id} not found`);
+      return undefined;
     }
 
     const updatedUser = {
@@ -47,7 +47,7 @@ export class UsersInMemoryRepository implements UsersRepository {
   async delete(id: string): Promise<void> {
     const userIndex = this.users.findIndex(u => u.id === id);
     if (userIndex === -1) {
-      throw new Error(`User with id ${id} not found`);
+      return undefined;
     }
 
     this.users.splice(userIndex, 1);

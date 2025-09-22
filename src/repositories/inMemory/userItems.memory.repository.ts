@@ -25,10 +25,10 @@ export class UserItemsInMemoryRepository implements UserItemsRepository {
     return userItem || null;
   }
 
-  async update(id: string, data: Partial<Omit<NewUserItem, 'id' | 'userId' | 'itemId'>>): Promise<UserItem> {
+  async update(id: string, data: Partial<Omit<NewUserItem, 'id' | 'userId' | 'itemId'>>): Promise<UserItem | undefined> {
     const userItemIndex = this.userItems.findIndex(ui => ui.id === id);
     if (userItemIndex === -1) {
-      throw new Error(`UserItem with id ${id} not found`);
+      return undefined;
     }
 
     const updatedUserItem = {
@@ -43,17 +43,16 @@ export class UserItemsInMemoryRepository implements UserItemsRepository {
   async delete(id: string): Promise<void> {
     const userItemIndex = this.userItems.findIndex(ui => ui.id === id);
     if (userItemIndex === -1) {
-      throw new Error(`UserItem with id ${id} not found`);
+      return undefined;
     }
 
     this.userItems.splice(userItemIndex, 1);
   }
 
-  async addItemToUserBacklog(userId: string, itemId: string, order?: number): Promise<UserItem> {
-    // Check if item already exists in user's backlog
+  async addItemToUserBacklog(userId: string, itemId: string, order?: number): Promise<UserItem | undefined> {
     const existingUserItem = await this.findUserItem(userId, itemId);
     if (existingUserItem) {
-      throw new Error(`Item ${itemId} already exists in user ${userId}'s backlog`);
+      return undefined;
     }
 
     const newUserItemData: Omit<NewUserItem, 'addedAt'> = {
@@ -73,7 +72,7 @@ export class UserItemsInMemoryRepository implements UserItemsRepository {
   async removeItemFromUserBacklog(userId: string, itemId: string): Promise<void> {
     const userItem = await this.findUserItem(userId, itemId);
     if (!userItem) {
-      throw new Error(`Item ${itemId} not found in user ${userId}'s backlog`);
+      return undefined;
     }
 
     await this.delete(userItem.id);
@@ -91,28 +90,28 @@ export class UserItemsInMemoryRepository implements UserItemsRepository {
       .sort((a, b) => (a.order || 0) - (b.order || 0));
   }
 
-  async updateUserItemStatus(userId: string, itemId: string, status: UserItemStatus): Promise<UserItem> {
+  async updateUserItemStatus(userId: string, itemId: string, status: UserItemStatus): Promise<UserItem | undefined> {
     const userItem = await this.findUserItem(userId, itemId);
     if (!userItem) {
-      throw new Error(`UserItem not found for user ${userId} and item ${itemId}`);
+      return undefined;
     }
 
     return await this.update(userItem.id, { status });
   }
 
-  async updateUserItemRating(userId: string, itemId: string, rating: number): Promise<UserItem> {
+  async updateUserItemRating(userId: string, itemId: string, rating: number): Promise<UserItem | undefined> {
     const userItem = await this.findUserItem(userId, itemId);
     if (!userItem) {
-      throw new Error(`UserItem not found for user ${userId} and item ${itemId}`);
+      return undefined;
     }
 
     return await this.update(userItem.id, { rating: rating });
   }
 
-  async updateUserItemOrder(userId: string, itemId: string, order: number): Promise<UserItem> {
+  async updateUserItemOrder(userId: string, itemId: string, order: number): Promise<UserItem | undefined> {
     const userItem = await this.findUserItem(userId, itemId);
     if (!userItem) {
-      throw new Error(`UserItem not found for user ${userId} and item ${itemId}`);
+      return undefined;
     }
 
     return await this.update(userItem.id, { order });
