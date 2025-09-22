@@ -2,7 +2,7 @@ import { User, NewUser } from "../../types/index.js";
 import { UsersRepository } from "../users.repository.js";
 import { randomUUID } from 'node:crypto';
 
-export class UsersMemoryRepository implements UsersRepository {
+export class UsersInMemoryRepository implements UsersRepository {
   private users: User[] = [];
 
   async create(data: Omit<NewUser, 'createdAt' | 'updatedAt'>): Promise<User> {

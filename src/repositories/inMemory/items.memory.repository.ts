@@ -8,7 +8,7 @@ interface ItemGenreRelation {
   genreId: string;
 }
 
-export class ItemsMemoryRepository implements ItemsRepository {
+export class ItemsInMemoryRepository implements ItemsRepository {
   private items: Item[] = [];
   private itemGenres: ItemGenreRelation[] = [];
   private genres: Genre[] = []; // We'll need access to genres for relationships

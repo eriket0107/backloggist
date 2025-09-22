@@ -4,7 +4,7 @@ import { sql } from "drizzle-orm";
 
 
 export const usersTable = table("users", {
-  id: t.text().primaryKey().notNull(),
+  id: t.text().primaryKey().notNull().default(sql`gen_random_uuid()`),
   name: t.varchar({ length: 150 }).notNull(),
   email: t.varchar({ length: 100 }).notNull().unique(),
   password: t.varchar({ length: 150 }).notNull(),
@@ -17,7 +17,7 @@ export const usersTable = table("users", {
 });
 
 export const itemsTable = table('items', {
-  id: t.text().primaryKey().notNull(),
+  id: t.text().primaryKey().notNull().default(sql`gen_random_uuid()`),
   title: t.varchar({ length: 200 }).notNull(),
   type: t.varchar({ length: 200, enum: ['game', 'book', 'serie', 'movie'] }).notNull(),
   note: t.text(),
@@ -29,12 +29,12 @@ export const itemsTable = table('items', {
 });
 
 export const userItemsTable = table('userItems', {
-  id: t.text().primaryKey().notNull(),
+  id: t.text().primaryKey().notNull().default(sql`gen_random_uuid()`),
   userId: t.text('user_id').notNull().references(() => usersTable.id),
   itemId: t.text('item_id').notNull().references(() => itemsTable.id),
   order: t.integer(), //decimal
   status: t.varchar({ length: 100, enum: ['completed', 'in_progress', 'pending'] }),
-  ranting: t.integer(), //decimal
+  rating: t.integer(), //decimal
   addedAt: t.timestamp('added_at').notNull(),
 }, (table) => {
   return {
@@ -47,14 +47,14 @@ export const userItemsTable = table('userItems', {
 
 
 export const genres = table('genres', {
-  id: t.text().primaryKey().notNull(),
+  id: t.text().primaryKey().notNull().default(sql`gen_random_uuid()`),
   name: t.varchar({ length: 100 }).notNull(),
 })
 
 export const itemGenres = table('itemGenres', {
-  id: t.text().primaryKey().notNull(),
-  itemId: t.text('item_id').notNull(),
-  genreId: t.text('genre_id').notNull(),
+  id: t.text().primaryKey().notNull().default(sql`gen_random_uuid()`),
+  itemId: t.text('item_id').notNull().references(() => itemsTable.id),
+  genreId: t.text('genre_id').notNull().references(() => genres.id),
 }, (table) => {
   return {
     itemIdx: t.index('item_genre_idx').on(table.itemId),

@@ -2,17 +2,17 @@ import { UserItem, NewUserItem, UserItemStatus } from "../../types/index.js";
 import { UserItemsRepository } from "../userItems.repository.js";
 import { randomUUID } from 'node:crypto';
 
-export class UserItemsMemoryRepository implements UserItemsRepository {
+export class UserItemsInMemoryRepository implements UserItemsRepository {
   private userItems: UserItem[] = [];
 
   async create(data: Omit<NewUserItem, 'addedAt'>): Promise<UserItem> {
     const userItem: UserItem = {
       id: randomUUID(),
-      userId: data.userId || null,
-      itemId: data.itemId || null,
+      userId: data.userId,
+      itemId: data.itemId,
       order: data.order || null,
       status: data.status || null,
-      ranting: data.ranting || null,
+      rating: data.rating || null,
       addedAt: new Date(),
     };
 
@@ -62,7 +62,7 @@ export class UserItemsMemoryRepository implements UserItemsRepository {
       itemId,
       order: order || 0,
       status: UserItemStatus.PENDING,
-      ranting: null,
+      rating: null,
     };
 
     const userItem = await this.create(newUserItemData);
@@ -106,7 +106,7 @@ export class UserItemsMemoryRepository implements UserItemsRepository {
       throw new Error(`UserItem not found for user ${userId} and item ${itemId}`);
     }
 
-    return await this.update(userItem.id, { ranting: rating });
+    return await this.update(userItem.id, { rating: rating });
   }
 
   async updateUserItemOrder(userId: string, itemId: string, order: number): Promise<UserItem> {

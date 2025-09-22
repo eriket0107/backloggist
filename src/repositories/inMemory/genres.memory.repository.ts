@@ -2,7 +2,7 @@ import { Genre, NewGenre } from "../../types/index.js";
 import { GenresRepository } from "../genres.repository.js";
 import { randomUUID } from 'node:crypto';
 
-export class GenresMemoryRepository implements GenresRepository {
+export class GenresInMemoryRepository implements GenresRepository {
   private genres: Genre[] = [];
 
   async create(data: Omit<NewGenre, 'id'>): Promise<Genre> {
