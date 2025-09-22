@@ -7,9 +7,13 @@
     "moduleResolution": "Node",
     "baseUrl": "./",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@/env": ["env/index.ts"],
+      "@/db": ["db/*", "db/index.ts"],
+      "@/db/schema": ["db/schema/index.ts"]
     },
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true

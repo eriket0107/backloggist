@@ -7,7 +7,11 @@ const envSchema = z.object({
   JWT_SECRET: z.string().optional().default("devTest"),
   PORT: z.coerce.number().default(3333),
   HOST: z.string().default("localhost"),
-  DB_FILE_NAME: z.string().default(`db/index.db`),
+  DATABASE_URL: z.string(),
+  POSTGRES_USER: z.string(),
+  POSTGRES_PASSWORD: z.string(),
+  POSTGRES_DB: z.string(),
+  POSTGRES_PORT: z.coerce.number(),
   UPLOADS_DIR: z.string().default('src/uploads'),
   LOGS_DIR: z.string().default('logs'),
 });

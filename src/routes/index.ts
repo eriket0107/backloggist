@@ -6,4 +6,4 @@ export const registerRoutes = (app: FastifyInstance) => {
   console.log('Routes has started.');
 
 
-};
+}; 

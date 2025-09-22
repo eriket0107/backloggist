@@ -48,7 +48,6 @@ export class Logger {
     };
   }
 }
-
 declare module "fastify" {
   interface FastifyInstance {
     logger: (entity: string) => {
