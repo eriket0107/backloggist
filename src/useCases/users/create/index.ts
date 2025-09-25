@@ -1,10 +1,10 @@
-import { User, Logger } from '@/types/index.js';
+import { NewUser, User } from '@/types/index.js';
 import { UsersRepository } from '@/repositories/users.repository.js';
+import { Logger } from '@/utils/logger';
+import { randomUUID } from 'node:crypto';
 
 export interface CreateUserRequest {
-  email: string;
-  password: string;
-  name: string;
+  user: NewUser
 }
 
 export interface CreateUserResponse {
@@ -14,16 +14,43 @@ export interface CreateUserResponse {
 export class CreateUserUseCase {
   constructor(
     private usersRepository: UsersRepository,
-    private logger: Logger
+    private logger: Logger,
   ) { }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async execute(request: CreateUserRequest): Promise<CreateUserResponse> {
-    // TODO: Add business logic here
-    // - Validate email format
-    // - Check if user already exists
-    // - Hash password
-    // - Create user
+  async execute({ user }: CreateUserRequest): Promise<CreateUserResponse> {
+    const loggerInstance = this.logger.createEntityLogger('user')
+    try {
 
-    throw new Error('Not implemented');
+      const duplicatedEmail = await this.usersRepository.findByEmail(user.email)
+
+      if (duplicatedEmail) {
+        loggerInstance.error(`Email already exitis. ${JSON.stringify(duplicatedEmail.email)}`)
+        throw new Error('Email Already Exists.')
+      }
+
+      loggerInstance.info(`Starting user creation process: ${JSON.stringify({
+        email: user.email,
+        name: user.name
+      })} `)
+
+      const createdUser = await this.usersRepository.create({
+        id: randomUUID(),
+        ...user
+      })
+
+      loggerInstance.info(`User created successfully ${JSON.stringify({
+        email: user.email,
+        name: user.name
+      })}`)
+
+      return {
+        user: createdUser,
+      }
+    } catch (error) {
+      loggerInstance.error(`Failed to create user: ${JSON.stringify({
+        email: user.email,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      })}`)
+      throw error
+    }
   }
 }

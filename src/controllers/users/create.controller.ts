@@ -1,24 +1,36 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
+import { z } from 'zod';
 import { CreateUserUseCase, CreateUserRequest } from '@/useCases/users/create/index.js';
+import { error } from 'node:console';
 
-interface CreateUserBody {
-  email: string;
-  password: string;
-  name: string;
-}
+const createUserBodySchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+  name: z.string().min(1),
+});
 
 export class CreateUserController {
   constructor(private createUserUseCase: CreateUserUseCase) { }
-
-  async handle(request: FastifyRequest<{ Body: CreateUserBody }>, reply: FastifyReply) {
+  async handle(request: FastifyRequest, reply: FastifyReply) {
     try {
-      // TODO: Add request validation
-      // TODO: Add authentication/authorization if needed
+      const validationResult = createUserBodySchema.safeParse(request.body);
+
+      if (!validationResult.success) {
+        return reply.status(400).send({
+          success: false,
+          error: 'Validation failed',
+          details: validationResult.error.issues,
+        });
+      }
+
+      const { email, password, name } = validationResult.data;
 
       const createUserRequest: CreateUserRequest = {
-        email: request.body.email,
-        password: request.body.password,
-        name: request.body.name,
+        user: {
+          email,
+          password,
+          name,
+        },
       };
 
       const result = await this.createUserUseCase.execute(createUserRequest);
@@ -29,11 +41,12 @@ export class CreateUserController {
       });
     } catch (error) {
       console.error(error);
-      // TODO: Add proper error handling
-      return reply.status(500).send({
+      reply.status(500).send({
         success: false,
         error: 'Internal server error',
+        message: (error as Error).message
       });
     }
+    throw error
   }
 }

@@ -16,14 +16,10 @@ export interface UserItemsRepository {
   updateUserItemOrder(userId: string, itemId: string, order: number): Promise<UserItem | undefined>;
 
   findUserItem(userId: string, itemId: string): Promise<UserItem | null>;
-  getUserCompletedItems(userId: string): Promise<UserItem[]>;
-  getUserInProgressItems(userId: string): Promise<UserItem[]>;
-  getUserPendingItems(userId: string): Promise<UserItem[]>;
+
 
   getUserBacklogStats(userId: string): Promise<{
-    total: number;
-    completed: number;
-    inProgress: number;
-    pending: number;
-  }>;
+    status: "completed" | "in_progress" | "pending" | null;
+    count: number;
+  }[]>;
 }

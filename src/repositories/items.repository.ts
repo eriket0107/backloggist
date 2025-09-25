@@ -7,7 +7,7 @@ export interface ItemsRepository {
   findByTitle(title: string): Promise<Item[]>;
   update(id: string, data: Partial<Omit<NewItem, 'id'>>): Promise<Item | undefined>;
   delete(id: string): Promise<void>;
-  findAll(): Promise<Item[]>;
+  findAll(limit: number, offset: number): Promise<Item[]>;
   search(query: string): Promise<Item[]>;
 
   addGenreToItem(itemId: string, genreId: string): Promise<void>;
