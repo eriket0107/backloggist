@@ -6,3 +6,4 @@ const client = postgres(env.DATABASE_URL);
 
 export const db = drizzle(client);
 
+export type DrizzleRepository = typeof db

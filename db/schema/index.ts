@@ -19,7 +19,7 @@ export const usersTable = table("users", {
 export const itemsTable = table('items', {
   id: t.text().primaryKey().notNull().default(sql`gen_random_uuid()`),
   title: t.varchar({ length: 200 }).notNull(),
-  type: t.varchar({ length: 200, enum: ['game', 'book', 'serie', 'movie'] }).notNull(),
+  type: t.varchar({ length: 200, enum: ['game', 'book', 'serie', 'movie', 'course'] }).notNull(),
   note: t.text(),
   imgUrl: t.text("img_url")
 }, (table) => {
