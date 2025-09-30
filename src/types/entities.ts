@@ -36,6 +36,14 @@ export interface UserItemWithDetails {
   item: Item;
 }
 
+export interface Session {
+  id: string;
+  userId: string;
+  accessToken: string;
+  isExpired?: boolean;
+  createdAt?: Date;
+}
+
 export interface BacklogStats {
   total: number;
   completed: number;

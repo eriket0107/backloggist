@@ -1,16 +1,19 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from '@/modules/database/database.module';
 import { UsersRepository } from '@/repositories/drizzle-repository/users.repository';
 import { ItemsRepository } from '@/repositories/drizzle-repository/items.repository';
 import { UserItemsRepository } from '@/repositories/drizzle-repository/user-items.repository';
+import { SessionsRepository } from '@/repositories/drizzle-repository/sessions.repository';
 import { UsersMemoryRepository } from '@/repositories/in-memory/users.memory.repository';
 import { ItemsMemoryRepository } from '@/repositories/in-memory/items.memory.repository';
 import { UserItemsMemoryRepository } from '@/repositories/in-memory/user-items.memory.repository';
+import { SessionsMemoryRepository } from '@/repositories/in-memory/sessions.memory.repository';
 import { DatabaseService } from '@/modules/database/database.service';
 
 const useMemory = process.env.NODE_ENV === 'test';
 
+@Global()
 @Module({
   imports: [ConfigModule, DatabaseModule],
   providers: [
@@ -35,7 +38,14 @@ const useMemory = process.env.NODE_ENV === 'test';
       },
       inject: [DatabaseService],
     },
+    {
+      provide: 'ISessionsRepository',
+      useFactory: (databaseService: DatabaseService) => {
+        return useMemory ? new SessionsMemoryRepository() : new SessionsRepository(databaseService);
+      },
+      inject: [DatabaseService],
+    },
   ],
-  exports: ['IUsersRepository', 'IItemsRepository', 'IUserItemsRepository'],
+  exports: ['IUsersRepository', 'IItemsRepository', 'IUserItemsRepository', 'ISessionsRepository'],
 })
 export class RepositoryConfigModule { }

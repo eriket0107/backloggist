@@ -5,16 +5,22 @@ import {
   ExecutionContext,
   Injectable,
   UnauthorizedException,
+  Inject,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { LoggerService } from '../../utils/logger/logger.service';
 import { Request } from 'express';
+import { ISessionsRepository } from '@/repositories/interfaces/sessions.repository.interface';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   private logger;
 
-  constructor(private jwtService: JwtService, private loggerService: LoggerService) {
+  constructor(
+    private jwtService: JwtService,
+    private loggerService: LoggerService,
+    @Inject('ISessionsRepository') private sessionService: ISessionsRepository,
+  ) {
     this.logger = this.loggerService.createEntityLogger('Auth');
   }
 

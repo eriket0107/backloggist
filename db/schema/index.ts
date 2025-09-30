@@ -3,6 +3,7 @@ import * as t from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 
 
+
 export const usersTable = table("users", {
   id: t.text().primaryKey().notNull().default(sql`gen_random_uuid()`),
   name: t.varchar({ length: 150 }).notNull(),
@@ -15,6 +16,21 @@ export const usersTable = table("users", {
     emailIdx: t.uniqueIndex('email_idx').on(table.email)
   }
 });
+
+export const sessionsTable = table('sessions', {
+  id: t.text().primaryKey().notNull().default(sql`gen_random_uuid()`).unique(),
+  userId: t.text('user_id').notNull().references(() => usersTable.id),
+  accessToken: t.text('access_token').notNull().unique(),
+  isExpired: t.boolean('is_expired'),
+  createdAt: t.timestamp('created_at').default(sql`CURRENT_TIMESTAMP`),
+},
+  (table) => {
+    return {
+      sessionUserIdx: t.uniqueIndex('session_user_idx').on(table.userId)
+    }
+  }
+)
+
 
 export const itemsTable = table('items', {
   id: t.text().primaryKey().notNull().default(sql`gen_random_uuid()`),
