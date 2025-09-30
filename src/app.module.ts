@@ -6,6 +6,7 @@ import { RepositoryConfigModule } from './modules/repository-config/repository-c
 import { UsersModule } from './modules/users/users.module';
 import { ItemsModule } from './modules/items/items.module';
 import { UserItemsModule } from './modules/user-items/user-items.module';
+import { PasswordHandlerModule } from './ultils/password-handler.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { UserItemsModule } from './modules/user-items/user-items.module';
     UsersModule,
     ItemsModule,
     UserItemsModule,
+    PasswordHandlerModule
   ],
 })
 export class AppModule { }

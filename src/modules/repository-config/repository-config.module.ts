@@ -9,13 +9,14 @@ import { ItemsMemoryRepository } from '@/repositories/in-memory/items.memory.rep
 import { UserItemsMemoryRepository } from '@/repositories/in-memory/user-items.memory.repository';
 import { DatabaseService } from '@/modules/database/database.service';
 
+const useMemory = process.env.NODE_ENV === 'test';
+
 @Module({
   imports: [ConfigModule, DatabaseModule],
   providers: [
     {
       provide: 'IUsersRepository',
       useFactory: (databaseService: DatabaseService) => {
-        const useMemory = process.env.USE_MEMORY_REPOSITORIES === 'true';
         return useMemory ? new UsersMemoryRepository() : new UsersRepository(databaseService);
       },
       inject: [DatabaseService],
@@ -23,7 +24,6 @@ import { DatabaseService } from '@/modules/database/database.service';
     {
       provide: 'IItemsRepository',
       useFactory: (databaseService: DatabaseService) => {
-        const useMemory = process.env.USE_MEMORY_REPOSITORIES === 'true';
         return useMemory ? new ItemsMemoryRepository() : new ItemsRepository(databaseService);
       },
       inject: [DatabaseService],
@@ -31,7 +31,6 @@ import { DatabaseService } from '@/modules/database/database.service';
     {
       provide: 'IUserItemsRepository',
       useFactory: (databaseService: DatabaseService) => {
-        const useMemory = process.env.USE_MEMORY_REPOSITORIES === 'true';
         return useMemory ? new UserItemsMemoryRepository() : new UserItemsRepository(databaseService);
       },
       inject: [DatabaseService],
