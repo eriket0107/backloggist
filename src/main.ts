@@ -1,29 +1,23 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
-import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestFastifyApplication>(
-    AppModule,
-    new FastifyAdapter()
-  );
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  // Enable CORS
   app.enableCors({
     origin: true,
     credentials: true,
   });
 
-  // Global validation pipe
   app.useGlobalPipes(new ValidationPipe({
     transform: true,
     whitelist: true,
     forbidNonWhitelisted: true,
   }));
 
-  // Swagger documentation
   const config = new DocumentBuilder()
     .setTitle('Backloggist API')
     .setDescription('API for managing your backlog of games, books, movies, etc.')

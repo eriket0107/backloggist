@@ -1,5 +1,6 @@
-# Getting Started with [Fastify-CLI](https://www.npmjs.com/package/fastify-cli)
-This project was bootstrapped with Fastify-CLI.
+# Getting Started with NestJS Express Backend
+
+This project is built with NestJS using Express adapter.
 
 ## Available Scripts
 
@@ -20,5 +21,6 @@ Run the test cases.
 
 ## Learn More
 
-To learn Fastify, check out the [Fastify documentation](https://fastify.dev/docs/latest/).
+To learn NestJS, check out the [NestJS documentation](https://docs.nestjs.com/).
+
 # backloggist

@@ -19,14 +19,16 @@
     "noFallthroughCasesInSwitch": false,
     "paths": {
       "@/*": ["src/*"],
-      "@/env": ["env/index.ts"],
+      "@/env": ["./env/index.ts"],
       "@/db": ["db/*", "db/index.ts"],
       "@/db/schema": ["db/schema/index.ts"],
       "@/types": ["src/types/*"],
       "@/repositories": ["src/repositories/*"],
       "@/repositories/interfaces": ["src/repositories/interfaces/*"],
       "@/repositories/in-memory": ["src/repositories/in-memory/*"],
-      "@/modules": ["src/modules/*"]
+      "@/modules": ["src/modules/*"],
+      "@/utils": ["src/utils/*"],
+      "@/constants": ["src/constants/*"]
     }
   }
 }

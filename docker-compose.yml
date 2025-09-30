@@ -16,11 +16,11 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - fastify_network
+      - backend_network
       
 volumes:
   postgres_data:
 
 networks:
-  fastify_network:
+  backend_network:
     driver: bridge

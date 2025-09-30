@@ -14,7 +14,7 @@ COPY . .
 # Build the project (e.g., TypeScript)
 RUN pnpm build
 
-# Expose the port used by Fastify
+# Expose the port used by the application
 EXPOSE 3333
 
 # Set production environment

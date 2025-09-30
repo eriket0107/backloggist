@@ -1,9 +1,9 @@
 import { Injectable, Inject, ConflictException, BadRequestException } from '@nestjs/common';
-import { LoggerService } from '@/modules/logger/logger.service';
+import { LoggerService } from '@/utils/logger/logger.service';
 import { IUsersRepository } from '@/repositories/interfaces/users.repository.interface';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { PasswordHandler } from '@/ultils/password-handler.module';
+import { PasswordHandler } from '@/utils/password-handler/password-handler.service';
 
 @Injectable()
 export class UsersService {

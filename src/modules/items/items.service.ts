@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { LoggerService } from '@/modules/logger/logger.service';
+import { LoggerService } from '@/utils/logger/logger.service';
 import { IItemsRepository } from '@/repositories/interfaces/items.repository.interface';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';

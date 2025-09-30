@@ -1,4 +1,3 @@
-import { Module } from "@nestjs/common";
 import * as bcryptjs from "bcryptjs";
 
 export class PasswordHandler {
@@ -13,11 +12,3 @@ export class PasswordHandler {
     return await bcryptjs.compare(password, passwordToCompare);
   }
 }
-
-@Module({
-  providers: [
-    PasswordHandler
-  ],
-  exports: [PasswordHandler],
-})
-export class PasswordHandlerModule { }
