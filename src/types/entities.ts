@@ -41,6 +41,7 @@ export interface Session {
   userId: string;
   accessToken: string;
   isExpired?: boolean;
+  expiredAt?: Date;
   createdAt?: Date;
 }
 

@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { LoggerService } from '../../utils/logger/logger.service';
 import { PasswordHandler } from '@/utils/password-handler/password-handler.service';
 import { ISessionsRepository } from '@/repositories/interfaces/sessions.repository.interface';
+import { addOneHour } from '@/helpers/add-one-hour';
 
 @Injectable()
 export class AuthService {
@@ -20,7 +21,7 @@ export class AuthService {
     this.logger = this.loggerService.createEntityLogger('Auth')
   }
 
-  async signIn(email: string, pass: string): Promise<{ access_token: string }> {
+  async signIn(email: string, pass: string): Promise<{ accessToken: string }> {
     this.logger.info('Attempting sign in', { email });
 
     const user = await this.usersService.findByEmail(email);
@@ -39,17 +40,29 @@ export class AuthService {
     const payload = { sub: user.id, user }
 
     this.logger.info('Generating JWT token', { userId: user.id });
-    const jwt = await this.jwtService.signAsync(payload)
+
+    let accessToken: string
 
     this.logger.info('Creating session', { userId: user.id });
-    await this.sessionRepository.create({
-      accessToken: jwt,
-      userId: user.id,
-    })
+
+    const session = await this.sessionRepository.findByUserId(user.id)
+
+    if (!session || session.isExpired) {
+      this.logger.info('No valid session found, creating new token and session', { userId: user.id });
+      accessToken = await this.jwtService.signAsync(payload)
+      await this.sessionRepository.create({
+        accessToken,
+        userId: user.id,
+        expiredAt: addOneHour(new Date())
+      })
+    } else {
+      this.logger.info('Getting existing session token', { userId: user.id });
+      accessToken = session.accessToken
+    }
 
     this.logger.info('Sign in successful', { userId: user.id });
     return {
-      access_token: jwt
+      accessToken
     };
   }
 }

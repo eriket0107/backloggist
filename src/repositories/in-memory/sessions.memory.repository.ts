@@ -32,8 +32,8 @@ export class SessionsMemoryRepository implements ISessionsRepository {
     return this.sessions.find(session => session.accessToken === accessToken) || null;
   }
 
-  async update(id: string, sessionData: UpdateSessionData): Promise<Session | null> {
-    const sessionIndex = this.sessions.findIndex(session => session.id === id);
+  async update(id: string, accessToken: string, sessionData: UpdateSessionData): Promise<Session | null> {
+    const sessionIndex = this.sessions.findIndex(session => session.id === id && session.accessToken === accessToken);
     if (sessionIndex === -1) {
       return null;
     }

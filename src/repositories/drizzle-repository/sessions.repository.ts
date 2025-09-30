@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '@/modules/database/database.service';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { sessionsTable } from '../../../db/schema';
 import { ISessionsRepository, CreateSessionData, UpdateSessionData } from '@/repositories/interfaces/sessions.repository.interface';
 
@@ -11,19 +11,13 @@ export class SessionsRepository implements ISessionsRepository {
   async create(sessionData: CreateSessionData) {
     const [session] = await this.databaseService.db
       .insert(sessionsTable)
-      .values(sessionData)
+      .values({
+        ...sessionData,
+        isExpired: false
+      })
       .returning();
     return session;
   }
-
-  async findById(id: string) {
-    const [session] = await this.databaseService.db
-      .select()
-      .from(sessionsTable)
-      .where(eq(sessionsTable.id, id));
-    return session || null;
-  }
-
   async findByUserId(userId: string) {
     const [session] = await this.databaseService.db
       .select()
@@ -37,14 +31,14 @@ export class SessionsRepository implements ISessionsRepository {
       .select()
       .from(sessionsTable)
       .where(eq(sessionsTable.accessToken, accessToken));
-    return session || null;
+    return session;
   }
 
-  async update(id: string, sessionData: UpdateSessionData) {
+  async update(userId: string, accessToken: string, sessionData: UpdateSessionData) {
     const [session] = await this.databaseService.db
       .update(sessionsTable)
       .set(sessionData)
-      .where(eq(sessionsTable.id, id))
+      .where(and(eq(sessionsTable.userId, userId), eq(sessionsTable.accessToken, accessToken)))
       .returning();
     return session || null;
   }

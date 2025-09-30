@@ -17,9 +17,9 @@ export class AuthGuard implements CanActivate {
   private logger;
 
   constructor(
+    @Inject('ISessionsRepository') private sessionService: ISessionsRepository,
     private jwtService: JwtService,
     private loggerService: LoggerService,
-    @Inject('ISessionsRepository') private sessionService: ISessionsRepository,
   ) {
     this.logger = this.loggerService.createEntityLogger('Auth');
   }
@@ -29,11 +29,15 @@ export class AuthGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
+    const currentDate = new Date()
+
+    let isExpired: boolean
 
     if (!token) {
       this.logger.warn('No token provided in request');
       throw new UnauthorizedException();
     }
+
 
     try {
       this.logger.info('Verifying JWT token');
@@ -44,9 +48,20 @@ export class AuthGuard implements CanActivate {
         }
       );
 
+      const session = await this.sessionService.findByUserId(payload.sub)
+      isExpired = currentDate >= session.expiredAt
+
+      if (isExpired) {
+        this.logger.warn('Session has expired.');
+        const teste = await this.sessionService.update(session.userId, token, {
+          isExpired: true,
+        })
+        console.log({ teste, session })
+        throw new UnauthorizedException('Session has expired.');
+      }
 
       this.logger.info(`Authentication successful for user: ${payload.sub}`);
-      request['user'] = payload;
+      request.user = payload;
     } catch (error) {
       this.logger.warn(`JWT verification failed: ${error.message}`);
       throw new UnauthorizedException();
