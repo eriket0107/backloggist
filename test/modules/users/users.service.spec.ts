@@ -54,12 +54,13 @@ describe('UsersService', () => {
       const result = await service.create(mockCreateUserDto);
 
       expect(result).toBeDefined();
-      expect(result.id).toBe('1');
-      expect(result.name).toBe(mockCreateUserDto.name);
-      expect(result.email).toBe(mockCreateUserDto.email);
-      expect(result.password).toBeUndefined();
-      expect(result.createdAt).toBeInstanceOf(Date);
-      expect(result.updatedAt).toBeInstanceOf(Date);
+      expect(result.data).toBeDefined();
+      expect(result.data.id).toBe('1');
+      expect(result.data.name).toBe(mockCreateUserDto.name);
+      expect(result.data.email).toBe(mockCreateUserDto.email);
+      expect(result.data.password).toBeUndefined();
+      expect(result.data.createdAt).toBeInstanceOf(Date);
+      expect(result.data.updatedAt).toBeInstanceOf(Date);
 
       const storedUser = await repository.findById('1');
       expect(storedUser).toBeDefined();
@@ -97,8 +98,8 @@ describe('UsersService', () => {
       const result1 = await service.create(user1Dto);
       const result2 = await service.create(user2Dto);
 
-      expect(result1.id).toBe('1');
-      expect(result2.id).toBe('2');
+      expect(result1.data.id).toBe('1');
+      expect(result2.data.id).toBe('2');
 
       const allUsers = await repository.findAll();
       expect(allUsers).toHaveLength(2);
@@ -111,7 +112,7 @@ describe('UsersService', () => {
     it('should return empty array when no users exist', async () => {
       const result = await service.findAll();
 
-      expect(result).toEqual([]);
+      expect(result.data).toEqual([]);
       expect(mockLogger.info).toHaveBeenCalledWith('Found 0 users');
     });
 
@@ -121,9 +122,9 @@ describe('UsersService', () => {
 
       const result = await service.findAll();
 
-      expect(result).toHaveLength(2);
-      expect(result[0].email).toBe('user1@example.com');
-      expect(result[1].email).toBe('user2@example.com');
+      expect(result.data).toHaveLength(2);
+      expect(result.data[0].email).toBe('user1@example.com');
+      expect(result.data[1].email).toBe('user2@example.com');
       expect(mockLogger.info).toHaveBeenCalledWith('Found 2 users');
     });
   });
@@ -132,7 +133,7 @@ describe('UsersService', () => {
     it('should return null when user does not exist', async () => {
       const result = await service.findOne('999');
 
-      expect(result).toBeNull();
+      expect(result.data).toBeNull();
       expect(mockLogger.warn).toHaveBeenCalledWith('User with ID 999 not found');
     });
 
@@ -141,10 +142,10 @@ describe('UsersService', () => {
 
       const result = await service.findOne('1');
 
-      expect(result).toBeDefined();
-      expect(result!.id).toBe('1');
-      expect(result!.email).toBe(mockCreateUserDto.email);
-      expect(result!.password).toBeTruthy();
+      expect(result.data).toBeDefined();
+      expect(result.data!.id).toBe('1');
+      expect(result.data!.email).toBe(mockCreateUserDto.email);
+      expect(result.data!.password).toBeTruthy();
       expect(mockLogger.info).toHaveBeenCalledWith(`User found: ${mockCreateUserDto.email}`);
     });
   });
@@ -153,7 +154,7 @@ describe('UsersService', () => {
     it('should return null when user does not exist', async () => {
       const result = await service.findByEmail('nonexistent@example.com');
 
-      expect(result).toBeNull();
+      expect(result.data).toBeNull();
       expect(mockLogger.warn).toHaveBeenCalledWith('User with email nonexistent@example.com not found');
     });
 
@@ -162,9 +163,9 @@ describe('UsersService', () => {
 
       const result = await service.findByEmail(mockCreateUserDto.email);
 
-      expect(result).toBeDefined();
-      expect(result!.email).toBe(mockCreateUserDto.email);
-      expect(result!.password).toBeTruthy();
+      expect(result.data).toBeDefined();
+      expect(result.data!.email).toBe(mockCreateUserDto.email);
+      expect(result.data!.password).toBeTruthy();
       expect(mockLogger.info).toHaveBeenCalledWith(`User found: ${mockCreateUserDto.email}`);
     });
   });
@@ -188,11 +189,11 @@ describe('UsersService', () => {
     it('should update user successfully without password change', async () => {
       const result = await service.update('1', mockUpdateUserDto);
 
-      expect(result).toBeDefined();
-      expect(result!.name).toBe(mockUpdateUserDto.name);
-      expect(result!.email).toBe(mockUpdateUserDto.email);
-      expect(result!.password).toBeUndefined();
-      expect(result!.updatedAt.getTime()).toBeGreaterThanOrEqual(existingUser.updatedAt.getTime());
+      expect(result.data).toBeDefined();
+      expect(result.data!.name).toBe(mockUpdateUserDto.name);
+      expect(result.data!.email).toBe(mockUpdateUserDto.email);
+      expect(result.data!.password).toBeUndefined();
+      expect(result.data!.updatedAt.getTime()).toBeGreaterThanOrEqual(existingUser.updatedAt.getTime());
 
       const updatedUser = await repository.findById('1');
       expect(updatedUser!.name).toBe(mockUpdateUserDto.name);
@@ -214,8 +215,8 @@ describe('UsersService', () => {
 
       const result = await service.update('1', updateDto);
 
-      expect(result).toBeDefined();
-      expect(result!.password).toBeUndefined();
+      expect(result.data).toBeDefined();
+      expect(result.data!.password).toBeUndefined();
 
       const updatedUser = await repository.findById('1');
       expect(updatedUser!.password).toBe('newHashedPassword123');
@@ -282,7 +283,7 @@ describe('UsersService', () => {
     it('should return null when user not found for deletion', async () => {
       const result = await service.remove('999');
 
-      expect(result).toBeNull();
+      expect(result.data).toBeNull();
       expect(mockLogger.warn).toHaveBeenCalledWith('User with ID 999 not found for deletion');
     });
 
@@ -296,9 +297,9 @@ describe('UsersService', () => {
 
       const result = await service.remove('1');
 
-      expect(result).toBeDefined();
-      expect(result!.id).toBe('1');
-      expect(result!.email).toBe(mockCreateUserDto.email);
+      expect(result.data).toBeDefined();
+      expect(result.data!.id).toBe('1');
+      expect(result.data!.email).toBe(mockCreateUserDto.email);
       expect(mockLogger.info).toHaveBeenCalledWith(`User deleted: ${mockCreateUserDto.email}`);
 
       const deletedUser = await repository.findById('1');
@@ -318,9 +319,9 @@ describe('UsersService', () => {
 
       const result = await service.remove('2');
 
-      expect(result).toBeDefined();
-      expect(result!.id).toBe('2');
-      expect(result!.email).toBe('user2@example.com');
+      expect(result.data).toBeDefined();
+      expect(result.data!.id).toBe('2');
+      expect(result.data!.email).toBe('user2@example.com');
 
       const allUsers = await repository.findAll();
       expect(allUsers).toHaveLength(2);
@@ -337,13 +338,13 @@ describe('UsersService', () => {
       jest.spyOn(passwordHandler, 'hashPassword').mockResolvedValueOnce(hashedPassword);
 
       const createdUser = await service.create(mockCreateUserDto);
-      expect(createdUser.id).toBe('1');
-      expect(createdUser.password).toBeUndefined();
+      expect(createdUser.data.id).toBe('1');
+      expect(createdUser.data.password).toBeUndefined();
 
       const foundUser = await service.findOne('1');
-      expect(foundUser).toBeDefined();
-      expect(foundUser!.email).toBe(mockCreateUserDto.email);
-      expect(foundUser!.password).toBe(hashedPassword);
+      expect(foundUser.data).toBeDefined();
+      expect(foundUser.data!.email).toBe(mockCreateUserDto.email);
+      expect(foundUser.data!.password).toBe(hashedPassword);
 
       jest.spyOn(passwordHandler, 'comparePassword').mockResolvedValueOnce(true);
       jest.spyOn(passwordHandler, 'comparePassword').mockResolvedValueOnce(false);
@@ -356,17 +357,17 @@ describe('UsersService', () => {
       };
 
       const updatedUser = await service.update('1', updateDto);
-      expect(updatedUser!.name).toBe('Updated Name');
-      expect(updatedUser!.password).toBeUndefined();
+      expect(updatedUser.data!.name).toBe('Updated Name');
+      expect(updatedUser.data!.password).toBeUndefined();
 
       const userWithNewPassword = await repository.findById('1');
       expect(userWithNewPassword!.password).toBe(newHashedPassword);
 
       const deletedUser = await service.remove('1');
-      expect(deletedUser).toBeDefined();
+      expect(deletedUser.data).toBeDefined();
 
       const shouldBeNull = await service.findOne('1');
-      expect(shouldBeNull).toBeNull();
+      expect(shouldBeNull.data).toBeNull();
     });
 
     it('should maintain data consistency during concurrent operations', async () => {
@@ -379,9 +380,9 @@ describe('UsersService', () => {
 
       const [user1, user2, user3] = await Promise.all([user1Promise, user2Promise, user3Promise]);
 
-      expect(user1.id).toBe('1');
-      expect(user2.id).toBe('2');
-      expect(user3.id).toBe('3');
+      expect(user1.data.id).toBe('1');
+      expect(user2.data.id).toBe('2');
+      expect(user3.data.id).toBe('3');
 
       const allUsers = await repository.findAll();
       expect(allUsers).toHaveLength(3);
@@ -390,9 +391,9 @@ describe('UsersService', () => {
       const foundUser2 = await service.findByEmail('user2@example.com');
       const foundUser3 = await service.findByEmail('user3@example.com');
 
-      expect(foundUser1).toBeDefined();
-      expect(foundUser2).toBeDefined();
-      expect(foundUser3).toBeDefined();
+      expect(foundUser1.data).toBeDefined();
+      expect(foundUser2.data).toBeDefined();
+      expect(foundUser3.data).toBeDefined();
     });
   });
 });
