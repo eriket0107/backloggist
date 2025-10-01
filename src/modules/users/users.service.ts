@@ -21,10 +21,10 @@ export class UsersService {
   async create(createUserDto: CreateUserDto) {
     this.logger.info('Creating new user');
 
-    const existingEmail = await this.findByEmail(createUserDto.email)
+    const existingEmailResult = await this.findByEmail(createUserDto.email);
 
-    if (existingEmail) {
-      this.logger.warn(`Email: ${existingEmail} already exists.`);
+    if (existingEmailResult.data) {
+      this.logger.warn(`Email: ${existingEmailResult.data.email} already exists.`);
       throw new ConflictException('This email address is already in use.');
     }
 
@@ -35,66 +35,67 @@ export class UsersService {
 
     const passwordHash = await this.passwordHandler.hashPassword(createUserDto.password)
 
-    const user = await this.usersRepository.create({
+    const data = await this.usersRepository.create({
       ...createUserDto,
       password: passwordHash,
     });
 
-    this.logger.info(`User created with ID: ${user.id}`);
+    this.logger.info(`User created with ID: ${data.id}`);
 
-    const userResponse = { ...user };
+    const userResponse = { ...data };
     delete userResponse.password;
 
-    return userResponse;
+    return { data: userResponse };
   }
 
   async findAll() {
     this.logger.info('Fetching all users');
 
-    const users = await this.usersRepository.findAll();
+    const data = await this.usersRepository.findAll();
 
-    this.logger.info(`Found ${users.length} users`);
-    return users;
+    this.logger.info(`Found ${data.length} users`);
+    return { data };
   }
 
   async findOne(id: string) {
     this.logger.info(`Fetching user with ID: ${id}`);
 
-    const user = await this.usersRepository.findById(id);
+    const data = await this.usersRepository.findById(id);
 
-    if (!user) {
+    if (!data) {
       this.logger.warn(`User with ID ${id} not found`);
-      return null;
+      return { data: null };
     }
 
-    this.logger.info(`User found: ${user.email}`);
-    return user;
+    this.logger.info(`User found: ${data.email}`);
+    return { data };
   }
 
   async findByEmail(email: string) {
     this.logger.info(`Fetching user with email: ${email}`);
 
-    const user = await this.usersRepository.findByEmail(email);
+    const data = await this.usersRepository.findByEmail(email);
 
-    if (!user) {
+    if (!data) {
       this.logger.warn(`User with email ${email} not found`);
-      return null;
+      return { data: null };
     }
 
-    this.logger.info(`User found: ${user.email}`);
-    return user;
+    this.logger.info(`User found: ${data.email}`);
+    return { data };
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
     this.logger.info(`Updating user with ID: ${id}`);
     this.logger.info(`Updating user with DTO: ${JSON.stringify(updateUserDto)}`);
 
-    const existingUser = await this.findOne(id);
-    if (!existingUser) {
+    const existingUserResult = await this.findOne(id);
+    if (!existingUserResult.data) {
       this.logger.warn(`User with ID ${id} not found for update`);
       throw new NotFoundException(`User with ID ${id} not found`);
     }
 
+    const existingUser = existingUserResult.data;
     let newPassword: string | undefined;
 
     if (updateUserDto.newPassword) {
@@ -140,30 +141,30 @@ export class UsersService {
       data.password = newPassword;
     }
 
-    const user = await this.usersRepository.update(id, data);
+    const updatedUser = await this.usersRepository.update(id, data);
 
-    if (!user) {
-      return null;
+    if (!updatedUser) {
+      return { data: null };
     }
 
-    const userResponse = { ...user };
+    const userResponse = { ...updatedUser };
     delete userResponse.password;
 
-    this.logger.info(`User updated: ${user.email}`);
-    return userResponse;
+    this.logger.info(`User updated: ${updatedUser.email}`);
+    return { data: userResponse };
   }
 
   async remove(id: string) {
     this.logger.info(`Deleting user with ID: ${id}`);
 
-    const user = await this.usersRepository.delete(id);
+    const data = await this.usersRepository.delete(id);
 
-    if (!user) {
+    if (!data) {
       this.logger.warn(`User with ID ${id} not found for deletion`);
-      return null;
+      return { data: null };
     }
 
-    this.logger.info(`User deleted: ${user.email}`);
-    return user;
+    this.logger.info(`User deleted: ${data.email}`);
+    return { data };
   }
 }
