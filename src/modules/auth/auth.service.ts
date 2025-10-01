@@ -30,7 +30,15 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const comparePassword = this.passwordHandler.comparePassword(user.password, pass)
+    this.logger.info('User found, checking password', { userId: user.id, hasPassword: !!user.password });
+
+    if (!user.password) {
+      this.logger.error('Password is missing', { userId: user.id });
+      throw new UnauthorizedException('Missing loggin information.');
+    }
+
+    const comparePassword = await this.passwordHandler.comparePassword(pass, user.password)
+
     if (!comparePassword) {
       this.logger.warn('Sign in failed - invalid password', { email });
       throw new UnauthorizedException();
