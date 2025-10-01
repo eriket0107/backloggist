@@ -24,7 +24,7 @@ export class AuthService {
   async signIn(email: string, pass: string): Promise<{ accessToken: string }> {
     this.logger.info('Attempting sign in', { email });
 
-    const user = await this.usersService.findByEmail(email);
+    const { data: user } = await this.usersService.findByEmail(email);
     if (!user) {
       this.logger.warn('Sign in failed - user not found', { email });
       throw new UnauthorizedException();
@@ -54,9 +54,18 @@ export class AuthService {
     this.logger.info('Creating session', { userId: user.id });
 
     const session = await this.sessionRepository.findByUserId(user.id)
+    const currentDate = new Date()
+    const isTimeExpired = session ? currentDate >= session.expiredAt : false
 
-    if (!session || session.isExpired) {
+    if (!session || session.isExpired || isTimeExpired) {
       this.logger.info('No valid session found, creating new token and session', { userId: user.id });
+
+      if (session && isTimeExpired && !session.isExpired) {
+        await this.sessionRepository.update(session.userId, session.accessToken, {
+          isExpired: true,
+        })
+      }
+
       accessToken = await this.jwtService.signAsync(payload)
       await this.sessionRepository.create({
         accessToken,
@@ -83,6 +92,12 @@ export class AuthService {
     const currentDate = new Date()
 
     if (!session || session.isExpired || currentDate >= session.expiredAt) {
+      // Mark as expired if it's time-expired but not marked yet
+      if (session && currentDate >= session.expiredAt && !session.isExpired) {
+        await this.sessionRepository.update(session.userId, session.accessToken, {
+          isExpired: true,
+        })
+      }
       throw new UnauthorizedException('Must be logged in to sign out.')
     }
 

@@ -50,11 +50,16 @@ export class AuthGuard implements CanActivate {
       const session = await this.sessionService.findByUserId(payload.sub)
       isExpired = currentDate >= session.expiredAt
 
-      if (isExpired || session.isExpired) {
-        this.logger.warn('Session has expired.');
+      if (isExpired) {
+        this.logger.warn('Session has expired by time, marking as expired.');
         await this.sessionService.update(session.userId, accessToken, {
           isExpired: true,
         })
+        throw new UnauthorizedException('Session has expired.');
+      }
+
+      if (session.isExpired) {
+        this.logger.warn('Session was already marked as expired.');
         throw new UnauthorizedException('Session has expired.');
       }
 
