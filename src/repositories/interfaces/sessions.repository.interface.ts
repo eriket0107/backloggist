@@ -15,7 +15,7 @@ export interface UpdateSessionData {
 
 export interface ISessionsRepository {
   create(sessionData: CreateSessionData): Promise<Session>;
-  findByAccessToken(id: string): Promise<Session | null>;
+  findByAccessToken(id: string, isExpired?: boolean): Promise<Session | null>;
   findByUserId(userId: string): Promise<Session | null>;
   update(userId: string, accessToken: string, sessionData: UpdateSessionData): Promise<Session | null>;
   delete(id: string): Promise<Session | null>;

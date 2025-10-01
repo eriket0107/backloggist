@@ -20,20 +20,18 @@ export class SessionsMemoryRepository implements ISessionsRepository {
     return session;
   }
 
-  async findById(id: string): Promise<Session | null> {
-    return this.sessions.find(session => session.id === id) || null;
-  }
-
   async findByUserId(userId: string): Promise<Session | null> {
     return this.sessions.find(session => session.userId === userId) || null;
   }
 
-  async findByAccessToken(accessToken: string): Promise<Session | null> {
-    return this.sessions.find(session => session.accessToken === accessToken) || null;
+  async findByAccessToken(id: string, isExpired?: boolean): Promise<Session | null> {
+    return this.sessions.find(session =>
+      session.accessToken === id && (isExpired === undefined || session.isExpired === isExpired)
+    ) || null;
   }
 
-  async update(id: string, accessToken: string, sessionData: UpdateSessionData): Promise<Session | null> {
-    const sessionIndex = this.sessions.findIndex(session => session.id === id && session.accessToken === accessToken);
+  async update(userId: string, accessToken: string, sessionData: UpdateSessionData): Promise<Session | null> {
+    const sessionIndex = this.sessions.findIndex(session => session.userId === userId && session.accessToken === accessToken);
     if (sessionIndex === -1) {
       return null;
     }

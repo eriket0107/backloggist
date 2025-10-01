@@ -26,11 +26,11 @@ export class SessionsRepository implements ISessionsRepository {
     return session || null;
   }
 
-  async findByAccessToken(accessToken: string) {
+  async findByAccessToken(accessToken: string, isExpired?: boolean) {
     const [session] = await this.databaseService.db
       .select()
       .from(sessionsTable)
-      .where(eq(sessionsTable.accessToken, accessToken));
+      .where(and(eq(sessionsTable.accessToken, accessToken), eq(sessionsTable.isExpired, isExpired ? isExpired : false)));
     return session;
   }
 

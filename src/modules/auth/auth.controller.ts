@@ -9,10 +9,17 @@ import { AuthGuard } from './auth.guard';
 export class AuthController {
   constructor(private authService: AuthService) { }
 
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.CREATED)
   @Post('login')
   signIn(@Body() signInDto: SignInDto) {
     return this.authService.signIn(signInDto.email, signInDto.password);
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('logout')
+  signOut(@Request() req) {
+    const user = this.getProfile(req)
+    return this.authService.signOut(user.accessToken)
   }
 
   @UseGuards(AuthGuard)
@@ -20,5 +27,4 @@ export class AuthController {
   getProfile(@Request() req) {
     return req.user;
   }
-
 }
