@@ -1,0 +1,32 @@
+{
+  "displayName": "E2E Tests",
+  "moduleFileExtensions": [
+    "js",
+    "json",
+    "ts"
+  ],
+  "rootDir": ".",
+  "testEnvironment": "node",
+  "testRegex": ".e2e-spec.ts$",
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "moduleNameMapper": {
+    "^@/(.*)$": "<rootDir>/../src/$1",
+    "^@/env$": "<rootDir>/../env/index.ts",
+    "^@/db(.*)$": "<rootDir>/../db/$1",
+    "^@/db/schema$": "<rootDir>/../db/schema/index.ts",
+    "^@/types/(.*)$": "<rootDir>/../src/types/$1",
+    "^@/repositories/(.*)$": "<rootDir>/../src/repositories/$1",
+    "^@/repositories/interfaces/(.*)$": "<rootDir>/../src/repositories/interfaces/$1",
+    "^@/repositories/in-memory/(.*)$": "<rootDir>/../src/repositories/in-memory/$1",
+    "^@/modules/(.*)$": "<rootDir>/../src/modules/$1",
+    "^@/utils/(.*)$": "<rootDir>/../src/utils/$1",
+    "^@/helpers/(.*)$": "<rootDir>/../src/helpers/$1",
+    "^@/constants/(.*)$": "<rootDir>/../src/constants/$1"
+  },
+  "setupFilesAfterEnv": [
+    "<rootDir>/setup.ts"
+  ],
+  "testTimeout": 30000
+}
