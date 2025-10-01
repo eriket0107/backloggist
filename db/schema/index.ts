@@ -21,12 +21,11 @@ export const sessionsTable = table('sessions', {
   id: t.text().primaryKey().notNull().default(sql`gen_random_uuid()`),
   userId: t.text('user_id').notNull().references(() => usersTable.id),
   accessToken: t.text('access_token').notNull(),
-  isExpired: t.boolean('is_expired'),
+  isExpired: t.boolean('is_expired').default(false),
   expiredAt: t.timestamp('expired_at'),
   createdAt: t.timestamp('created_at').default(sql`CURRENT_TIMESTAMP`),
 },
 )
-
 
 export const itemsTable = table('items', {
   id: t.text().primaryKey().notNull().default(sql`gen_random_uuid()`),

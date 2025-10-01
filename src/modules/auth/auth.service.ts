@@ -1,4 +1,4 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { LoggerService } from '../../utils/logger/logger.service';
@@ -60,9 +60,31 @@ export class AuthService {
       accessToken = session.accessToken
     }
 
+
     this.logger.info('Sign in successful', { userId: user.id });
+    this.logger.info(`Authentication successful for user: ${user.id}`);
     return {
       accessToken
     };
+  }
+
+  async signOut(accessToken: string) {
+    if (!accessToken) throw new UnauthorizedException('Must be logged in to sign out.')
+    const session = await this.sessionRepository.findByAccessToken(accessToken);
+
+    this.logger.info(`User: ${session.userId} attempting sign out.`);
+
+    try {
+      this.logger.info(`Starting signing out.`);
+      await this.sessionRepository.update(session.userId, session.accessToken, {
+        isExpired: true,
+        expiredAt: new Date()
+      })
+      this.logger.info(`Finished signing out.`);
+      return true
+    } catch (error) {
+      this.logger.error(`Error signing out.`, error);
+      throw new InternalServerErrorException('Failed to sign out user')
+    }
   }
 }

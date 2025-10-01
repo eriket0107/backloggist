@@ -15,6 +15,13 @@
       "when": 1759258515546,
       "tag": "0001_naive_thing",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1759313681127,
+      "tag": "0002_yielding_tomas",
+      "breakpoints": true
     }
   ]
 }
