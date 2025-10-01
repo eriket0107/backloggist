@@ -75,7 +75,6 @@ export class AuthService {
     const currentDate = new Date()
 
     if (!session || session.isExpired || currentDate >= session.expiredAt) {
-
       throw new UnauthorizedException('Must be logged in to sign out.')
     }
 
