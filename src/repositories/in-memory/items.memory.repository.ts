@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { IItemsRepository, CreateItemData, UpdateItemData } from '@/repositories/interfaces/items.repository.interface';
 import { Item } from '@/types/entities';
+import { PaginatedResult } from '@/types/pagination';
 
 @Injectable()
 export class ItemsMemoryRepository implements IItemsRepository {
@@ -21,8 +22,24 @@ export class ItemsMemoryRepository implements IItemsRepository {
     return item;
   }
 
-  async findAll(): Promise<Item[]> {
-    return [...this.items];
+  async findAll({ limit, page }: { limit?: number, page?: number } = {}): Promise<PaginatedResult<Item>> {
+    const totalItems = this.items.length;
+    const currentPage = page || 1;
+    const itemsPerPage = limit || totalItems;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const data = [...this.items].slice(startIndex, endIndex);
+
+    return {
+      data,
+      totalItems,
+      totalPages,
+      currentPage,
+      isFirstPage: currentPage === 1,
+      isLastPage: currentPage === totalPages || totalPages === 0,
+    };
   }
 
   async findById(id: string): Promise<Item | null> {

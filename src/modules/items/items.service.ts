@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { LoggerService } from '@/utils/logger/logger.service';
 import { IItemsRepository } from '@/repositories/interfaces/items.repository.interface';
 import { CreateItemDto } from './dto/create-item.dto';
@@ -19,60 +19,62 @@ export class ItemsService {
   async create(createItemDto: CreateItemDto) {
     this.logger.info('Creating new item');
 
-    const item = await this.itemsRepository.create(createItemDto);
+    const data = await this.itemsRepository.create(createItemDto);
 
-    this.logger.info(`Item created with ID: ${item.id}`);
-    return item;
+    this.logger.info(`Item created with ID: ${data.id}`);
+    return { data };
   }
 
-  async findAll() {
+  async findAll({ limit = 10, page = 1 }: { limit?: number, page?: number } = {}) {
     this.logger.info('Fetching all items');
+    const data = await this.itemsRepository.findAll({ limit, page });
 
-    const items = await this.itemsRepository.findAll();
+    this.logger.info(`Found ${data.totalItems} items`);
 
-    this.logger.info(`Found ${items.length} items`);
-    return items;
+    return {
+      ...data
+    };
   }
 
   async findOne(id: string) {
     this.logger.info(`Fetching item with ID: ${id}`);
 
-    const item = await this.itemsRepository.findById(id);
+    const data = await this.itemsRepository.findById(id);
 
-    if (!item) {
+    if (!data) {
       this.logger.warn(`Item with ID ${id} not found`);
-      return null;
+      throw new NotFoundException(`Item with ID ${id} not found`);
     }
 
-    this.logger.info(`Item found: ${item.title}`);
-    return item;
+    this.logger.info(`Item found: ${data.title}`);
+    return { data };
   }
 
   async update(id: string, updateItemDto: UpdateItemDto) {
     this.logger.info(`Updating item with ID: ${id}`);
 
-    const item = await this.itemsRepository.update(id, updateItemDto);
+    const data = await this.itemsRepository.update(id, updateItemDto);
 
-    if (!item) {
+    if (!data) {
       this.logger.warn(`Item with ID ${id} not found for update`);
-      return null;
+      throw new NotFoundException(`Item with ID ${id} not found`);
     }
 
-    this.logger.info(`Item updated: ${item.title}`);
-    return item;
+    this.logger.info(`Item updated: ${data.title}`);
+    return { data };
   }
 
   async remove(id: string) {
     this.logger.info(`Deleting item with ID: ${id}`);
 
-    const item = await this.itemsRepository.delete(id);
+    const data = await this.itemsRepository.delete(id);
 
-    if (!item) {
+    if (!data) {
       this.logger.warn(`Item with ID ${id} not found for deletion`);
-      return null;
+      return { data: null };
     }
 
-    this.logger.info(`Item deleted: ${item.title}`);
-    return item;
+    this.logger.info(`Item deleted: ${data.title}`);
+    return { data };
   }
 }
