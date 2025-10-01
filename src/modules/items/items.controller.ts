@@ -8,18 +8,25 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
+  UseGuards,
+  Query,
+  Request,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ItemsService } from './items.service';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
+import { FindAllItemsDto } from './dto/find-all-items.dto';
+import { AuthGuard } from '../auth/auth.guard';
 
+@UseGuards(AuthGuard)
 @ApiTags('items')
 @Controller('items')
 export class ItemsController {
-  constructor(private readonly itemsService: ItemsService) {}
+  constructor(private readonly itemsService: ItemsService) { }
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a new item' })
   @ApiResponse({ status: 201, description: 'Item created successfully' })
   @ApiResponse({ status: 400, description: 'Bad request' })
@@ -30,8 +37,9 @@ export class ItemsController {
   @Get()
   @ApiOperation({ summary: 'Get all items' })
   @ApiResponse({ status: 200, description: 'Items retrieved successfully' })
-  findAll() {
-    return this.itemsService.findAll();
+  findAll(@Query() query: FindAllItemsDto, @Request() request) {
+    request.user.items_page = request.query.page
+    return this.itemsService.findAll(query);
   }
 
   @Get(':id')
