@@ -20,7 +20,6 @@ const _env = envSchema.safeParse(process.env);
 
 if (_env.success === false) {
   console.error("❌ Invalid envoriment variables", _env.error.message);
-  console.log(process.env.JWT_SECRET);
   throw new Error("Invalid envoriment variables");
 }
 
