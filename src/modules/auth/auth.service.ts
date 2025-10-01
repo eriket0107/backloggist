@@ -69,8 +69,15 @@ export class AuthService {
   }
 
   async signOut(accessToken: string) {
-    if (!accessToken) throw new UnauthorizedException('Must be logged in to sign out.')
+    if (!accessToken) throw new UnauthorizedException('Missing token.')
+
     const session = await this.sessionRepository.findByAccessToken(accessToken);
+    const currentDate = new Date()
+
+    if (!session || session.isExpired || currentDate >= session.expiredAt) {
+
+      throw new UnauthorizedException('Must be logged in to sign out.')
+    }
 
     this.logger.info(`User: ${session.userId} attempting sign out.`);
 
