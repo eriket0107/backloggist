@@ -19,7 +19,8 @@ export class UsersMemoryRepository implements IUsersRepository {
 
     this.users.push(user);
     this.nextId++;
-    return user;
+
+    return { ...user };
   }
 
   async findAll(): Promise<User[]> {
@@ -27,11 +28,13 @@ export class UsersMemoryRepository implements IUsersRepository {
   }
 
   async findById(id: string): Promise<User | null> {
-    return this.users.find(user => user.id === id) || null;
+    const user = this.users.find(user => user.id === id);
+    return user ? { ...user } : null;
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    return this.users.find(user => user.email === email) || null;
+    const user = this.users.find(user => user.email === email);
+    return user ? { ...user } : null;
   }
 
   async update(id: string, userData: UpdateUserData): Promise<User | null> {
@@ -46,7 +49,7 @@ export class UsersMemoryRepository implements IUsersRepository {
       updatedAt: new Date(),
     };
 
-    return this.users[userIndex];
+    return { ...this.users[userIndex] };
   }
 
   async delete(id: string): Promise<User | null> {
@@ -57,6 +60,6 @@ export class UsersMemoryRepository implements IUsersRepository {
 
     const deletedUser = this.users[userIndex];
     this.users.splice(userIndex, 1);
-    return deletedUser;
+    return { ...deletedUser };
   }
 }

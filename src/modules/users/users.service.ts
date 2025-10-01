@@ -1,4 +1,4 @@
-import { Injectable, Inject, ConflictException, BadRequestException } from '@nestjs/common';
+import { Injectable, Inject, ConflictException, BadRequestException, NotFoundException } from '@nestjs/common';
 import { LoggerService } from '@/utils/logger/logger.service';
 import { IUsersRepository } from '@/repositories/interfaces/users.repository.interface';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -42,9 +42,10 @@ export class UsersService {
 
     this.logger.info(`User created with ID: ${user.id}`);
 
-    delete user.password
+    const userResponse = { ...user };
+    delete userResponse.password;
 
-    return user;
+    return userResponse;
   }
 
   async findAll() {
@@ -91,7 +92,7 @@ export class UsersService {
     const existingUser = await this.findOne(id);
     if (!existingUser) {
       this.logger.warn(`User with ID ${id} not found for update`);
-      return null;
+      throw new NotFoundException(`User with ID ${id} not found`);
     }
 
     let newPassword: string | undefined;
@@ -132,16 +133,24 @@ export class UsersService {
 
     const data = {
       ...updateUserDto,
-      password: newPassword || undefined,
       updatedAt: new Date()
     };
 
+    if (newPassword) {
+      data.password = newPassword;
+    }
+
     const user = await this.usersRepository.update(id, data);
 
-    delete user.password
+    if (!user) {
+      return null;
+    }
+
+    const userResponse = { ...user };
+    delete userResponse.password;
 
     this.logger.info(`User updated: ${user.email}`);
-    return user;
+    return userResponse;
   }
 
   async remove(id: string) {
