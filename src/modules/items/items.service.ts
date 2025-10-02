@@ -53,7 +53,10 @@ export class ItemsService {
   async update(id: string, updateItemDto: UpdateItemDto) {
     this.logger.info(`Updating item with ID: ${id}`);
 
-    const data = await this.itemsRepository.update(id, updateItemDto);
+    const data = await this.itemsRepository.update(id, {
+      ...updateItemDto,
+      updatedAt: new Date()
+    });
 
     if (!data) {
       this.logger.warn(`Item with ID ${id} not found for update`);
