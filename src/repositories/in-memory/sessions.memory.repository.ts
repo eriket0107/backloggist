@@ -65,4 +65,11 @@ export class SessionsMemoryRepository implements ISessionsRepository {
     this.sessions.splice(sessionIndex, 1);
     return deletedSession;
   }
+
+  async expireToken(accessToken: string): Promise<void> {
+    const session = this.sessions.find(session => session.accessToken === accessToken);
+    if (session) {
+      session.isExpired = true;
+    }
+  }
 }
