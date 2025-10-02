@@ -31,38 +31,38 @@ export class AuthGuard implements CanActivate {
     const accessToken = this.extractTokenFromHeader(request);
     const currentDate = new Date()
 
-    let isExpired: boolean
 
     if (!accessToken) {
       this.logger.warn('No token provided in request');
       throw new UnauthorizedException();
     }
 
+    this.logger.info('Verifying JWT token');
+    let payload
+
     try {
-      this.logger.info('Verifying JWT token');
-      const payload = this.jwtService.verify(
+      payload = this.jwtService.verify(
         accessToken,
         {
           secret: jwtConstants.secret
         }
       );
-
-      const session = await this.sessionService.findByUserId(payload.sub)
-      isExpired = currentDate >= session.expiredAt
-
-      if (isExpired || session.isExpired) {
-        this.logger.warn('Session has expired.');
-        await this.sessionService.update(session.userId, accessToken, {
-          isExpired: true,
-        })
-        throw new UnauthorizedException('Session has expired.');
-      }
-
-      request.user = { ...payload, accessToken };
-    } catch (error) {
-      this.logger.warn(`JWT verification failed: ${error.message}`);
-      throw new UnauthorizedException();
+    } catch {
+      this.logger.warn('Session has expired by time, marking as expired.');
+      await this.sessionService.expireToken(accessToken)
+      throw new UnauthorizedException('Session has expired.');
     }
+
+    const session = await this.sessionService.findByUserId(payload.sub)
+    const isExpired: boolean = currentDate >= session.expiredAt
+
+    if (session.isExpired || isExpired) {
+      this.logger.warn('Session was already marked as expired.');
+      await this.sessionService.expireToken(accessToken)
+      throw new UnauthorizedException('Session has expired.');
+    }
+
+    request.user = { ...payload, accessToken };
 
     return true;
   }

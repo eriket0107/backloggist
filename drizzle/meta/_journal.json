@@ -22,6 +22,13 @@
       "when": 1759313681127,
       "tag": "0002_yielding_tomas",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1759357709154,
+      "tag": "0003_next_johnny_storm",
+      "breakpoints": true
     }
   ]
 }

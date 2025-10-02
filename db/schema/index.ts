@@ -32,7 +32,10 @@ export const itemsTable = table('items', {
   title: t.varchar({ length: 200 }).notNull(),
   type: t.varchar({ length: 200, enum: ['game', 'book', 'serie', 'movie', 'course'] }).notNull(),
   note: t.text(),
-  imgUrl: t.text("img_url")
+  imgUrl: t.text("img_url"),
+  createdAt: t.timestamp('created_at').default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: t.timestamp('updated_at').default(sql`CURRENT_TIMESTAMP`),
+
 }, (table) => {
   return {
     typeIdx: t.index('type_idx').on(table.type)

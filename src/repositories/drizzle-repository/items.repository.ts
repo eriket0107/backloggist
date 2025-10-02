@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '@/modules/database/database.service';
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import { itemsTable } from '../../../db/schema';
 import { IItemsRepository, CreateItemData, UpdateItemData } from '@/repositories/interfaces/items.repository.interface';
 
@@ -16,10 +16,27 @@ export class ItemsRepository implements IItemsRepository {
     return item;
   }
 
-  async findAll() {
-    return await this.databaseService.db
+  async findAll({ limit = 10, page = 1 }: { limit?: number, page?: number }) {
+    const offset = (page - 1) * limit;
+
+    const items = await this.databaseService.db
       .select()
-      .from(itemsTable);
+      .from(itemsTable)
+      .limit(limit)
+      .offset(offset)
+      .orderBy(desc(itemsTable.createdAt));
+
+    const totalCount = await this.databaseService.db.$count(itemsTable)
+    const totalPages = Math.ceil(totalCount / limit)
+
+    return {
+      data: items,
+      totalItems: totalCount,
+      totalPages,
+      currentPage: page,
+      isFirstPage: page === 1,
+      isLastPage: page >= totalPages,
+    };
   }
 
   async findById(id: string) {
