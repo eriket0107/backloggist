@@ -18,6 +18,7 @@ export interface ISessionsRepository {
   findByAccessToken(id: string, isExpired?: boolean): Promise<Session | null>;
   findByUserId(userId: string): Promise<Session | null>;
   update(userId: string, accessToken: string, sessionData: UpdateSessionData): Promise<Session | null>;
+  expireToken(accessToken: string): Promise<void>
   delete(id: string): Promise<Session | null>;
   deleteByUserId(userId: string): Promise<Session | null>;
 }
