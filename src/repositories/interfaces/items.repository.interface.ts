@@ -13,6 +13,7 @@ export interface UpdateItemData {
   type?: 'game' | 'book' | 'serie' | 'movie' | 'course';
   note?: string;
   imgUrl?: string;
+  updatedAt?: Date;
 }
 
 export interface IItemsRepository {
