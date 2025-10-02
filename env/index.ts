@@ -14,6 +14,8 @@ const envSchema = z.object({
   POSTGRES_PORT: z.coerce.number(),
   UPLOADS_DIR: z.string().default('src/uploads'),
   LOGS_DIR: z.string().default('logs'),
+  LOG_USERNAME: z.string().default('admin'),
+  LOG_PASSWORD: z.string().default('admin@123$')
 });
 
 const _env = envSchema.safeParse(process.env);
