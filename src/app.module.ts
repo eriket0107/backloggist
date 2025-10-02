@@ -8,6 +8,7 @@ import { ItemsModule } from './modules/items/items.module';
 import { UserItemsModule } from './modules/user-items/user-items.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { PasswordHandlerModule } from './utils/password-handler/password-handler.module';
+import { StaticModule } from './utils/static/static.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { PasswordHandlerModule } from './utils/password-handler/password-handler
     UserItemsModule,
     AuthModule,
     PasswordHandlerModule,
+    StaticModule,
   ],
 })
 export class AppModule { }
