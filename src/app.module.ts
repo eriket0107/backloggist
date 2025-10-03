@@ -6,6 +6,8 @@ import { RepositoryConfigModule } from './modules/repository-config/repository-c
 import { UsersModule } from './modules/users/users.module';
 import { ItemsModule } from './modules/items/items.module';
 import { UserItemsModule } from './modules/user-items/user-items.module';
+import { GenresModule } from './modules/genres/genres.module';
+import { ItemGenresModule } from './modules/item-genres/item-genres.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { PasswordHandlerModule } from './utils/password-handler/password-handler.module';
 import { StaticModule } from './utils/static/static.module';
@@ -21,6 +23,8 @@ import { StaticModule } from './utils/static/static.module';
     UsersModule,
     ItemsModule,
     UserItemsModule,
+    GenresModule,
+    ItemGenresModule,
     AuthModule,
     PasswordHandlerModule,
     StaticModule,

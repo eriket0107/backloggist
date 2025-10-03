@@ -13,6 +13,8 @@ export interface Item {
   type: 'game' | 'book' | 'serie' | 'movie' | 'course';
   note?: string;
   imgUrl?: string;
+  createdAt?: Date;
+  updatedAt: Date;
 }
 
 export interface UserItem {
@@ -50,4 +52,28 @@ export interface BacklogStats {
   completed: number;
   inProgress: number;
   pending: number;
+}
+
+export interface Genre {
+  id: string;
+  name: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface ItemGenre {
+  id: string;
+  itemId: string;
+  genreId: string;
+  createdAt?: Date;
+  updatedAt: Date;
+}
+
+export interface ItemGenreWithDetails {
+  id: string;
+  itemId: string;
+  genreId: string;
+  genre: Genre;
+  createdAt?: Date;
+  updatedAt: Date;
 }

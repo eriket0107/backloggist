@@ -1,0 +1,1 @@
+CREATE INDEX "genr_name_idx" ON "genres" USING btree ("name");

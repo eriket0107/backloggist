@@ -1,0 +1,1 @@
+ALTER TABLE "genres" ADD CONSTRAINT "genres_name_unique" UNIQUE("name");
