@@ -50,6 +50,8 @@ export const userItemsTable = table('userItems', {
   status: t.varchar({ length: 100, enum: ['completed', 'in_progress', 'pending'] }),
   rating: t.integer(), //decimal
   addedAt: t.timestamp('added_at').notNull(),
+  createdAt: t.timestamp('created_at').default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: t.timestamp('updated_at').default(sql`CURRENT_TIMESTAMP`),
 }, (table) => {
   return {
     userIdx: t.index('user_idx').on(table.userId),

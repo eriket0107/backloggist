@@ -20,7 +20,8 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "db-generate": "npx drizzle-kit generate",
-    "db-migrate": "npx drizzle-kit migrate"
+    "db-migrate": "npx drizzle-kit migrate",
+    "db-seed": "npx tsx db/seed/index.ts"
   },
   "keywords": [],
   "author": "",
