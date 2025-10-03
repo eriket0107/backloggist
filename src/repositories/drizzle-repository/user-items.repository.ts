@@ -33,6 +33,8 @@ export class UserItemsRepository implements IUserItemsRepository {
           type: itemsTable.type,
           note: itemsTable.note,
           imgUrl: itemsTable.imgUrl,
+          createdAt: itemsTable.createdAt,
+          updatedAt: itemsTable.updatedAt,
         }
       })
       .from(userItemsTable)

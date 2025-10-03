@@ -53,6 +53,8 @@ export class ItemGenresRepository implements IItemGenresRepository {
         id: itemGenres.id,
         itemId: itemGenres.itemId,
         genreId: itemGenres.genreId,
+        createdAt: itemGenres.createdAt,
+        updatedAt: itemGenres.updatedAt,
         genre: {
           id: genres.id,
           name: genres.name,
@@ -66,6 +68,8 @@ export class ItemGenresRepository implements IItemGenresRepository {
       id: item.id,
       itemId: item.itemId,
       genreId: item.genreId,
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
       genre: item.genre
     }));
   }

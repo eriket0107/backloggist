@@ -76,6 +76,8 @@ export const itemGenres = table('itemGenres', {
   id: t.text().primaryKey().notNull().default(sql`gen_random_uuid()`),
   itemId: t.text('item_id').notNull().references(() => itemsTable.id),
   genreId: t.text('genre_id').notNull().references(() => genres.id),
+  createdAt: t.timestamp('created_at').default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: t.timestamp('updated_at').default(sql`CURRENT_TIMESTAMP`),
 }, (table) => {
   return {
     itemIdx: t.index('item_genre_idx').on(table.itemId),
