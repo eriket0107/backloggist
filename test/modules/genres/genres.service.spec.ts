@@ -66,7 +66,7 @@ describe('GenresService', () => {
         `Genre with name '${mockCreateGenreDto.name}' already exists`
       );
 
-      const allGenres = await repository.findAll({});
+      const allGenres = await repository.findAll({ search: '' });
       expect(allGenres.data).toHaveLength(1);
     });
 
@@ -90,7 +90,7 @@ describe('GenresService', () => {
       expect(result1.data.id).toBe('1');
       expect(result2.data.id).toBe('2');
 
-      const allGenres = await repository.findAll({});
+      const allGenres = await repository.findAll({ search: '' });
       expect(allGenres.data).toHaveLength(2);
       expect(allGenres.data.find(g => g.name === 'Action')).toBeDefined();
       expect(allGenres.data.find(g => g.name === 'Comedy')).toBeDefined();
@@ -186,6 +186,67 @@ describe('GenresService', () => {
       expect(result.currentPage).toBe(1); // Default page
       expect(result.totalItems).toBe(15);
       expect(result.totalPages).toBe(2);
+    });
+
+    it('should filter genres by search term (prefix search)', async () => {
+      await service.create({ name: 'Action' });
+      await service.create({ name: 'Adventure' });
+      await service.create({ name: 'Comedy' });
+      await service.create({ name: 'Action-Adventure' });
+
+      const result = await service.findAll({ search: 'Act' });
+
+      expect(result.data).toHaveLength(2);
+      expect(result.data[0].name).toBe('Action');
+      expect(result.data[1].name).toBe('Action-Adventure');
+      expect(result.totalItems).toBe(2);
+      expect(result.totalPages).toBe(1);
+    });
+
+    it('should be case-insensitive for search', async () => {
+      await service.create({ name: 'Action' });
+      await service.create({ name: 'Comedy' });
+
+      const result = await service.findAll({ search: 'act' });
+
+      expect(result.data).toHaveLength(1);
+      expect(result.data[0].name).toBe('Action');
+    });
+
+    it('should return empty results when search has no matches', async () => {
+      await service.create({ name: 'Action' });
+      await service.create({ name: 'Comedy' });
+
+      const result = await service.findAll({ search: 'xyz' });
+
+      expect(result.data).toHaveLength(0);
+      expect(result.totalItems).toBe(0);
+      expect(result.totalPages).toBe(0);
+    });
+
+    it('should combine search with pagination', async () => {
+      await service.create({ name: 'Action' });
+      await service.create({ name: 'Action-Adventure' });
+      await service.create({ name: 'Action-Comedy' });
+      await service.create({ name: 'Comedy' });
+
+      const result = await service.findAll({ search: 'Action', limit: 2, page: 1 });
+
+      expect(result.data).toHaveLength(2);
+      expect(result.totalItems).toBe(3);
+      expect(result.totalPages).toBe(2);
+      expect(result.currentPage).toBe(1);
+      expect(result.isLastPage).toBe(false);
+    });
+
+    it('should handle empty search string (return all)', async () => {
+      await service.create({ name: 'Action' });
+      await service.create({ name: 'Comedy' });
+
+      const result = await service.findAll({ search: '' });
+
+      expect(result.data).toHaveLength(2);
+      expect(result.totalItems).toBe(2);
     });
   });
 
@@ -310,7 +371,7 @@ describe('GenresService', () => {
       const deletedGenre = await repository.findById('1');
       expect(deletedGenre).toBeNull();
 
-      const allGenres = await repository.findAll({});
+      const allGenres = await repository.findAll({ search: '' });
       expect(allGenres.data).toHaveLength(0);
     });
 
@@ -325,7 +386,7 @@ describe('GenresService', () => {
       expect(result.data!.id).toBe('2');
       expect(result.data!.name).toBe('Comedy');
 
-      const allGenres = await repository.findAll({});
+      const allGenres = await repository.findAll({ search: '' });
       expect(allGenres.data).toHaveLength(2);
       expect(allGenres.data.find(g => g.id === '1')).toBeDefined();
       expect(allGenres.data.find(g => g.id === '2')).toBeUndefined();
@@ -371,7 +432,7 @@ describe('GenresService', () => {
       expect(genre2.data.id).toBe('2');
       expect(genre3.data.id).toBe('3');
 
-      const allGenres = await repository.findAll({});
+      const allGenres = await repository.findAll({ search: '' });
       expect(allGenres.data).toHaveLength(3);
 
       const foundGenre1 = await service.findOne('1');
