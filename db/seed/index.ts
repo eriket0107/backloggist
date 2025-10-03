@@ -1,6 +1,7 @@
 import { LoggerService } from '@/utils/logger/logger.service'
 import { itemsSeed } from './items'
 import { usersSeed } from './users'
+import { genresSeed } from './genres'
 
 const loggerService = new LoggerService();
 
@@ -17,6 +18,9 @@ const logger = loggerService.createEntityLogger('Seeds');
 
     logger.info('📚 Seeding items...')
     await itemsSeed()
+
+    logger.info('🏷️  Seeding genres...')
+    await genresSeed()
 
     const duration = Date.now() - startTime
     logger.info(`✅ Database seeding completed successfully in ${duration}ms`)

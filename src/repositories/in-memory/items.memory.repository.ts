@@ -15,6 +15,8 @@ export class ItemsMemoryRepository implements IItemsRepository {
       type: itemData.type,
       note: itemData.note,
       imgUrl: itemData.imgUrl,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
 
     this.items.push(item);
@@ -55,6 +57,7 @@ export class ItemsMemoryRepository implements IItemsRepository {
     this.items[itemIndex] = {
       ...this.items[itemIndex],
       ...itemData,
+      updatedAt: new Date(),
     };
 
     return this.items[itemIndex];

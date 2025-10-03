@@ -61,11 +61,16 @@ export const userItemsTable = table('userItems', {
   }
 });
 
-
 export const genres = table('genres', {
   id: t.text().primaryKey().notNull().default(sql`gen_random_uuid()`),
-  name: t.varchar({ length: 100 }).notNull(),
-})
+  name: t.varchar({ length: 100 }).notNull().unique(),
+},
+  (table) => {
+    return {
+      genreNameIdx: t.index('genr_name_idx').on(table.name),
+    }
+  }
+)
 
 export const itemGenres = table('itemGenres', {
   id: t.text().primaryKey().notNull().default(sql`gen_random_uuid()`),
