@@ -35,6 +35,8 @@ export class UserItemsMemoryRepository implements IUserItemsRepository {
         type: 'game' as const,
         note: 'Mock item',
         imgUrl: undefined,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       }
     }));
   }
