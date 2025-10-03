@@ -28,7 +28,7 @@ export class GenresRepository implements IGenresRepository {
       .offset(offset)
       .orderBy(genres.name);
 
-    const totalCount = await this.databaseService.db.$count(genres, search && ilike(genres.name, `%${search}%`));
+    const totalCount = await this.databaseService.db.$count(genres, search && ilike(genres.name, `${search}%`));
     const totalPages = Math.ceil(totalCount / limit);
 
     return {

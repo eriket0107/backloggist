@@ -18,12 +18,20 @@ export class GenresMemoryRepository implements IGenresRepository {
     return genre;
   }
 
-  async findAll({ limit = 10, page = 1 }: { limit?: number, page?: number }) {
+  async findAll({ limit = 10, page = 1, search }: { limit?: number, page?: number, search: string }) {
     const offset = (page - 1) * limit;
-    const sortedGenres = [...this.genres].sort((a, b) => a.name.localeCompare(b.name));
+
+    let filteredGenres = this.genres;
+    if (search) {
+      filteredGenres = this.genres.filter(genre =>
+        genre.name.toLowerCase().startsWith(search.toLowerCase())
+      );
+    }
+
+    const sortedGenres = [...filteredGenres].sort((a, b) => a.name.localeCompare(b.name));
     const paginatedGenres = sortedGenres.slice(offset, offset + limit);
 
-    const totalItems = this.genres.length;
+    const totalItems = filteredGenres.length;
     const totalPages = Math.ceil(totalItems / limit);
 
     return {
