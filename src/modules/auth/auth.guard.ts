@@ -47,8 +47,9 @@ export class AuthGuard implements CanActivate {
           secret: jwtConstants.secret
         }
       );
-    } catch {
-      this.logger.warn('Session has expired by time, marking as expired.');
+    } catch (error) {
+      console.error(error)
+      this.logger.warn(`Session ${accessToken} has expired by time, marking as expired.`);
       await this.sessionService.expireToken(accessToken)
       throw new UnauthorizedException('Session has expired.');
     }
@@ -57,7 +58,7 @@ export class AuthGuard implements CanActivate {
     const isExpired: boolean = currentDate >= session.expiredAt
 
     if (session.isExpired || isExpired) {
-      this.logger.warn('Session was already marked as expired.');
+      this.logger.warn(`Session ${accessToken} was already marked as expired.`);
       await this.sessionService.expireToken(accessToken)
       throw new UnauthorizedException('Session has expired.');
     }
