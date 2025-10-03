@@ -16,17 +16,19 @@ export class GenresRepository implements IGenresRepository {
     return genre;
   }
 
-  async findAll({ limit = 10, page = 1 }: { limit?: number, page?: number }) {
+  async findAll({ limit = 10, page = 1, search }: { limit?: number, page?: number, search: string }) {
     const offset = (page - 1) * limit;
+
 
     const genreList = await this.databaseService.db
       .select()
       .from(genres)
+      .where(search && ilike(genres.name, `${search}%`))
       .limit(limit)
       .offset(offset)
       .orderBy(genres.name);
 
-    const totalCount = await this.databaseService.db.$count(genres);
+    const totalCount = await this.databaseService.db.$count(genres, search && ilike(genres.name, `%${search}%`));
     const totalPages = Math.ceil(totalCount / limit);
 
     return {
