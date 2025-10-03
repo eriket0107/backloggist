@@ -50,6 +50,13 @@
       "when": 1759518419609,
       "tag": "0006_round_supernaut",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1759520717962,
+      "tag": "0007_superb_supernaut",
+      "breakpoints": true
     }
   ]
 }

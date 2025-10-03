@@ -67,7 +67,7 @@ export const genres = table('genres', {
 },
   (table) => {
     return {
-      genreNameIdx: t.index('genr_name_idx').on(table.name),
+      genreNameIdx: t.index('genre_name_idx').on(table.name),
     }
   }
 )
