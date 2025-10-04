@@ -66,7 +66,7 @@ export interface ItemGenre {
   itemId: string;
   genreId: string;
   createdAt?: Date;
-  updatedAt: Date;
+  updatedAt?: Date;
 }
 
 export interface ItemGenreWithDetails {

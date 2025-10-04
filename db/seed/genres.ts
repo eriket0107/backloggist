@@ -1,5 +1,5 @@
 import { db } from ".."
-import { genres } from "../schema"
+import { genresTable } from "../schema"
 import { LoggerService } from "@/utils/logger/logger.service"
 import { Genre } from "@/types/entities"
 
@@ -56,7 +56,7 @@ export const genresSeed = async () => {
   logger.info(`🌱 Starting to seed ${genresList.length} genres...`)
 
   try {
-    await db.insert(genres).values(genresList)
+    await db.insert(genresTable).values(genresList)
 
     const duration = Date.now() - startTime
     logger.info(`✅ Successfully created ${genresList.length} genres in ${duration}ms`)

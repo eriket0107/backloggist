@@ -41,6 +41,7 @@ export class ItemGenresService {
       createItemGenreDto.itemId,
       createItemGenreDto.genreId
     );
+
     if (existingRelation) {
       this.logger.warn(`Item-Genre relationship already exists`);
       throw new ConflictException(`Item is already associated with this genre`);
@@ -56,18 +57,13 @@ export class ItemGenresService {
     this.logger.info('Fetching item-genre relationships');
 
     if (itemId) {
-      const data = await this.itemGenresRepository.findByItemId(itemId);
-      this.logger.info(`Found ${data.length} genres for item ${itemId}`);
-      return { data };
+      this.logger.info(`Filtering by itemId: ${itemId}`);
     }
-
     if (genreId) {
-      const data = await this.itemGenresRepository.findByGenreId(genreId);
-      this.logger.info(`Found ${data.length} items for genre ${genreId}`);
-      return { data };
+      this.logger.info(`Filtering by genreId: ${genreId}`);
     }
 
-    const data = await this.itemGenresRepository.findAll({ limit, page });
+    const data = await this.itemGenresRepository.findAll({ limit, page, genreId, itemId });
     this.logger.info(`Found ${data.totalItems} item-genre relationships`);
 
     return {
@@ -89,21 +85,6 @@ export class ItemGenresService {
     return { data };
   }
 
-  async findByItem(itemId: string) {
-    this.logger.info(`Fetching genres for item with ID: ${itemId}`);
-
-    const item = await this.itemsRepository.findById(itemId);
-    if (!item) {
-      this.logger.warn(`Item with ID ${itemId} not found`);
-      throw new NotFoundException(`Item with ID ${itemId} not found`);
-    }
-
-    const data = await this.itemGenresRepository.findByItemId(itemId);
-
-    this.logger.info(`Found ${data.length} genres for item ${itemId}`);
-    return { data };
-  }
-
   async remove(id: string) {
     this.logger.info(`Deleting item-genre relationship with ID: ${id}`);
 
@@ -111,20 +92,6 @@ export class ItemGenresService {
 
     if (!data) {
       this.logger.warn(`Item-Genre relationship with ID ${id} not found for deletion`);
-      return { data: null };
-    }
-
-    this.logger.info(`Item-Genre relationship deleted: ${data.id}`);
-    return { data };
-  }
-
-  async removeByItemAndGenre(itemId: string, genreId: string) {
-    this.logger.info(`Deleting item-genre relationship for item ${itemId} and genre ${genreId}`);
-
-    const data = await this.itemGenresRepository.deleteByItemAndGenre(itemId, genreId);
-
-    if (!data) {
-      this.logger.warn(`Item-Genre relationship not found for deletion`);
       return { data: null };
     }
 

@@ -1,17 +1,17 @@
-import { IsOptional, IsNumberString, IsUUID } from 'class-validator';
+import { IsOptional, IsUUID, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 
 export class FindAllItemGenresDto {
   @ApiProperty({ required: false, example: '10' })
   @IsOptional()
-  @IsNumberString()
+  @IsNumber()
   @Transform(({ value }) => parseInt(value, 10))
   limit?: number;
 
   @ApiProperty({ required: false, example: '1' })
   @IsOptional()
-  @IsNumberString()
+  @IsNumber()
   @Transform(({ value }) => parseInt(value, 10))
   page?: number;
 

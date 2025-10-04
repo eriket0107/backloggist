@@ -61,7 +61,7 @@ export const userItemsTable = table('userItems', {
   }
 });
 
-export const genres = table('genres', {
+export const genresTable = table('genres', {
   id: t.text().primaryKey().notNull().default(sql`gen_random_uuid()`),
   name: t.varchar({ length: 100 }).notNull().unique(),
 },
@@ -72,10 +72,10 @@ export const genres = table('genres', {
   }
 )
 
-export const itemGenres = table('itemGenres', {
+export const itemGenresTable = table('itemGenres', {
   id: t.text().primaryKey().notNull().default(sql`gen_random_uuid()`),
   itemId: t.text('item_id').notNull().references(() => itemsTable.id),
-  genreId: t.text('genre_id').notNull().references(() => genres.id),
+  genreId: t.text('genre_id').notNull().references(() => genresTable.id),
   createdAt: t.timestamp('created_at').default(sql`CURRENT_TIMESTAMP`),
   updatedAt: t.timestamp('updated_at').default(sql`CURRENT_TIMESTAMP`),
 }, (table) => {
