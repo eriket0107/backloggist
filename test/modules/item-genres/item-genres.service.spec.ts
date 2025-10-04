@@ -150,31 +150,6 @@ describe('ItemGenresService', () => {
     });
   });
 
-  describe('findByItem', () => {
-    it('should throw NotFoundException when item does not exist', async () => {
-      await expect(service.findByItem('invalid-item')).rejects.toThrow(NotFoundException);
-    });
-
-    it('should return empty array when item has no genres', async () => {
-      await itemsRepository.create(mockItem);
-
-      const result = await service.findByItem('1');
-
-      expect(result.data).toEqual([]);
-    });
-
-    it('should return genres for specific item', async () => {
-      const { itemId, genreId } = await setupTestData();
-      const createDto = { itemId, genreId };
-      await service.create(createDto);
-
-      const result = await service.findByItem(itemId);
-
-      expect(result.data).toHaveLength(1);
-      expect(result.data[0].itemId).toBe(itemId);
-    });
-  });
-
   describe('remove', () => {
     it('should return null when relationship not found', async () => {
       const result = await service.remove('999');
@@ -191,25 +166,6 @@ describe('ItemGenresService', () => {
 
       expect(result.data).toBeDefined();
       expect(result.data!.id).toBe('1');
-    });
-  });
-
-  describe('removeByItemAndGenre', () => {
-    it('should return null when relationship not found', async () => {
-      const result = await service.removeByItemAndGenre('item-1', 'genre-1');
-
-      expect(result.data).toBeNull();
-    });
-
-    it('should delete relationship by item and genre IDs', async () => {
-      const { itemId, genreId } = await setupTestData();
-      const createDto = { itemId, genreId };
-      await service.create(createDto);
-
-      const result = await service.removeByItemAndGenre(itemId, genreId);
-
-      expect(result.data).toBeDefined();
-      expect(result.data!.itemId).toBe(itemId);
     });
   });
 });

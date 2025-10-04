@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '@/modules/database/database.service';
 import { eq, ilike } from 'drizzle-orm';
-import { genres } from '../../../db/schema';
+import { genresTable } from '../../../db/schema';
 import { IGenresRepository, CreateGenreData, UpdateGenreData } from '@/repositories/interfaces/genres.repository.interface';
 
 @Injectable()
@@ -10,7 +10,7 @@ export class GenresRepository implements IGenresRepository {
 
   async create(genreData: CreateGenreData) {
     const [genre] = await this.databaseService.db
-      .insert(genres)
+      .insert(genresTable)
       .values(genreData)
       .returning();
     return genre;
@@ -22,13 +22,13 @@ export class GenresRepository implements IGenresRepository {
 
     const genreList = await this.databaseService.db
       .select()
-      .from(genres)
-      .where(search && ilike(genres.name, `${search}%`))
+      .from(genresTable)
+      .where(search && ilike(genresTable.name, `${search}%`))
       .limit(limit)
       .offset(offset)
-      .orderBy(genres.name);
+      .orderBy(genresTable.name);
 
-    const totalCount = await this.databaseService.db.$count(genres, search && ilike(genres.name, `${search}%`));
+    const totalCount = await this.databaseService.db.$count(genresTable, search && ilike(genresTable.name, `${search}%`));
     const totalPages = Math.ceil(totalCount / limit);
 
     return {
@@ -44,32 +44,32 @@ export class GenresRepository implements IGenresRepository {
   async findById(id: string) {
     const [genre] = await this.databaseService.db
       .select()
-      .from(genres)
-      .where(eq(genres.id, id));
+      .from(genresTable)
+      .where(eq(genresTable.id, id));
     return genre || null;
   }
 
   async findByName(name: string) {
     const [genre] = await this.databaseService.db
       .select()
-      .from(genres)
-      .where(ilike(genres.name, name));
+      .from(genresTable)
+      .where(ilike(genresTable.name, name));
     return genre || null;
   }
 
   async update(id: string, genreData: UpdateGenreData) {
     const [genre] = await this.databaseService.db
-      .update(genres)
+      .update(genresTable)
       .set(genreData)
-      .where(eq(genres.id, id))
+      .where(eq(genresTable.id, id))
       .returning();
     return genre || null;
   }
 
   async delete(id: string) {
     const [genre] = await this.databaseService.db
-      .delete(genres)
-      .where(eq(genres.id, id))
+      .delete(genresTable)
+      .where(eq(genresTable.id, id))
       .returning();
     return genre || null;
   }

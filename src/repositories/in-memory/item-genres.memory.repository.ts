@@ -80,18 +80,6 @@ export class ItemGenresMemoryRepository implements IItemGenresRepository {
     this.itemGenres.splice(itemGenreIndex, 1);
     return deletedItemGenre;
   }
-
-  async deleteByItemAndGenre(itemId: string, genreId: string): Promise<ItemGenre | null> {
-    const itemGenreIndex = this.itemGenres.findIndex(itemGenre =>
-      itemGenre.itemId === itemId && itemGenre.genreId === genreId
-    );
-    if (itemGenreIndex === -1) return null;
-
-    const deletedItemGenre = this.itemGenres[itemGenreIndex];
-    this.itemGenres.splice(itemGenreIndex, 1);
-    return deletedItemGenre;
-  }
-
   // Helper method to set genres for better mock data (not part of interface)
   setGenres(genres: Genre[]): void {
     this.genres = genres;

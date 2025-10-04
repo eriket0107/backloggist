@@ -45,7 +45,7 @@ export class ItemGenresController {
   @ApiResponse({ status: 200, description: 'Genres for item retrieved successfully' })
   @ApiResponse({ status: 404, description: 'Item not found' })
   findByItem(@Param('itemId') itemId: string) {
-    return this.itemGenresService.findByItem(itemId);
+    return this.itemGenresService.findAll({ itemId });
   }
 
   @Get(':id')
@@ -54,6 +54,14 @@ export class ItemGenresController {
   @ApiResponse({ status: 404, description: 'Item-Genre relationship not found' })
   findOne(@Param('id') id: string) {
     return this.itemGenresService.findOne(id);
+  }
+
+  @Get('genre/:genreId')
+  @ApiOperation({ summary: 'Get item-genre relationship by ID' })
+  @ApiResponse({ status: 200, description: 'Item-Genre relationship found' })
+  @ApiResponse({ status: 404, description: 'Item-Genre relationship not found' })
+  findByGenre(@Param('genreId') genreId: string) {
+    return this.itemGenresService.findAll({ genreId });
   }
 
   @Delete(':id')
@@ -65,15 +73,4 @@ export class ItemGenresController {
     return this.itemGenresService.remove(id);
   }
 
-  @Delete('item/:itemId/genre/:genreId')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Delete item-genre relationship by item and genre IDs' })
-  @ApiResponse({ status: 204, description: 'Item-Genre relationship deleted successfully' })
-  @ApiResponse({ status: 404, description: 'Item-Genre relationship not found' })
-  removeByItemAndGenre(
-    @Param('itemId') itemId: string,
-    @Param('genreId') genreId: string
-  ) {
-    return this.itemGenresService.removeByItemAndGenre(itemId, genreId);
-  }
 }
