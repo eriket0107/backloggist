@@ -3,6 +3,7 @@ import { LoggerService } from '@/utils/logger/logger.service';
 import { IUserItemsRepository } from '@/repositories/interfaces/user-items.repository.interface';
 import { AddToBacklogDto } from './dto/add-to-backlog.dto';
 import { UpdateUserItemDto } from './dto/update-user-item.dto';
+import { Item } from '@/types/entities';
 
 @Injectable()
 export class UserItemsService {
@@ -30,26 +31,26 @@ export class UserItemsService {
     return { data };
   }
 
-  async getUserBacklog(userId: string) {
+  async getUserBacklog({ userId, page, type, limit, search }: { userId: string, page: number, limit: number, type?: Item['type'], search?: string }) {
     this.logger.info(`Fetching backlog for user ${userId}`);
 
-    const data = await this.userItemsRepository.findByUserId(userId);
+    const data = await this.userItemsRepository.findByBacklogByUser({ userId, page, limit, type, search });
 
-    this.logger.info(`Found ${data.length} items in user backlog`);
-    return { data };
+    this.logger.info(`Found ${data.data.length} items in user backlog`);
+    return { ...data };
   }
 
-  async updateUserItem(userId: string, itemId: string, updateUserItemDto: UpdateUserItemDto) {
-    this.logger.info(`Updating user item for user ${userId}, item ${itemId}`);
+  async updateUserItem(userId: string, id: string, updateUserItemDto: UpdateUserItemDto) {
+    this.logger.info(`Updating user item for user ${userId}, item ${id}`);
 
     const data = await this.userItemsRepository.updateByUserAndItem(
       userId,
-      itemId,
+      id,
       updateUserItemDto
     );
 
     if (!data) {
-      this.logger.warn(`User item not found for user ${userId}, item ${itemId}`);
+      this.logger.warn(`User item not found for user ${userId}, item ${id}`);
       return { data: null };
     }
 
@@ -57,13 +58,13 @@ export class UserItemsService {
     return { data };
   }
 
-  async removeFromBacklog(userId: string, itemId: string) {
-    this.logger.info(`Removing item ${itemId} from user ${userId} backlog`);
+  async removeFromBacklog(userId: string, id: string) {
+    this.logger.info(`Removing item ${id} from user ${userId} backlog`);
 
-    const data = await this.userItemsRepository.deleteByUserAndItem(userId, itemId);
+    const data = await this.userItemsRepository.deleteByUserAndItem(userId, id);
 
     if (!data) {
-      this.logger.warn(`User item not found for deletion: user ${userId}, item ${itemId}`);
+      this.logger.warn(`User item not found for deletion: user ${userId}, item ${id}`);
       return { data: null };
     }
 
