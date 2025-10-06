@@ -8,9 +8,6 @@ import * as path from 'path';
 import { mkdir } from 'fs/promises';
 import { Worker } from 'worker_threads';
 
-
-
-
 @Injectable()
 export class ItemsService {
   private logger;
