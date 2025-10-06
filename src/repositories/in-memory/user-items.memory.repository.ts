@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { IUserItemsRepository, CreateUserItemData, UpdateUserItemData } from '@/repositories/interfaces/user-items.repository.interface';
-import { UserItem, UserItemWithDetails, BacklogStats } from '@/types/entities';
+import { UserItem, UserItemWithDetails, BacklogStats, Item } from '@/types/entities';
+import { PaginatedResult } from '@/types/pagination';
 
 @Injectable()
 export class UserItemsMemoryRepository implements IUserItemsRepository {
@@ -21,32 +22,56 @@ export class UserItemsMemoryRepository implements IUserItemsRepository {
     return userItem;
   }
 
-  async findByUserId(userId: string): Promise<UserItemWithDetails[]> {
-    // In a real implementation, this would join with items
-    // For now, we'll return user items without item details
-    const userItems = this.userItems.filter(ui => ui.userId === userId);
+  async findByBacklogByUser({ userId, limit = 10, page = 1, search, type }: { limit?: number, page?: number, userId: string, type?: Item['type'], search?: string }): Promise<PaginatedResult<UserItemWithDetails>> {
+    let userItems = this.userItems.filter(ui => ui.userId === userId);
 
-    // Mock item details for demonstration
-    return userItems.map(ui => ({
+    if (search) {
+      userItems = userItems.filter(ui =>
+        `Mock Item ${ui.itemId}`.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+
+    if (type) {
+      userItems = userItems.filter(() => {
+
+        return type === 'game';
+      });
+    }
+
+    const totalItems = userItems.length;
+    const totalPages = Math.ceil(totalItems / limit);
+    const offset = (page - 1) * limit;
+    const paginatedItems = userItems.slice(offset, offset + limit);
+
+    const data = paginatedItems.map(ui => ({
       ...ui,
       item: {
         id: ui.itemId,
-        title: `Item ${ui.itemId}`,
+        title: `Mock Item ${ui.itemId}`,
         type: 'game' as const,
-        note: 'Mock item',
-        imgUrl: undefined,
+        note: 'Mock item for testing',
+        imgUrl: `https://example.com/image-${ui.itemId}.jpg`,
         createdAt: new Date(),
         updatedAt: new Date(),
       }
     }));
+
+    return {
+      data,
+      totalItems,
+      totalPages,
+      currentPage: page,
+      isFirstPage: page === 1,
+      isLastPage: page === totalPages,
+    };
   }
 
-  async findByUserAndItem(userId: string, itemId: string): Promise<UserItem | null> {
-    return this.userItems.find(ui => ui.userId === userId && ui.itemId === itemId) || null;
+  async findByUserAndItem({ id, userId }: { userId: string, id: string }): Promise<UserItem | null> {
+    return this.userItems.find(ui => ui.userId === userId && ui.id === id) || null;
   }
 
-  async updateByUserAndItem(userId: string, itemId: string, userItemData: UpdateUserItemData): Promise<UserItem | null> {
-    const userItemIndex = this.userItems.findIndex(ui => ui.userId === userId && ui.itemId === itemId);
+  async updateByUserAndItem(userId: string, id: string, userItemData: UpdateUserItemData): Promise<UserItem | null> {
+    const userItemIndex = this.userItems.findIndex(ui => ui.userId === userId && ui.id === id);
     if (userItemIndex === -1) {
       return null;
     }
@@ -59,8 +84,8 @@ export class UserItemsMemoryRepository implements IUserItemsRepository {
     return this.userItems[userItemIndex];
   }
 
-  async deleteByUserAndItem(userId: string, itemId: string): Promise<UserItem | null> {
-    const userItemIndex = this.userItems.findIndex(ui => ui.userId === userId && ui.itemId === itemId);
+  async deleteByUserAndItem(userId: string, id: string): Promise<UserItem | null> {
+    const userItemIndex = this.userItems.findIndex(ui => ui.userId === userId && ui.id === id);
     if (userItemIndex === -1) {
       return null;
     }
@@ -76,7 +101,7 @@ export class UserItemsMemoryRepository implements IUserItemsRepository {
     return {
       total: userItems.length,
       completed: userItems.filter(ui => ui.status === 'completed').length,
-      inProgress: userItems.filter(ui => ui.status === 'in_progress').length,
+      in_progress: userItems.filter(ui => ui.status === 'in_progress').length,
       pending: userItems.filter(ui => ui.status === 'pending').length,
     };
   }

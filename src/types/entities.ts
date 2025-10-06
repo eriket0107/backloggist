@@ -50,7 +50,7 @@ export interface Session {
 export interface BacklogStats {
   total: number;
   completed: number;
-  inProgress: number;
+  in_progress: number;
   pending: number;
 }
 

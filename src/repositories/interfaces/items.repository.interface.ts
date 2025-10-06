@@ -22,4 +22,5 @@ export interface IItemsRepository {
   findById(id: string): Promise<Item | null>;
   update(id: string, itemData: UpdateItemData): Promise<Item | null>;
   delete(id: string): Promise<Item | null>;
+  // saveFile(file: Express.Multer.File): Promise<void>
 }

@@ -68,3 +68,6 @@ db/index.db
 
 # build
 dist/
+
+# uploads
+uploads/*
