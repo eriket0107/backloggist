@@ -4,7 +4,6 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { LogIndexService } from './log-index.service';
 import { LogsController } from './logs.controller';
-import { BasicAuthGuard } from './basic-auth.guard';
 
 @Module({
   imports: [
@@ -12,9 +11,13 @@ import { BasicAuthGuard } from './basic-auth.guard';
       rootPath: join(process.cwd(), 'logs'),
       serveRoot: '/logs',
     }),
+    ServeStaticModule.forRoot({
+      rootPath: join(process.cwd(), 'uploads'),
+      serveRoot: '/uploads',
+    }),
   ],
   controllers: [LogsController],
-  providers: [LogIndexService, BasicAuthGuard],
+  providers: [LogIndexService],
   exports: [LogIndexService],
 })
 

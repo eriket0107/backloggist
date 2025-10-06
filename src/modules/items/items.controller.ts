@@ -11,6 +11,9 @@ import {
   UseGuards,
   Query,
   Request,
+  UseInterceptors,
+  UploadedFile,
+  Res,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ItemsService } from './items.service';
@@ -18,6 +21,8 @@ import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 import { FindAllItemsDto } from './dto/find-all-items.dto';
 import { AuthGuard } from '../auth/auth.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Response } from 'express';
 
 @UseGuards(AuthGuard)
 @ApiTags('items')
@@ -54,8 +59,29 @@ export class ItemsController {
   @ApiOperation({ summary: 'Update item' })
   @ApiResponse({ status: 200, description: 'Item updated successfully' })
   @ApiResponse({ status: 404, description: 'Item not found' })
-  update(@Param('id') id: string, @Body() updateItemDto: UpdateItemDto) {
+  @UseInterceptors(FileInterceptor('file'))
+  async update(@Param('id') id: string, @Body() updateItemDto: UpdateItemDto, @UploadedFile() file: Express.Multer.File) {
+
+    if (file) {
+      await this.itemsService.saveImg(id, file)
+    }
+
     return this.itemsService.update(id, updateItemDto);
+  }
+
+  @Get(':id/img')
+  @ApiOperation({ summary: 'Get item image' })
+  @ApiResponse({ status: 200, description: 'Image retrieved successfully' })
+  @ApiResponse({ status: 404, description: 'Image not found' })
+  async findImg(@Param('id') id: string, @Res() res: Response) {
+    const fileData = await this.itemsService.findImg(id);
+
+    res.set({
+      'Content-Type': fileData.contentType,
+      'Content-Disposition': `inline; filename="${fileData.fileName}"`
+    });
+
+    fileData.stream.pipe(res);
   }
 
   @Delete(':id')
