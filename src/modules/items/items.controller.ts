@@ -62,9 +62,7 @@ export class ItemsController {
   @UseInterceptors(FileInterceptor('file'))
   async update(@Param('id') id: string, @Body() updateItemDto: UpdateItemDto, @UploadedFile() file: Express.Multer.File) {
 
-    if (file) {
-      await this.itemsService.saveImg(id, file)
-    }
+    if (file) await this.itemsService.saveImg(id, file)
 
     return this.itemsService.update(id, updateItemDto);
   }

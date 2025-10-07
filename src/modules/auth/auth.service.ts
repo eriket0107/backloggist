@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { LoggerService } from '../../utils/logger/logger.service';
 import { PasswordHandler } from '@/utils/password-handler/password-handler.service';
 import { ISessionsRepository } from '@/repositories/interfaces/sessions.repository.interface';
-import { addOneHour } from '@/helpers/add-one-hour';
+import { addOneDay } from '@/helpers/add-one-day';
 
 @Injectable()
 export class AuthService {
@@ -70,7 +70,7 @@ export class AuthService {
       await this.sessionRepository.create({
         accessToken,
         userId: user.id,
-        expiredAt: addOneHour(new Date())
+        expiredAt: addOneDay(new Date())
       })
     } else {
       this.logger.info('Getting existing session token', { userId: user.id });
