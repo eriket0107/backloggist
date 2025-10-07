@@ -31,7 +31,6 @@ export class AuthGuard implements CanActivate {
     const accessToken = this.extractTokenFromHeader(request);
     const currentDate = new Date()
 
-
     if (!accessToken) {
       this.logger.warn('No token provided in request');
       throw new UnauthorizedException();
@@ -69,11 +68,11 @@ export class AuthGuard implements CanActivate {
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {
-    this.logger.info('Extracting token from request headers');
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
 
     if (type !== 'Bearer') {
       this.logger.warn(`Invalid authorization type: ${type}`);
+      throw new UnauthorizedException('Session has expired.');
     }
 
     return type === 'Bearer' ? token : undefined;
