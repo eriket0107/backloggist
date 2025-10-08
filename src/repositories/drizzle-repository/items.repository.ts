@@ -49,18 +49,28 @@ export class ItemsRepository implements IItemsRepository {
 
   async update(id: string, itemData: UpdateItemData) {
     const [item] = await this.databaseService.db
-      .update(itemsTable)
-      .set(itemData)
-      .where(eq(itemsTable.id, id))
-      .returning();
+      .transaction(async () =>
+        await this.databaseService.db
+          .update(itemsTable)
+          .set(itemData)
+          .where(eq(itemsTable.id, id))
+          .returning()
+        , {
+          isolationLevel: "read committed",
+          accessMode: "read write",
+          deferrable: true
+        });
     return item || null;
   }
 
   async delete(id: string) {
     const [item] = await this.databaseService.db
-      .delete(itemsTable)
-      .where(eq(itemsTable.id, id))
-      .returning();
+      .transaction(async () =>
+        await this.databaseService.db
+          .delete(itemsTable)
+          .where(eq(itemsTable.id, id))
+          .returning());
+
     return item || null;
   }
 }
