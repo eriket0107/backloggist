@@ -19,7 +19,7 @@ export const usersTable = table("users", {
 
 export const sessionsTable = table('sessions', {
   id: t.text().primaryKey().notNull().default(sql`gen_random_uuid()`),
-  userId: t.text('user_id').notNull().references(() => usersTable.id),
+  userId: t.text('user_id').notNull().references(() => usersTable.id, { onDelete: 'cascade' }),
   accessToken: t.text('access_token').notNull(),
   isExpired: t.boolean('is_expired').default(false),
   expiredAt: t.timestamp('expired_at'),
@@ -44,8 +44,8 @@ export const itemsTable = table('items', {
 
 export const userItemsTable = table('userItems', {
   id: t.text().primaryKey().notNull().default(sql`gen_random_uuid()`),
-  userId: t.text('user_id').notNull().references(() => usersTable.id),
-  itemId: t.text('item_id').notNull().references(() => itemsTable.id),
+  userId: t.text('user_id').notNull().references(() => usersTable.id, { onDelete: 'cascade' }),
+  itemId: t.text('item_id').notNull().references(() => itemsTable.id, { onDelete: 'cascade' }),
   order: t.integer(), //decimal
   status: t.varchar({ length: 100, enum: ['completed', 'in_progress', 'pending'] }),
   rating: t.integer(), //decimal
@@ -74,8 +74,8 @@ export const genresTable = table('genres', {
 
 export const itemGenresTable = table('itemGenres', {
   id: t.text().primaryKey().notNull().default(sql`gen_random_uuid()`),
-  itemId: t.text('item_id').notNull().references(() => itemsTable.id),
-  genreId: t.text('genre_id').notNull().references(() => genresTable.id),
+  itemId: t.text('item_id').notNull().references(() => itemsTable.id, { onDelete: 'cascade' }),
+  genreId: t.text('genre_id').notNull().references(() => genresTable.id, { onDelete: 'cascade' }),
   createdAt: t.timestamp('created_at').default(sql`CURRENT_TIMESTAMP`),
   updatedAt: t.timestamp('updated_at').default(sql`CURRENT_TIMESTAMP`),
 }, (table) => {

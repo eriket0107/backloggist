@@ -56,12 +56,17 @@ export const genresSeed = async () => {
   logger.info(`🌱 Starting to seed ${genresList.length} genres...`)
 
   try {
+    const existingGenres = await db.select().from(genresTable)
+    if (existingGenres.length > 0) {
+      logger.info(`⚠️  ${existingGenres.length} genres already exist. Skipping genre seeding.`)
+      return
+    }
+
     await db.insert(genresTable).values(genresList)
 
     const duration = Date.now() - startTime
     logger.info(`✅ Successfully created ${genresList.length} genres in ${duration}ms`)
 
-    // Log first few genres as examples
     const sampleGenres = genresList.slice(0, 5)
     sampleGenres.forEach(genre => {
       logger.info(`   🏷️  Created genre: ${genre.name}`)
