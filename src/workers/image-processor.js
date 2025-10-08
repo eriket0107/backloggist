@@ -9,10 +9,10 @@ if (!isMainThread) {
     .resize(800, 600, {
       fit: 'inside',
       withoutEnlargement: true
-    }).webp({ quality });
+    })
+    .webp({ quality });
 
   const fileStream = createWriteStream(filePath);
-
 
   sharpStream
     .pipe(fileStream)

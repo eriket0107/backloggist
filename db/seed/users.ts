@@ -43,6 +43,13 @@ export const usersSeed = async () => {
   logger.info(`🌱 Starting to seed ${users.length} users...`)
 
   try {
+    // Check if users already exist
+    const existingUsers = await db.select().from(usersTable)
+    if (existingUsers.length > 0) {
+      logger.info(`⚠️  ${existingUsers.length} users already exist. Skipping user seeding.`)
+      return
+    }
+
     await db.insert(usersTable).values(users)
 
     const duration = Date.now() - startTime
