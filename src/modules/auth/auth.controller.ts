@@ -4,6 +4,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { SignInDto } from './dto/sign-in.dto';
 import { AuthGuard } from './auth.guard';
 import { Response as ResponseType } from 'express';
+import { accessTokenCookie } from '@/constants/cookies';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -15,11 +16,11 @@ export class AuthController {
   async signIn(@Body() signInDto: SignInDto, @Response() res: ResponseType) {
     const { accessToken } = await this.authService.signIn(signInDto.email, signInDto.password);
 
-    res.cookie('accessToken', accessToken, {
+    res.cookie(accessTokenCookie.KEY, accessToken, {
       httpOnly: true,
-      secure: true, // HTTPS only
+      secure: true,
       sameSite: 'strict',
-      maxAge: 1000 * 60 * 60 * 24 // 1 DAY
+      maxAge: accessTokenCookie.EXPIRATION
     });
 
     return res.send('Created')
