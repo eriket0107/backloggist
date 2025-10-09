@@ -28,7 +28,7 @@ export class AuthGuard implements CanActivate {
     this.logger.info('Checking authentication');
 
     const request = context.switchToHttp().getRequest();
-    const accessToken = this.extractTokenFromHeader(request);
+    const accessToken = this.extractTokenFromRequest(request);
     const currentDate = new Date()
 
     if (!accessToken) {
@@ -67,14 +67,7 @@ export class AuthGuard implements CanActivate {
     return true;
   }
 
-  private extractTokenFromHeader(request: Request): string | undefined {
-    const [type, token] = request.headers.authorization?.split(' ') ?? [];
-
-    if (type !== 'Bearer') {
-      this.logger.warn(`Invalid authorization type: ${type}`);
-      throw new UnauthorizedException('Session has expired.');
-    }
-
-    return type === 'Bearer' ? token : undefined;
+  private extractTokenFromRequest(request: Request): string | undefined {
+    return request.cookies?.accessToken;
   }
 }

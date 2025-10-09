@@ -1,8 +1,9 @@
-import { Body, Controller, Post, HttpCode, HttpStatus, UseGuards, Get, Request } from '@nestjs/common';
+import { Body, Controller, Post, HttpCode, HttpStatus, UseGuards, Get, Request, Response } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiTags } from '@nestjs/swagger';
 import { SignInDto } from './dto/sign-in.dto';
 import { AuthGuard } from './auth.guard';
+import { Response as ResponseType } from 'express';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -11,8 +12,17 @@ export class AuthController {
 
   @HttpCode(HttpStatus.CREATED)
   @Post('login')
-  signIn(@Body() signInDto: SignInDto) {
-    return this.authService.signIn(signInDto.email, signInDto.password);
+  async signIn(@Body() signInDto: SignInDto, @Response() res: ResponseType) {
+    const { accessToken } = await this.authService.signIn(signInDto.email, signInDto.password);
+
+    res.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      secure: true, // HTTPS only
+      sameSite: 'strict',
+      maxAge: 1000 * 60 * 60 * 24 // 1 DAY
+    });
+
+    return res.send('Created')
   }
 
   @UseGuards(AuthGuard)
