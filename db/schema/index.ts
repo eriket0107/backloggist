@@ -9,6 +9,7 @@ export const usersTable = table("users", {
   name: t.varchar({ length: 150 }).notNull(),
   email: t.varchar({ length: 100 }).notNull().unique(),
   password: t.varchar({ length: 150 }).notNull(),
+  roles: t.varchar({ enum: ['USER', 'ADMIN'] }).default('USER'),
   createdAt: t.timestamp('created_at').default(sql`CURRENT_TIMESTAMP`),
   updatedAt: t.timestamp('updated_at').default(sql`CURRENT_TIMESTAMP`),
 }, (table) => {

@@ -71,6 +71,13 @@
       "when": 1759917542904,
       "tag": "0009_ambitious_silhouette",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1760000821432,
+      "tag": "0010_spooky_risque",
+      "breakpoints": true
     }
   ]
 }
