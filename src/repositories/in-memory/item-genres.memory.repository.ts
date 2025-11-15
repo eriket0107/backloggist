@@ -20,11 +20,21 @@ export class ItemGenresMemoryRepository implements IItemGenresRepository {
     return itemGenre;
   }
 
-  async findAll({ limit = 10, page = 1 }: { limit?: number, page?: number }) {
-    const offset = (page - 1) * limit;
-    const paginatedItemGenres = this.itemGenres.slice(offset, offset + limit);
+  async findAll({ limit = 10, page = 1, itemId, genreId }: { limit?: number, page?: number, itemId?: string, genreId?: string }) {
+    let filteredItemGenres = this.itemGenres;
 
-    const totalItems = this.itemGenres.length;
+    if (itemId) {
+      filteredItemGenres = filteredItemGenres.filter(itemGenre => itemGenre.itemId === itemId);
+    }
+
+    if (genreId) {
+      filteredItemGenres = filteredItemGenres.filter(itemGenre => itemGenre.genreId === genreId);
+    }
+
+    const offset = (page - 1) * limit;
+    const paginatedItemGenres = filteredItemGenres.slice(offset, offset + limit);
+
+    const totalItems = filteredItemGenres.length;
     const totalPages = Math.ceil(totalItems / limit);
 
     return {

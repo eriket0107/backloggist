@@ -38,9 +38,10 @@ export class UserItemsRepository implements IUserItemsRepository {
         addedAt: userItemsTable.addedAt,
         item: {
           id: itemsTable.id,
+          userId: itemsTable.userId,
           title: itemsTable.title,
           type: itemsTable.type,
-          note: itemsTable.note,
+          description: itemsTable.description,
           imgUrl: itemsTable.imgUrl,
           createdAt: itemsTable.createdAt,
           updatedAt: itemsTable.updatedAt,
@@ -55,7 +56,7 @@ export class UserItemsRepository implements IUserItemsRepository {
     const totalPages = Math.ceil(totalCount / limit);
 
     return {
-      data: backlog,
+      data: backlog as UserItemWithDetails[],
       totalItems: totalCount,
       totalPages,
       currentPage: page,

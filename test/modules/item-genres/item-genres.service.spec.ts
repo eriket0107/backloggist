@@ -16,6 +16,7 @@ describe('ItemGenresService', () => {
 
   const mockItem: Item = {
     id: 'item-1',
+    userId: 'user-1',
     title: 'Test Item',
     type: 'game',
     createdAt: new Date(),
@@ -72,7 +73,7 @@ describe('ItemGenresService', () => {
     it('should create item-genre relationship successfully', async () => {
       const { itemId, genreId } = await setupTestData();
       const createDto = { itemId, genreId };
-      const result = await service.create(createDto);
+      const result = await service.create(createDto, mockItem.userId);
 
       expect(result.data.itemId).toBe(itemId);
       expect(result.data.genreId).toBe(genreId);
@@ -83,22 +84,22 @@ describe('ItemGenresService', () => {
       await genresRepository.create(mockGenre);
       const invalidDto = { itemId: 'invalid-item', genreId: '1' };
 
-      await expect(service.create(invalidDto)).rejects.toThrow(NotFoundException);
+      await expect(service.create(invalidDto, mockItem.userId)).rejects.toThrow(NotFoundException);
     });
 
     it('should throw NotFoundException when genre does not exist', async () => {
       await itemsRepository.create(mockItem);
-      const invalidDto = { itemId: '1', genreId: 'invalid-genre' };
+      const invalidDto = { itemId: mockItem.id, genreId: 'invalid-genre' };
 
-      await expect(service.create(invalidDto)).rejects.toThrow(NotFoundException);
+      await expect(service.create(invalidDto, mockItem.userId)).rejects.toThrow(NotFoundException);
     });
 
     it('should throw ConflictException when relationship already exists', async () => {
       const { itemId, genreId } = await setupTestData();
       const createDto = { itemId, genreId };
-      await service.create(createDto);
+      await service.create(createDto, mockItem.userId);
 
-      await expect(service.create(createDto)).rejects.toThrow(ConflictException);
+      await expect(service.create(createDto, mockItem.userId)).rejects.toThrow(ConflictException);
     });
   });
 
@@ -112,7 +113,7 @@ describe('ItemGenresService', () => {
     it('should return all relationships', async () => {
       const { itemId, genreId } = await setupTestData();
       const createDto = { itemId, genreId };
-      await service.create(createDto);
+      await service.create(createDto, mockItem.userId);
 
       const result = await service.findAll({});
 
@@ -124,7 +125,7 @@ describe('ItemGenresService', () => {
     it('should filter by itemId', async () => {
       const { itemId, genreId } = await setupTestData();
       const createDto = { itemId, genreId };
-      await service.create(createDto);
+      await service.create(createDto, mockItem.userId);
 
       const result = await service.findAll({ itemId });
 
@@ -141,7 +142,7 @@ describe('ItemGenresService', () => {
     it('should return relationship when found', async () => {
       const { itemId, genreId } = await setupTestData();
       const createDto = { itemId, genreId };
-      await service.create(createDto);
+      await service.create(createDto, mockItem.userId);
 
       const result = await service.findOne('1');
 
@@ -160,7 +161,7 @@ describe('ItemGenresService', () => {
     it('should delete relationship successfully', async () => {
       const { itemId, genreId } = await setupTestData();
       const createDto = { itemId, genreId };
-      await service.create(createDto);
+      await service.create(createDto, mockItem.userId);
 
       const result = await service.remove('1');
 

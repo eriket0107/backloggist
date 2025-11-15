@@ -1,5 +1,5 @@
 import { db } from ".."
-import { itemsTable } from "../schema"
+import { itemsTable, usersTable } from "../schema"
 import { LoggerService } from "@/utils/logger/logger.service"
 import { Item } from "@/types/entities"
 
@@ -7,133 +7,133 @@ const loggerService = new LoggerService()
 
 const logger = loggerService.createEntityLogger('ItemsSeed')
 
-const items: Omit<Item, 'id' | 'createdAt' | 'updatedAt'>[] = [
+const items: Omit<Item, 'id' | 'createdAt' | 'updatedAt' | 'userId'>[] = [
   {
     title: "The Witcher 3: Wild Hunt",
     type: "game",
-    note: "Epic RPG adventure",
-    imgUrl: "https://example.com/witcher3.jpg"
+    description: "Epic RPG adventure",
+    imgUrl: "https://example.com/witcher3.jpg",
   },
   {
     title: "Dune",
     type: "book",
-    note: "Classic sci-fi novel",
+    description: "Classic sci-fi novel",
     imgUrl: "https://example.com/dune.jpg"
   },
   {
     title: "Breaking Bad",
     type: "serie",
-    note: "Crime drama series"
+    description: "Crime drama series"
   },
   {
     title: "The Matrix",
     type: "movie",
-    note: "Sci-fi action movie"
+    description: "Sci-fi action movie"
   },
   {
     title: "JavaScript Course",
     type: "course",
-    note: "Learn modern JavaScript"
+    description: "Learn modern JavaScript"
   },
   {
     title: "Cyberpunk 2077",
     type: "game",
-    note: "Futuristic RPG"
+    description: "Futuristic RPG"
   },
   {
     title: "1984",
     type: "book",
-    note: "Dystopian classic by George Orwell"
+    description: "Dystopian classic by George Orwell"
   },
   {
     title: "Stranger Things",
     type: "serie",
-    note: "Supernatural horror series"
+    description: "Supernatural horror series"
   },
   {
     title: "Inception",
     type: "movie",
-    note: "Mind-bending thriller"
+    description: "Mind-bending thriller"
   },
   {
     title: "React Masterclass",
     type: "course",
-    note: "Complete React development course"
+    description: "Complete React development course"
   },
   {
     title: "God of War",
     type: "game",
-    note: "Norse mythology action-adventure"
+    description: "Norse mythology action-adventure"
   },
   {
     title: "The Hobbit",
     type: "book",
-    note: "Fantasy adventure by Tolkien"
+    description: "Fantasy adventure by Tolkien"
   },
   {
     title: "Game of Thrones",
     type: "serie",
-    note: "Epic fantasy drama"
+    description: "Epic fantasy drama"
   },
   {
     title: "Interstellar",
     type: "movie",
-    note: "Space exploration epic"
+    description: "Space exploration epic"
   },
   {
     title: "Python for Data Science",
     type: "course",
-    note: "Data analysis with Python"
+    description: "Data analysis with Python"
   },
   {
     title: "Red Dead Redemption 2",
     type: "game",
-    note: "Western action-adventure"
+    description: "Western action-adventure"
   },
   {
     title: "Sapiens",
     type: "book",
-    note: "History of humankind"
+    description: "History of humankind"
   },
   {
     title: "The Office",
     type: "serie",
-    note: "Comedy mockumentary"
+    description: "Comedy mockumentary"
   },
   {
     title: "Pulp Fiction",
     type: "movie",
-    note: "Tarantino crime classic"
+    description: "Tarantino crime classic"
   },
   {
     title: "Machine Learning Basics",
     type: "course",
-    note: "Introduction to ML concepts"
+    description: "Introduction to ML concepts"
   },
   {
     title: "Elden Ring",
     type: "game",
-    note: "Dark fantasy RPG"
+    description: "Dark fantasy RPG"
   },
   {
     title: "Atomic Habits",
     type: "book",
-    note: "Self-improvement guide"
+    description: "Self-improvement guide"
   },
   {
     title: "Better Call Saul",
     type: "serie",
-    note: "Breaking Bad spin-off"
+    description: "Breaking Bad spin-off"
   },
   {
     title: "The Dark Knight",
     type: "movie",
-    note: "Batman superhero film"
+    description: "Batman superhero film"
   },
   {
     title: "Node.js Backend Development",
     type: "course",
-    note: "Server-side JavaScript development"
+    description: "Server-side JavaScript development"
   }
 ]
 
@@ -143,14 +143,34 @@ export const itemsSeed = async () => {
   logger.info(`🌱 Starting to seed ${items.length} items...`)
 
   try {
-    // Check if items already exist
     const existingItems = await db.select().from(itemsTable)
     if (existingItems.length > 0) {
       logger.info(`⚠️  ${existingItems.length} items already exist. Skipping item seeding.`)
       return
     }
 
-    await db.insert(itemsTable).values(items)
+    const users = await db.select().from(usersTable)
+    if (users.length === 0) {
+      logger.warn('⚠️  No users found in database. Items require a userId. Skipping item seeding.')
+      return
+    }
+
+
+
+    const itemsWithUserId = items.map(item => {
+      const randomIdFromIndex = Math.floor(Math.random() * users.length)
+
+      return ({
+        title: item.title,
+        type: item.type,
+        description: item.description,
+        imgUrl: item.imgUrl,
+        userId: users[randomIdFromIndex].id
+      })
+    })
+
+
+    await db.insert(itemsTable).values(itemsWithUserId)
 
     const duration = Date.now() - startTime
     logger.info(`✅ Successfully created ${items.length} items in ${duration}ms`)

@@ -78,6 +78,13 @@
       "when": 1760000821432,
       "tag": "0010_spooky_risque",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1763157094027,
+      "tag": "0011_sparkling_toro",
+      "breakpoints": true
     }
   ]
 }

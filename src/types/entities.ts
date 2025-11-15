@@ -1,3 +1,4 @@
+
 export interface User {
   id: string;
   name: string;
@@ -5,14 +6,17 @@ export interface User {
   password: string;
   createdAt: Date;
   updatedAt: Date;
+  roles?: ('USER' | 'ADMIN')[]
 }
 
 export interface Item {
   id: string;
   title: string;
   type: 'game' | 'book' | 'serie' | 'movie' | 'course';
-  note?: string;
+  description?: string;
   imgUrl?: string;
+  isPublic?: boolean,
+  userId: User['id']
   createdAt?: Date;
   updatedAt: Date;
 }
