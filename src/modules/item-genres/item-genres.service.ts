@@ -21,11 +21,11 @@ export class ItemGenresService {
     this.logger = this.loggerService.createEntityLogger('ItemGenresService');
   }
 
-  async create(createItemGenreDto: CreateItemGenreDto) {
+  async create(createItemGenreDto: CreateItemGenreDto, userId: string) {
     this.logger.info('Creating new item-genre relationship');
 
 
-    const item = await this.itemsRepository.findById(createItemGenreDto.itemId);
+    const item = await this.itemsRepository.findById(createItemGenreDto.itemId, userId);
     if (!item) {
       this.logger.warn(`Item with ID ${createItemGenreDto.itemId} not found`);
       throw new NotFoundException(`Item with ID ${createItemGenreDto.itemId} not found`);

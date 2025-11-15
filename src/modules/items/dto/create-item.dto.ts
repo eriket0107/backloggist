@@ -18,7 +18,7 @@ export class CreateItemDto {
   @ApiProperty({ example: 'An amazing RPG game', required: false })
   @IsOptional()
   @IsString()
-  note?: string;
+  description?: string;
 
   @ApiProperty({ example: 'https://example.com/image.jpg', required: false })
   @IsOptional()

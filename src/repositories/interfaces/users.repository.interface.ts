@@ -1,9 +1,12 @@
 import { User } from '@/types/entities';
+import { Role } from '@/types/roles';
+
 
 export interface CreateUserData {
   name: string;
   email: string;
   password: string;
+  roles?: Role[]
 }
 
 export interface UpdateUserData {

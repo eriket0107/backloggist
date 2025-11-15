@@ -23,6 +23,7 @@ import { FindAllItemsDto } from './dto/find-all-items.dto';
 import { AuthGuard } from '../auth/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
+import { AdminOrOwnerGuard } from '../roles/admin-or-owner.guard';
 
 @UseGuards(AuthGuard)
 @ApiTags('items')
@@ -35,26 +36,31 @@ export class ItemsController {
   @ApiOperation({ summary: 'Create a new item' })
   @ApiResponse({ status: 201, description: 'Item created successfully' })
   @ApiResponse({ status: 400, description: 'Bad request' })
-  create(@Body() createItemDto: CreateItemDto) {
-    return this.itemsService.create(createItemDto);
+  create(@Body() createItemDto: CreateItemDto, @Request() request) {
+    const userId = request.user.sub;
+    return this.itemsService.create(createItemDto, userId);
   }
 
   @Get()
   @ApiOperation({ summary: 'Get all items' })
   @ApiResponse({ status: 200, description: 'Items retrieved successfully' })
   findAll(@Query() query: FindAllItemsDto, @Request() request) {
+    const userId = request.user.sub;
     request.user.items_page = request.query.page
-    return this.itemsService.findAll(query);
+    return this.itemsService.findAll({ ...query, userId });
   }
 
+  @UseGuards(AdminOrOwnerGuard)
   @Get(':id')
   @ApiOperation({ summary: 'Get item by ID' })
   @ApiResponse({ status: 200, description: 'Item found' })
   @ApiResponse({ status: 404, description: 'Item not found' })
-  findOne(@Param('id') id: string) {
-    return this.itemsService.findOne(id);
+  findOne(@Param('id') id: string, @Request() request) {
+    const userId = request.user.sub;
+    return this.itemsService.findOne(id, userId);
   }
 
+  @UseGuards(AdminOrOwnerGuard)
   @Patch(':id')
   @ApiOperation({ summary: 'Update item' })
   @ApiResponse({ status: 200, description: 'Item updated successfully' })
@@ -82,6 +88,7 @@ export class ItemsController {
     fileData.stream.pipe(res);
   }
 
+  @UseGuards(AdminOrOwnerGuard)
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete item' })

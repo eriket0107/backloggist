@@ -13,8 +13,9 @@ export class ItemsMemoryRepository implements IItemsRepository {
       id: this.nextId.toString(),
       title: itemData.title,
       type: itemData.type,
-      note: itemData.note,
+      description: itemData.description,
       imgUrl: itemData.imgUrl,
+      userId: itemData.userId,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -24,15 +25,16 @@ export class ItemsMemoryRepository implements IItemsRepository {
     return item;
   }
 
-  async findAll({ limit, page }: { limit?: number, page?: number } = {}): Promise<PaginatedResult<Item>> {
-    const totalItems = this.items.length;
+  async findAll({ limit, page, userId }: { limit?: number, page?: number, userId: string }): Promise<PaginatedResult<Item>> {
+    const filteredItems = this.items.filter(item => item.userId === userId);
+    const totalItems = filteredItems.length;
     const currentPage = page || 1;
     const itemsPerPage = limit || totalItems;
     const totalPages = Math.ceil(totalItems / itemsPerPage);
 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    const data = [...this.items].slice(startIndex, endIndex);
+    const data = [...filteredItems].slice(startIndex, endIndex);
 
     return {
       data,
@@ -44,8 +46,8 @@ export class ItemsMemoryRepository implements IItemsRepository {
     };
   }
 
-  async findById(id: string): Promise<Item | null> {
-    return this.items.find(item => item.id === id) || null;
+  async findById(id: string, userId: string): Promise<Item | null> {
+    return this.items.find(item => item.id === id && item.userId === userId) || null;
   }
 
   async update(id: string, itemData: UpdateItemData): Promise<Item | null> {

@@ -1,6 +1,6 @@
 import { Injectable, Inject, NotFoundException, ConflictException } from '@nestjs/common';
 import { LoggerService } from '@/utils/logger/logger.service';
-import { IItemsRepository } from '@/repositories/interfaces/items.repository.interface';
+import { IItemsRepository, UpdateItemData } from '@/repositories/interfaces/items.repository.interface';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 import { createReadStream, existsSync, ReadStream, unlink } from 'fs';
@@ -20,18 +20,21 @@ export class ItemsService {
     this.logger = this.loggerService.createEntityLogger('ItemsService');
   }
 
-  async create(createItemDto: CreateItemDto) {
-    this.logger.info('Creating new item');
+  async create(createItemDto: CreateItemDto, userId: string) {
+    this.logger.info(`Creating new item for user ${userId}`);
 
-    const data = await this.itemsRepository.create(createItemDto);
+    const data = await this.itemsRepository.create({
+      ...createItemDto,
+      userId
+    });
 
     this.logger.info(`Item created with ID: ${data.id}`);
     return { data };
   }
 
-  async findAll({ limit = 10, page = 1 }: { limit?: number, page?: number } = {}) {
-    this.logger.info('Fetching all items');
-    const data = await this.itemsRepository.findAll({ limit, page });
+  async findAll({ limit = 10, page = 1, userId }: { limit?: number, page?: number, userId: string } = { limit: 10, page: 1, userId: '' }) {
+    this.logger.info(`Fetching items for user ${userId}`);
+    const data = await this.itemsRepository.findAll({ limit, page, userId });
 
     this.logger.info(`Found ${data.totalItems} items`);
 
@@ -40,10 +43,10 @@ export class ItemsService {
     };
   }
 
-  async findOne(id: string) {
-    this.logger.info(`Fetching item with ID: ${id}`);
+  async findOne(id: string, userId: string) {
+    this.logger.info(`Fetching item with ID: ${id} for user ${userId}`);
 
-    const data = await this.itemsRepository.findById(id);
+    const data = await this.itemsRepository.findById(id, userId);
 
     if (!data) {
       this.logger.warn(`Item with ID ${id} not found`);
@@ -57,10 +60,9 @@ export class ItemsService {
   async update(id: string, updateItemDto: UpdateItemDto) {
     this.logger.info(`Updating item with ID: ${id}`);
 
-    const data = await this.itemsRepository.update(id, {
-      ...updateItemDto,
-      updatedAt: new Date()
-    });
+    const updateData: UpdateItemData = { ...updateItemDto, updatedAt: new Date() };
+
+    const data = await this.itemsRepository.update(id, updateData);
 
     if (!data) {
       this.logger.warn(`Item with ID ${id} not found for update`);

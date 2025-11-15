@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '@/modules/database/database.service';
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, or, and, count } from 'drizzle-orm';
 import { itemsTable } from '../../../db/schema';
 import { IItemsRepository, CreateItemData, UpdateItemData } from '@/repositories/interfaces/items.repository.interface';
 
@@ -16,17 +16,27 @@ export class ItemsRepository implements IItemsRepository {
     return item;
   }
 
-  async findAll({ limit = 10, page = 1 }: { limit?: number, page?: number }) {
+  async findAll({ limit = 10, page = 1, userId }: { limit?: number, page?: number, userId: string }) {
     const offset = (page - 1) * limit;
+
+    const whereCondition = or(
+      eq(itemsTable.userId, userId),
+      eq(itemsTable.isPublic, false)
+    );
+
+    const [{ totalItems: totalCount }] = await this.databaseService.db
+      .select({ totalItems: count() })
+      .from(itemsTable)
+      .where(whereCondition);
 
     const items = await this.databaseService.db
       .select()
       .from(itemsTable)
+      .where(whereCondition)
       .limit(limit)
       .offset(offset)
       .orderBy(desc(itemsTable.createdAt));
 
-    const totalCount = await this.databaseService.db.$count(itemsTable)
     const totalPages = Math.ceil(totalCount / limit)
 
     return {
@@ -39,11 +49,19 @@ export class ItemsRepository implements IItemsRepository {
     };
   }
 
-  async findById(id: string) {
+  async findById(id: string, userId: string) {
+    const whereCondition = and(
+      eq(itemsTable.id, id),
+      or(
+        eq(itemsTable.userId, userId),
+        eq(itemsTable.isPublic, false)
+      )
+    );
+
     const [item] = await this.databaseService.db
       .select()
       .from(itemsTable)
-      .where(eq(itemsTable.id, id));
+      .where(whereCondition);
     return item || null;
   }
 

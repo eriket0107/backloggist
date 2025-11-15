@@ -1,4 +1,4 @@
-import { IsOptional, IsNumber } from 'class-validator';
+import { IsOptional, IsNumber, IsBoolean } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 
@@ -14,4 +14,11 @@ export class FindAllItemsDto {
   @IsNumber()
   @Transform(({ value }) => parseInt(value))
   page?: number;
+
+  @ApiProperty({ example: false, required: false })
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => parseInt(value))
+  isPublic?: boolean;
+
 }

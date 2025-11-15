@@ -37,6 +37,12 @@ export const usersSeed = async () => {
       name: "Charlie Wilson",
       email: "charlie.wilson@example.com",
       password: await passwordHandler.hashPassword("password123")
+    },
+    {
+      name: "Admin",
+      email: 'admin@admin.com',
+      password: await passwordHandler.hashPassword("admin@123"),
+      roles: ['ADMIN', 'USER']
     }
   ]
 

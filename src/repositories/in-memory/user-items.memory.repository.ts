@@ -47,9 +47,10 @@ export class UserItemsMemoryRepository implements IUserItemsRepository {
       ...ui,
       item: {
         id: ui.itemId,
+        userId: ui.userId,
         title: `Mock Item ${ui.itemId}`,
         type: 'game' as const,
-        note: 'Mock item for testing',
+        description: 'Mock item for testing',
         imgUrl: `https://example.com/image-${ui.itemId}.jpg`,
         createdAt: new Date(),
         updatedAt: new Date(),

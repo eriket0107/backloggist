@@ -92,12 +92,12 @@ export class AuthService {
     const currentDate = new Date()
 
     if (!session || session.isExpired || currentDate >= session.expiredAt) {
-      // Mark as expired if it's time-expired but not marked yet
       if (session && currentDate >= session.expiredAt && !session.isExpired) {
         await this.sessionRepository.update(session.userId, session.accessToken, {
           isExpired: true,
         })
       }
+      this.logger.error(`User: ${session.userId} must be logged in to sign out..`);
       throw new UnauthorizedException('Must be logged in to sign out.')
     }
 

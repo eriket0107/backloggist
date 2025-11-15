@@ -9,6 +9,7 @@ import {
   HttpStatus,
   UseGuards,
   Query,
+  Request,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ItemGenresService } from './item-genres.service';
@@ -29,8 +30,9 @@ export class ItemGenresController {
   @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiResponse({ status: 404, description: 'Item or Genre not found' })
   @ApiResponse({ status: 409, description: 'Item-Genre relationship already exists' })
-  create(@Body() createItemGenreDto: CreateItemGenreDto) {
-    return this.itemGenresService.create(createItemGenreDto);
+  create(@Body() createItemGenreDto: CreateItemGenreDto, @Request() request) {
+    const userId = request.user.sub;
+    return this.itemGenresService.create(createItemGenreDto, userId);
   }
 
   @Get()
