@@ -19,7 +19,7 @@ export class ItemsRepository implements IItemsRepository {
   async findAll({ limit = 10, page = 1, userId }: { limit?: number, page?: number, userId: string }) {
     const offset = (page - 1) * limit;
 
-    const whereCondition = or(
+    const whereCondition = and(
       eq(itemsTable.userId, userId),
       eq(itemsTable.isPublic, false)
     );
