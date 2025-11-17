@@ -18,7 +18,7 @@ export class FindAllItemsDto {
   @ApiProperty({ example: false, required: false })
   @IsOptional()
   @IsBoolean()
-  @Transform(({ value }) => parseInt(value))
+  @Transform(({ value }) => Boolean(value))
   isPublic?: boolean;
 
 }
