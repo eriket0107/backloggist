@@ -37,15 +37,16 @@ export class ItemsRepository implements IItemsRepository {
       .offset(offset)
       .orderBy(desc(itemsTable.createdAt));
 
-    const totalPages = Math.ceil(totalCount / limit)
+    const totalPages = Math.ceil(totalCount / limit);
+    const currentPage = totalCount === 0 ? 1 : Math.min(page, totalPages);
 
     return {
       data: items,
       totalItems: totalCount,
-      totalPages,
-      currentPage: page,
-      isFirstPage: page === 1,
-      isLastPage: page >= totalPages,
+      totalPages: Math.max(totalPages, 1),
+      currentPage,
+      isFirstPage: currentPage === 1,
+      isLastPage: currentPage === Math.max(totalPages, 1),
     };
   }
 
