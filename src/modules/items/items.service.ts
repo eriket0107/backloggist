@@ -129,10 +129,12 @@ export class ItemsService {
         }
       });
 
-      worker.on('message', async ({ success, filePath, error }) => {
+      worker.on('message', async ({ success, error }) => {
         if (success) {
           this.logger.info(`Image processed successfully for item: ${id}`);
           try {
+
+            const filePath = `/${path.join('uploads', fileName)}`;
             await this.itemsRepository.update(id, {
               imgUrl: filePath
             });
