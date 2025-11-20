@@ -36,9 +36,14 @@ export class ItemsController {
   @ApiOperation({ summary: 'Create a new item' })
   @ApiResponse({ status: 201, description: 'Item created successfully' })
   @ApiResponse({ status: 400, description: 'Bad request' })
-  create(@Body() createItemDto: CreateItemDto, @Request() request) {
+  @UseInterceptors(FileInterceptor('file'))
+  async create(@Body() createItemDto: CreateItemDto, @Request() request, @UploadedFile() file: Express.Multer.File) {
     const userId = request.user.sub;
-    return this.itemsService.create(createItemDto, userId);
+
+    const data = await this.itemsService.create(createItemDto, userId);
+    if (file) await this.itemsService.saveImg(data.data.id, file)
+
+    return data;
   }
 
   @Get()

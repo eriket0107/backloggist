@@ -38,7 +38,7 @@ export class ItemsRepository implements IItemsRepository {
       .limit(limit)
       .orderBy(desc(itemsTable.createdAt))
 
-    const totalPages = Math.ceil(totalCount / limit); ``
+    const totalPages = Math.ceil(totalCount / limit);
     const currentPage = totalCount === 0 ? 1 : Math.min(page, totalPages);
 
     return {
