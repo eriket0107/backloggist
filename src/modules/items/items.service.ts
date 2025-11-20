@@ -32,9 +32,9 @@ export class ItemsService {
     return { data };
   }
 
-  async findAll({ limit = 10, page = 1, userId }: { limit?: number, page?: number, userId: string } = { limit: 10, page: 1, userId: '' }) {
+  async findAll({ limit = 10, page = 1, userId, searchTerm = '' }: { limit?: number, page?: number, userId: string, searchTerm?: string } = { limit: 10, page: 1, userId: '', searchTerm: '' }) {
     this.logger.info(`Fetching items for user ${userId}`);
-    const data = await this.itemsRepository.findAll({ limit, page, userId });
+    const data = await this.itemsRepository.findAll({ limit, page, userId, searchTerm });
 
     this.logger.info(`Found ${data.totalItems} items`);
 

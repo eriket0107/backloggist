@@ -1,4 +1,4 @@
-import { IsOptional, IsNumber, IsBoolean } from 'class-validator';
+import { IsOptional, IsNumber, IsBoolean, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 
@@ -21,4 +21,8 @@ export class FindAllItemsDto {
   @Transform(({ value }) => Boolean(value))
   isPublic?: boolean;
 
+  @ApiProperty({ example: false, required: false })
+  @IsOptional()
+  @IsString()
+  searchTerm?: string;
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '@/modules/database/database.service';
-import { desc, eq, or, and, count } from 'drizzle-orm';
+import { desc, eq, or, and, count, ilike } from 'drizzle-orm';
 import { itemsTable } from '../../../db/schema';
 import { IItemsRepository, CreateItemData, UpdateItemData } from '@/repositories/interfaces/items.repository.interface';
 
@@ -16,12 +16,13 @@ export class ItemsRepository implements IItemsRepository {
     return item;
   }
 
-  async findAll({ limit = 10, page = 1, userId }: { limit?: number, page?: number, userId: string }) {
+  async findAll({ limit = 10, page = 1, userId, searchTerm }: { limit?: number, page?: number, userId: string, searchTerm?: string }) {
     const offset = (page - 1) * limit;
 
     const whereCondition = and(
       eq(itemsTable.userId, userId),
-      eq(itemsTable.isPublic, false)
+      eq(itemsTable.isPublic, false),
+      ...searchTerm ? [ilike(itemsTable.title, `%${searchTerm}%`)] : []
     );
 
     const [{ totalItems: totalCount }] = await this.databaseService.db
@@ -33,11 +34,11 @@ export class ItemsRepository implements IItemsRepository {
       .select()
       .from(itemsTable)
       .where(whereCondition)
-      .limit(limit)
       .offset(offset)
-      .orderBy(desc(itemsTable.createdAt));
+      .limit(limit)
+      .orderBy(desc(itemsTable.createdAt))
 
-    const totalPages = Math.ceil(totalCount / limit);
+    const totalPages = Math.ceil(totalCount / limit); ``
     const currentPage = totalCount === 0 ? 1 : Math.min(page, totalPages);
 
     return {
