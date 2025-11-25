@@ -9,6 +9,11 @@ export class PasswordHandler {
     password: string,
     passwordToCompare: string,
   ): Promise<boolean> {
+
     return await bcryptjs.compare(password, passwordToCompare);
+  }
+
+  decodePassword(encodedPassword: string): string {
+    return Buffer.from(encodedPassword, 'base64').toString('utf-8');
   }
 }

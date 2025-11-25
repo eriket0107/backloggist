@@ -23,7 +23,6 @@ export class AuthService {
 
   async signIn(email: string, pass: string): Promise<{ accessToken: string }> {
     this.logger.info('Attempting sign in', { email });
-
     const { data: user } = await this.usersService.findByEmail(email);
     if (!user) {
       this.logger.warn('Sign in failed - user not found', { email });
@@ -37,7 +36,10 @@ export class AuthService {
       throw new UnauthorizedException('Missing loggin information.');
     }
 
-    const comparePassword = await this.passwordHandler.comparePassword(pass, user.password)
+    this.logger.info('User found, decodeding Password',);
+    const decodedPassword = this.passwordHandler.decodePassword(pass);
+
+    const comparePassword = await this.passwordHandler.comparePassword(decodedPassword, user.password)
 
     if (!comparePassword) {
       this.logger.warn('Sign in failed - invalid password', { email });
