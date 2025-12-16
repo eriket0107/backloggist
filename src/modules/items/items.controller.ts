@@ -73,9 +73,20 @@ export class ItemsController {
   @UseInterceptors(FileInterceptor('file'))
   async update(@Param('id') id: string, @Body() updateItemDto: UpdateItemDto, @UploadedFile() file: Express.Multer.File) {
 
-    if (file) await this.itemsService.saveImg(id, file)
+    const updatedItem = await this.itemsService.update(id, updateItemDto);
 
-    return this.itemsService.update(id, updateItemDto);
+
+    if (file) {
+      try {
+        await this.itemsService.saveImg(id, file);
+      } catch (error) {
+        // Opcional: reverter a atualização ou marcar item como "incomplete"
+        this.logger.error(`Failed to save image for item ${id}`, error);
+        throw new InternalServerErrorException('Failed to update item with image');
+      }
+    }
+
+    return updatedItem;
   }
 
   @Get(':id/img')

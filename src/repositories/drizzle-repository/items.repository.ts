@@ -22,7 +22,7 @@ export class ItemsRepository implements IItemsRepository {
     const whereCondition = and(
       eq(itemsTable.userId, userId),
       eq(itemsTable.isPublic, false),
-      ...searchTerm ? [ilike(itemsTable.title, `%${searchTerm}%`)] : []
+      ...searchTerm ? [ilike(itemsTable.title, `${searchTerm}%`)] : []
     );
 
     const [{ totalItems: totalCount }] = await this.databaseService.db
