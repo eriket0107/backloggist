@@ -14,6 +14,7 @@ import {
   UseInterceptors,
   UploadedFile,
   Res,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ItemsService } from './items.service';
@@ -79,13 +80,10 @@ export class ItemsController {
     if (file) {
       try {
         await this.itemsService.saveImg(id, file);
-      } catch (error) {
-        // Opcional: reverter a atualização ou marcar item como "incomplete"
-        this.logger.error(`Failed to save image for item ${id}`, error);
+      } catch {
         throw new InternalServerErrorException('Failed to update item with image');
       }
     }
-
     return updatedItem;
   }
 
