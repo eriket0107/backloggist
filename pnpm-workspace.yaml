@@ -1,0 +1,8 @@
+allowBuilds:
+  '@nestjs/core': false
+  '@scarf/scarf': false
+  bcrypt: false
+  esbuild: false
+  sharp: false
+  sqlite3: false
+  unrs-resolver: false
