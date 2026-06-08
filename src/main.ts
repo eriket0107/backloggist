@@ -3,7 +3,8 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import * as cookieParser from 'cookie-parser';
+import cookieParser from 'cookie-parser';
+import { env } from '@/env';
 
 
 async function bootstrap() {
@@ -36,6 +37,9 @@ async function bootstrap() {
   const port = process.env.PORT || 3000;
   await app.listen(port, '0.0.0.0');
   console.log(`Application is running on: http://localhost:${port}`);
+  if (env.NODE_ENV !== "prod") {
+    console.log("DATABASE_URL", env.DATABASE_URL);
+  }
 }
 
 bootstrap();
