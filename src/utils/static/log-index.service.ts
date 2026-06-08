@@ -10,6 +10,7 @@ export class LogIndexService {
 
   async generateLogIndex(): Promise<void> {
     try {
+      await fs.mkdir(this.logsPath, { recursive: true });
       const files = await fs.readdir(this.logsPath);
 
       const logFiles = files.filter(file =>
