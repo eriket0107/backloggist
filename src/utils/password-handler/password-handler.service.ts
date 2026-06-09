@@ -5,11 +5,7 @@ export class PasswordHandler {
     return await bcryptjs.hash(password, salt);
   }
 
-  async comparePassword(
-    password: string,
-    passwordToCompare: string,
-  ): Promise<boolean> {
-
+  async comparePassword(password: string, passwordToCompare: string): Promise<boolean> {
     return await bcryptjs.compare(password, passwordToCompare);
   }
 

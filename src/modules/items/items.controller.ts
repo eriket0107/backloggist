@@ -38,11 +38,15 @@ export class ItemsController {
   @ApiResponse({ status: 201, description: 'Item created successfully' })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @UseInterceptors(FileInterceptor('file'))
-  async create(@Body() createItemDto: CreateItemDto, @Request() request, @UploadedFile() file: Express.Multer.File) {
+  async create(
+    @Body() createItemDto: CreateItemDto,
+    @Request() request,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
     const userId = request.user.sub;
 
     const data = await this.itemsService.create(createItemDto, userId);
-    if (file) await this.itemsService.saveImg(data.data.id, file)
+    if (file) await this.itemsService.saveImg(data.data.id, file);
 
     return data;
   }
@@ -72,10 +76,12 @@ export class ItemsController {
   @ApiResponse({ status: 200, description: 'Item updated successfully' })
   @ApiResponse({ status: 404, description: 'Item not found' })
   @UseInterceptors(FileInterceptor('file'))
-  async update(@Param('id') id: string, @Body() updateItemDto: UpdateItemDto, @UploadedFile() file: Express.Multer.File) {
-
+  async update(
+    @Param('id') id: string,
+    @Body() updateItemDto: UpdateItemDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
     const updatedItem = await this.itemsService.update(id, updateItemDto);
-
 
     if (file) {
       try {

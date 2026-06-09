@@ -19,7 +19,17 @@ export interface UpdateItemData {
 
 export interface IItemsRepository {
   create(itemData: CreateItemData): Promise<Item>;
-  findAll({ limit, page, userId, searchTerm }: { limit?: number, page?: number, userId: string, searchTerm: string }): Promise<PaginatedResult<Item>>;
+  findAll({
+    limit,
+    page,
+    userId,
+    searchTerm,
+  }: {
+    limit?: number;
+    page?: number;
+    userId: string;
+    searchTerm: string;
+  }): Promise<PaginatedResult<Item>>;
   findById(id: string, userId: string): Promise<Item | null>;
   update(id: string, itemData: UpdateItemData): Promise<Item | null>;
   delete(id: string): Promise<Item | null>;

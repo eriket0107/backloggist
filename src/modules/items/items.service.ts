@@ -41,7 +41,19 @@ export class ItemsService {
     return { data };
   }
 
-  async findAll({ limit = 10, page = 1, userId, searchTerm = '' }: { limit?: number, page?: number, userId: string, searchTerm?: string } = { limit: 10, page: 1, userId: '', searchTerm: '' }) {
+  async findAll(
+    {
+      limit = 10,
+      page = 1,
+      userId,
+      searchTerm = '',
+    }: { limit?: number; page?: number; userId: string; searchTerm?: string } = {
+      limit: 10,
+      page: 1,
+      userId: '',
+      searchTerm: '',
+    },
+  ) {
     this.logger.info(`Fetching items for user ${userId}`);
     const data = await this.itemsRepository.findAll({ limit, page, userId, searchTerm });
 
@@ -110,7 +122,7 @@ export class ItemsService {
       if (!existsSync(pathUpload)) {
         this.logger.info('Creating uploads directory');
         await mkdir(pathUpload, {
-          recursive: true
+          recursive: true,
         });
       }
 
@@ -135,8 +147,8 @@ export class ItemsService {
           workerData: {
             fileBuffer: file.buffer,
             filePath,
-            quality: 80
-          }
+            quality: 80,
+          },
         });
 
         worker.on('message', async ({ success, error }) => {
@@ -145,7 +157,7 @@ export class ItemsService {
             try {
               const filePath = `/${path.join('uploads', fileName)}`;
               await this.itemsRepository.update(id, {
-                imgUrl: filePath
+                imgUrl: filePath,
               });
               this.logger.info(`Database updated with image URL for item: ${id}`);
               resolve({ fileName, filePath });

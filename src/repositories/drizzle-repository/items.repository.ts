@@ -17,13 +17,23 @@ export class ItemsRepository implements IItemsRepository {
     return item;
   }
 
-  async findAll({ limit = 10, page = 1, userId, searchTerm }: { limit?: number, page?: number, userId: string, searchTerm?: string }) {
+  async findAll({
+    limit = 10,
+    page = 1,
+    userId,
+    searchTerm,
+  }: {
+    limit?: number;
+    page?: number;
+    userId: string;
+    searchTerm?: string;
+  }) {
     const offset = (page - 1) * limit;
 
     const whereCondition = and(
       eq(itemsTable.userId, userId),
       eq(itemsTable.isPublic, false),
-      ...searchTerm ? [ilike(itemsTable.title, `${searchTerm}%`)] : []
+      ...(searchTerm ? [ilike(itemsTable.title, `${searchTerm}%`)] : []),
     );
 
     const [{ totalItems: totalCount }] = await this.databaseService.db
@@ -37,7 +47,7 @@ export class ItemsRepository implements IItemsRepository {
       .where(whereCondition)
       .offset(offset)
       .limit(limit)
-      .orderBy(desc(itemsTable.createdAt))
+      .orderBy(desc(itemsTable.createdAt));
 
     const totalPages = Math.ceil(totalCount / limit);
     const currentPage = totalCount === 0 ? 1 : Math.min(page, totalPages);
