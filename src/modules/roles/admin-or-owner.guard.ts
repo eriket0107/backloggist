@@ -9,7 +9,7 @@ export class AdminOrOwnerGuard implements CanActivate {
 
     const userId = user?.sub || user?.user?.id;
     const userRoles: Role[] = user?.user?.roles || user?.roles || [];
-    console.log(userRoles)
+    console.log(userRoles);
     if (userRoles.includes('ADMIN')) {
       return true;
     }
@@ -22,4 +22,3 @@ export class AdminOrOwnerGuard implements CanActivate {
     return true;
   }
 }
-

@@ -1,6 +1,7 @@
 import { NotFoundException } from '@nestjs/common';
 import { ItemsService } from '@/modules/items/items.service';
 import { LoggerService } from '@/utils/logger/logger.service';
+import { ErrorHandlerService } from '@/utils/error-handler/error-handler.service';
 import { ItemsMemoryRepository } from '@/repositories/in-memory/items.memory.repository';
 import { CreateItemDto } from '@/modules/items/dto/create-item.dto';
 import { UpdateItemDto } from '@/modules/items/dto/update-item.dto';
@@ -10,7 +11,7 @@ describe('ItemsService', () => {
   let service: ItemsService;
   let repository: ItemsMemoryRepository;
   let mockLoggerService: jest.Mocked<LoggerService>;
-  let mockLogger: { info: jest.Mock; warn: jest.Mock; error: jest.Mock; };
+  let mockLogger: { info: jest.Mock; warn: jest.Mock; error: jest.Mock };
 
   const mockUserId = 'user-1';
 
@@ -39,7 +40,9 @@ describe('ItemsService', () => {
       createEntityLogger: jest.fn().mockReturnValue(mockLogger),
     } as unknown as jest.Mocked<LoggerService>;
 
-    service = new ItemsService(repository, mockLoggerService);
+    const errorHandler = new ErrorHandlerService();
+
+    service = new ItemsService(repository, mockLoggerService, errorHandler);
   });
 
   afterEach(() => {
@@ -96,8 +99,13 @@ describe('ItemsService', () => {
     });
 
     it('should test all valid item types', async () => {
-      const types: ('game' | 'book' | 'serie' | 'movie' | 'course')[] =
-        ['game', 'book', 'serie', 'movie', 'course'];
+      const types: ('game' | 'book' | 'serie' | 'movie' | 'course')[] = [
+        'game',
+        'book',
+        'serie',
+        'movie',
+        'course',
+      ];
 
       for (const type of types) {
         const dto = { ...mockCreateItemDto, title: `Test ${type}`, type };
@@ -144,7 +152,11 @@ describe('ItemsService', () => {
         await service.create({ ...mockCreateItemDto, title: `Item ${i}` }, mockUserId);
       }
 
-      const result = await service.findAll({ limit: 2, page: 2, userId: mockUserId });
+      const result = await service.findAll({
+        limit: 2,
+        page: 2,
+        userId: mockUserId,
+      });
 
       expect(result.data).toHaveLength(2);
       expect(result.totalItems).toBe(5);
@@ -159,7 +171,11 @@ describe('ItemsService', () => {
         await service.create({ ...mockCreateItemDto, title: `Item ${i}` }, mockUserId);
       }
 
-      const result = await service.findAll({ limit: 2, page: 2, userId: mockUserId });
+      const result = await service.findAll({
+        limit: 2,
+        page: 2,
+        userId: mockUserId,
+      });
 
       expect(result.data).toHaveLength(1);
       expect(result.currentPage).toBe(2);
@@ -220,7 +236,10 @@ describe('ItemsService', () => {
     });
 
     it('should handle clearing optional fields', async () => {
-      const clearUpdate: UpdateItemDto = { description: undefined, imgUrl: undefined };
+      const clearUpdate: UpdateItemDto = {
+        description: undefined,
+        imgUrl: undefined,
+      };
 
       const result = await service.update('1', clearUpdate);
 
@@ -271,9 +290,9 @@ describe('ItemsService', () => {
 
       const allItems = await repository.findAll({ userId: mockUserId });
       expect(allItems.data).toHaveLength(2);
-      expect(allItems.data.find(i => i.id === '1')).toBeDefined();
-      expect(allItems.data.find(i => i.id === '2')).toBeUndefined();
-      expect(allItems.data.find(i => i.id === '3')).toBeDefined();
+      expect(allItems.data.find((i) => i.id === '1')).toBeDefined();
+      expect(allItems.data.find((i) => i.id === '2')).toBeUndefined();
+      expect(allItems.data.find((i) => i.id === '3')).toBeDefined();
     });
   });
 
@@ -357,7 +376,11 @@ describe('ItemsService', () => {
 
     it('should handle pagination edge cases', async () => {
       // Test page beyond available data
-      const result = await service.findAll({ limit: 10, page: 999, userId: mockUserId });
+      const result = await service.findAll({
+        limit: 10,
+        page: 999,
+        userId: mockUserId,
+      });
       expect(result.data).toHaveLength(0);
       expect(result.currentPage).toBe(999);
       expect(result.isLastPage).toBe(true);
@@ -366,7 +389,11 @@ describe('ItemsService', () => {
     it('should handle very large pagination limits', async () => {
       await service.create(mockCreateItemDto, mockUserId);
 
-      const result = await service.findAll({ limit: 1000, page: 1, userId: mockUserId });
+      const result = await service.findAll({
+        limit: 1000,
+        page: 1,
+        userId: mockUserId,
+      });
       expect(result.data).toHaveLength(1);
       expect(result.totalPages).toBe(1);
       expect(result.isLastPage).toBe(true);

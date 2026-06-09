@@ -23,7 +23,7 @@ export class UserItemsService {
     const data = await this.userItemsRepository.create({
       userId,
       itemId: addToBacklogDto.itemId,
-      status: addToBacklogDto.status || 'pending' as 'completed' | 'in_progress' | 'pending',
+      status: addToBacklogDto.status || ('pending' as 'completed' | 'in_progress' | 'pending'),
       addedAt: new Date(),
     });
 
@@ -31,10 +31,28 @@ export class UserItemsService {
     return { data };
   }
 
-  async getUserBacklog({ userId, page, type, limit, search }: { userId: string, page: number, limit: number, type?: Item['type'], search?: string }) {
+  async getUserBacklog({
+    userId,
+    page,
+    type,
+    limit,
+    search,
+  }: {
+    userId: string;
+    page: number;
+    limit: number;
+    type?: Item['type'];
+    search?: string;
+  }) {
     this.logger.info(`Fetching backlog for user ${userId}`);
 
-    const data = await this.userItemsRepository.findByBacklogByUser({ userId, page, limit, type, search });
+    const data = await this.userItemsRepository.findByBacklogByUser({
+      userId,
+      page,
+      limit,
+      type,
+      search,
+    });
 
     this.logger.info(`Found ${data.data.length} items in user backlog`);
     return { ...data };
@@ -43,11 +61,7 @@ export class UserItemsService {
   async updateUserItem(userId: string, id: string, updateUserItemDto: UpdateUserItemDto) {
     this.logger.info(`Updating user item for user ${userId}, item ${id}`);
 
-    const data = await this.userItemsRepository.updateByUserAndItem(
-      userId,
-      id,
-      updateUserItemDto
-    );
+    const data = await this.userItemsRepository.updateByUserAndItem(userId, id, updateUserItemDto);
 
     if (!data) {
       this.logger.warn(`User item not found for user ${userId}, item ${id}`);

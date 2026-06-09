@@ -4,21 +4,25 @@ export interface CreateSessionData {
   userId: string;
   accessToken: string;
   isExpired?: boolean;
-  expiredAt?: Date
+  expiredAt?: Date;
 }
 
 export interface UpdateSessionData {
   accessToken?: string;
   isExpired?: boolean;
-  expiredAt?: Date
+  expiredAt?: Date;
 }
 
 export interface ISessionsRepository {
   create(sessionData: CreateSessionData): Promise<Session>;
   findByAccessToken(id: string, isExpired?: boolean): Promise<Session | null>;
   findByUserId(userId: string): Promise<Session | null>;
-  update(userId: string, accessToken: string, sessionData: UpdateSessionData): Promise<Session | null>;
-  expireToken(accessToken: string): Promise<void>
+  update(
+    userId: string,
+    accessToken: string,
+    sessionData: UpdateSessionData,
+  ): Promise<Session | null>;
+  expireToken(accessToken: string): Promise<void>;
   delete(id: string): Promise<Session | null>;
   deleteByUserId(userId: string): Promise<Session | null>;
 }

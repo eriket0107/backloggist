@@ -1,10 +1,16 @@
-import { Inject, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { LoggerService } from '../../utils/logger/logger.service';
 import { PasswordHandler } from '@/utils/password-handler/password-handler.service';
 import { ISessionsRepository } from '@/repositories/interfaces/sessions.repository.interface';
 import { addOneDay } from '@/helpers/add-one-day';
+import { ErrorHandlerService } from '@/utils/error-handler/error-handler.service';
 
 @Injectable()
 export class AuthService {
@@ -17,8 +23,13 @@ export class AuthService {
     private passwordHandler: PasswordHandler,
     private jwtService: JwtService,
     private loggerService: LoggerService,
+    private errorHandler: ErrorHandlerService,
   ) {
-    this.logger = this.loggerService.createEntityLogger('Auth')
+    this.logger = this.loggerService.createEntityLogger('Auth');
+  }
+
+  private getErrorMessage(error: unknown): string {
+    return this.errorHandler.getMessage(error);
   }
 
   async signIn(email: string, pass: string): Promise<{ accessToken: string }> {
@@ -30,75 +41,79 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    this.logger.info('User found, checking password', { userId: user.id, hasPassword: !!user.password });
+    this.logger.info('User found, checking password', {
+      userId: user.id,
+      hasPassword: !!user.password,
+    });
 
     if (!user.password) {
       this.logger.error('Password is missing', { userId: user.id });
       throw new UnauthorizedException('Missing loggin information.');
     }
 
-    const comparePassword = await this.passwordHandler.comparePassword(pass, user.password)
+    const comparePassword = await this.passwordHandler.comparePassword(pass, user.password);
 
     if (!comparePassword) {
       this.logger.warn('Sign in failed - invalid password', { email });
       throw new UnauthorizedException();
     }
 
-    delete user.password
-    const payload = { sub: user.id, user }
+    delete user.password;
+    const payload = { sub: user.id, user };
 
     this.logger.info('Generating JWT token', { userId: user.id });
 
-    let accessToken: string
+    let accessToken: string;
 
     this.logger.info('Creating session', { userId: user.id });
 
-    const session = await this.sessionRepository.findByUserId(user.id)
-    const currentDate = new Date()
-    const isTimeExpired = session ? currentDate >= session.expiredAt : false
+    const session = await this.sessionRepository.findByUserId(user.id);
+    const currentDate = new Date();
+    const isTimeExpired = session ? currentDate >= session.expiredAt : false;
 
     if (!session || session.isExpired || isTimeExpired) {
-      this.logger.info('No valid session found, creating new token and session', { userId: user.id });
+      this.logger.info('No valid session found, creating new token and session', {
+        userId: user.id,
+      });
 
       if (session && isTimeExpired && !session.isExpired) {
         await this.sessionRepository.update(session.userId, session.accessToken, {
           isExpired: true,
-        })
+        });
       }
 
-      accessToken = await this.jwtService.signAsync(payload)
+      accessToken = await this.jwtService.signAsync(payload);
       await this.sessionRepository.create({
         accessToken,
         userId: user.id,
-        expiredAt: addOneDay(new Date())
-      })
+        expiredAt: addOneDay(new Date()),
+      });
     } else {
       this.logger.info('Getting existing session token', { userId: user.id });
-      accessToken = session.accessToken
+      accessToken = session.accessToken;
     }
-
 
     this.logger.info('Sign in successful', { userId: user.id });
     this.logger.info(`Authentication successful for user: ${user.id}`);
     return {
-      accessToken
+      accessToken,
     };
   }
 
   async signOut(accessToken: string) {
-    if (!accessToken) throw new UnauthorizedException('Missing token.')
+    if (!accessToken) throw new UnauthorizedException('Missing token.');
 
     const session = await this.sessionRepository.findByAccessToken(accessToken);
-    const currentDate = new Date()
+    const currentDate = new Date();
 
     if (!session || session.isExpired || currentDate >= session.expiredAt) {
       if (session && currentDate >= session.expiredAt && !session.isExpired) {
         await this.sessionRepository.update(session.userId, session.accessToken, {
           isExpired: true,
-        })
+        });
       }
       this.logger.error(`User: ${session.userId} must be logged in to sign out..`);
-      throw new UnauthorizedException('Must be logged in to sign out.')
+      throw new UnauthorizedException('Must be logged in to sign out.');
     }
 
     this.logger.info(`User: ${session.userId} attempting sign out.`);
@@ -107,13 +122,14 @@ export class AuthService {
       this.logger.info(`Starting signing out.`);
       await this.sessionRepository.update(session.userId, session.accessToken, {
         isExpired: true,
-        expiredAt: new Date()
-      })
+        expiredAt: new Date(),
+      });
       this.logger.info(`Finished signing out.`);
-      return true
+      return true;
     } catch (error) {
-      this.logger.error(`Error signing out.`, error);
-      throw new InternalServerErrorException('Failed to sign out user')
+      const errorMessage = this.getErrorMessage(error);
+      this.logger.error(`Error signing out: ${errorMessage}`);
+      throw new InternalServerErrorException('Failed to sign out user');
     }
   }
 }

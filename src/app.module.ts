@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { LoggerModule } from './utils/logger/logger.module';
+import { ErrorHandlerModule } from './utils/error-handler/error-handler.module';
 import { DatabaseModule } from './modules/database/database.module';
 import { RepositoryConfigModule } from './modules/repository-config/repository-config.module';
 import { UsersModule } from './modules/users/users.module';
@@ -17,6 +18,7 @@ import { StaticModule } from './utils/static/static.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    ErrorHandlerModule,
     LoggerModule,
     DatabaseModule,
     RepositoryConfigModule,
@@ -30,4 +32,4 @@ import { StaticModule } from './utils/static/static.module';
     StaticModule,
   ],
 })
-export class AppModule { }
+export class AppModule {}

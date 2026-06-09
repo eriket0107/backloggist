@@ -10,7 +10,7 @@ describe('GenresService', () => {
   let service: GenresService;
   let repository: GenresMemoryRepository;
   let mockLoggerService: jest.Mocked<LoggerService>;
-  let mockLogger: { info: jest.Mock; warn: jest.Mock; error: jest.Mock; };
+  let mockLogger: { info: jest.Mock; warn: jest.Mock; error: jest.Mock };
 
   const mockCreateGenreDto: CreateGenreDto = {
     name: 'Action',
@@ -63,7 +63,7 @@ describe('GenresService', () => {
 
       await expect(service.create(mockCreateGenreDto)).rejects.toThrow(ConflictException);
       expect(mockLogger.warn).toHaveBeenCalledWith(
-        `Genre with name '${mockCreateGenreDto.name}' already exists`
+        `Genre with name '${mockCreateGenreDto.name}' already exists`,
       );
 
       const allGenres = await repository.findAll({ search: '' });
@@ -76,7 +76,7 @@ describe('GenresService', () => {
       const upperCaseDto = { name: mockCreateGenreDto.name.toUpperCase() };
       await expect(service.create(upperCaseDto)).rejects.toThrow(ConflictException);
       expect(mockLogger.warn).toHaveBeenCalledWith(
-        `Genre with name '${upperCaseDto.name}' already exists`
+        `Genre with name '${upperCaseDto.name}' already exists`,
       );
     });
 
@@ -92,8 +92,8 @@ describe('GenresService', () => {
 
       const allGenres = await repository.findAll({ search: '' });
       expect(allGenres.data).toHaveLength(2);
-      expect(allGenres.data.find(g => g.name === 'Action')).toBeDefined();
-      expect(allGenres.data.find(g => g.name === 'Comedy')).toBeDefined();
+      expect(allGenres.data.find((g) => g.name === 'Action')).toBeDefined();
+      expect(allGenres.data.find((g) => g.name === 'Comedy')).toBeDefined();
     });
 
     it('should log creation process correctly', async () => {
@@ -177,7 +177,9 @@ describe('GenresService', () => {
     it('should use default pagination values when not provided', async () => {
       // Create 15 genres to test default limit
       for (let i = 1; i <= 15; i++) {
-        await service.create({ name: `Genre ${i.toString().padStart(2, '0')}` });
+        await service.create({
+          name: `Genre ${i.toString().padStart(2, '0')}`,
+        });
       }
 
       const result = await service.findAll();
@@ -230,7 +232,11 @@ describe('GenresService', () => {
       await service.create({ name: 'Action-Comedy' });
       await service.create({ name: 'Comedy' });
 
-      const result = await service.findAll({ search: 'Action', limit: 2, page: 1 });
+      const result = await service.findAll({
+        search: 'Action',
+        limit: 2,
+        page: 1,
+      });
 
       expect(result.data).toHaveLength(2);
       expect(result.totalItems).toBe(3);
@@ -289,7 +295,7 @@ describe('GenresService', () => {
 
     it('should update genre successfully', async () => {
       // Add a small delay to ensure different timestamps
-      await new Promise(resolve => setTimeout(resolve, 1));
+      await new Promise((resolve) => setTimeout(resolve, 1));
 
       const result = await service.update('1', mockUpdateGenreDto);
 
@@ -299,16 +305,16 @@ describe('GenresService', () => {
 
       const updatedGenre = await repository.findById('1');
       expect(updatedGenre!.name).toBe(mockUpdateGenreDto.name);
-      expect(updatedGenre!.updatedAt.getTime()).toBeGreaterThanOrEqual(updatedGenre!.createdAt.getTime());
+      expect(updatedGenre!.updatedAt.getTime()).toBeGreaterThanOrEqual(
+        updatedGenre!.createdAt.getTime(),
+      );
     });
 
     it('should throw ConflictException when updating to existing genre name', async () => {
       await service.create({ name: 'Comedy' });
 
       await expect(service.update('1', { name: 'Comedy' })).rejects.toThrow(ConflictException);
-      expect(mockLogger.warn).toHaveBeenCalledWith(
-        "Genre with name 'Comedy' already exists"
-      );
+      expect(mockLogger.warn).toHaveBeenCalledWith("Genre with name 'Comedy' already exists");
 
       // Original genre should remain unchanged
       const originalGenre = await repository.findById('1');
@@ -316,7 +322,9 @@ describe('GenresService', () => {
     });
 
     it('should allow updating genre with same name (no change)', async () => {
-      const result = await service.update('1', { name: mockCreateGenreDto.name });
+      const result = await service.update('1', {
+        name: mockCreateGenreDto.name,
+      });
 
       expect(result.data).toBeDefined();
       expect(result.data!.name).toBe(mockCreateGenreDto.name);
@@ -327,9 +335,7 @@ describe('GenresService', () => {
       await service.create({ name: 'Comedy' });
 
       await expect(service.update('1', { name: 'COMEDY' })).rejects.toThrow(ConflictException);
-      expect(mockLogger.warn).toHaveBeenCalledWith(
-        "Genre with name 'COMEDY' already exists"
-      );
+      expect(mockLogger.warn).toHaveBeenCalledWith("Genre with name 'COMEDY' already exists");
     });
 
     it('should update with undefined name (no change)', async () => {
@@ -388,9 +394,9 @@ describe('GenresService', () => {
 
       const allGenres = await repository.findAll({ search: '' });
       expect(allGenres.data).toHaveLength(2);
-      expect(allGenres.data.find(g => g.id === '1')).toBeDefined();
-      expect(allGenres.data.find(g => g.id === '2')).toBeUndefined();
-      expect(allGenres.data.find(g => g.id === '3')).toBeDefined();
+      expect(allGenres.data.find((g) => g.id === '1')).toBeDefined();
+      expect(allGenres.data.find((g) => g.id === '2')).toBeUndefined();
+      expect(allGenres.data.find((g) => g.id === '3')).toBeDefined();
     });
 
     it('should log deletion process correctly', async () => {
@@ -426,7 +432,11 @@ describe('GenresService', () => {
       const genre2Promise = service.create({ name: 'Comedy' });
       const genre3Promise = service.create({ name: 'Drama' });
 
-      const [genre1, genre2, genre3] = await Promise.all([genre1Promise, genre2Promise, genre3Promise]);
+      const [genre1, genre2, genre3] = await Promise.all([
+        genre1Promise,
+        genre2Promise,
+        genre3Promise,
+      ]);
 
       expect(genre1.data.id).toBe('1');
       expect(genre2.data.id).toBe('2');
@@ -461,8 +471,8 @@ describe('GenresService', () => {
       expect(allGenres.data).toHaveLength(2);
 
       // Find genres by their updated names (sorted alphabetically)
-      const actionGenre = allGenres.data.find(g => g.name === 'Action');
-      const comedyGenre = allGenres.data.find(g => g.name === 'Romantic Comedy');
+      const actionGenre = allGenres.data.find((g) => g.name === 'Action');
+      const comedyGenre = allGenres.data.find((g) => g.name === 'Romantic Comedy');
 
       expect(actionGenre).toBeDefined();
       expect(comedyGenre).toBeDefined();

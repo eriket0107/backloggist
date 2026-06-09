@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { ItemGenre, ItemGenreWithDetails, Genre } from '@/types/entities';
-import { IItemGenresRepository, CreateItemGenreData } from '@/repositories/interfaces/item-genres.repository.interface';
+import {
+  IItemGenresRepository,
+  CreateItemGenreData,
+} from '@/repositories/interfaces/item-genres.repository.interface';
 
 @Injectable()
 export class ItemGenresMemoryRepository implements IItemGenresRepository {
@@ -20,15 +23,25 @@ export class ItemGenresMemoryRepository implements IItemGenresRepository {
     return itemGenre;
   }
 
-  async findAll({ limit = 10, page = 1, itemId, genreId }: { limit?: number, page?: number, itemId?: string, genreId?: string }) {
+  async findAll({
+    limit = 10,
+    page = 1,
+    itemId,
+    genreId,
+  }: {
+    limit?: number;
+    page?: number;
+    itemId?: string;
+    genreId?: string;
+  }) {
     let filteredItemGenres = this.itemGenres;
 
     if (itemId) {
-      filteredItemGenres = filteredItemGenres.filter(itemGenre => itemGenre.itemId === itemId);
+      filteredItemGenres = filteredItemGenres.filter((itemGenre) => itemGenre.itemId === itemId);
     }
 
     if (genreId) {
-      filteredItemGenres = filteredItemGenres.filter(itemGenre => itemGenre.genreId === genreId);
+      filteredItemGenres = filteredItemGenres.filter((itemGenre) => itemGenre.genreId === genreId);
     }
 
     const offset = (page - 1) * limit;
@@ -48,14 +61,14 @@ export class ItemGenresMemoryRepository implements IItemGenresRepository {
   }
 
   async findById(id: string): Promise<ItemGenre | null> {
-    return this.itemGenres.find(itemGenre => itemGenre.id === id) || null;
+    return this.itemGenres.find((itemGenre) => itemGenre.id === id) || null;
   }
 
   async findByItemId(itemId: string): Promise<ItemGenreWithDetails[]> {
-    const itemGenreList = this.itemGenres.filter(itemGenre => itemGenre.itemId === itemId);
+    const itemGenreList = this.itemGenres.filter((itemGenre) => itemGenre.itemId === itemId);
 
-    return itemGenreList.map(itemGenre => {
-      const genre = this.genres.find(g => g.id === itemGenre.genreId);
+    return itemGenreList.map((itemGenre) => {
+      const genre = this.genres.find((g) => g.id === itemGenre.genreId);
       return {
         id: itemGenre.id,
         itemId: itemGenre.itemId,
@@ -73,17 +86,19 @@ export class ItemGenresMemoryRepository implements IItemGenresRepository {
   }
 
   async findByGenreId(genreId: string): Promise<ItemGenre[]> {
-    return this.itemGenres.filter(itemGenre => itemGenre.genreId === genreId);
+    return this.itemGenres.filter((itemGenre) => itemGenre.genreId === genreId);
   }
 
   async findByItemAndGenre(itemId: string, genreId: string): Promise<ItemGenre | null> {
-    return this.itemGenres.find(itemGenre =>
-      itemGenre.itemId === itemId && itemGenre.genreId === genreId
-    ) || null;
+    return (
+      this.itemGenres.find(
+        (itemGenre) => itemGenre.itemId === itemId && itemGenre.genreId === genreId,
+      ) || null
+    );
   }
 
   async delete(id: string): Promise<ItemGenre | null> {
-    const itemGenreIndex = this.itemGenres.findIndex(itemGenre => itemGenre.id === id);
+    const itemGenreIndex = this.itemGenres.findIndex((itemGenre) => itemGenre.id === id);
     if (itemGenreIndex === -1) return null;
 
     const deletedItemGenre = this.itemGenres[itemGenreIndex];

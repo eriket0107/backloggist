@@ -31,15 +31,23 @@ export class GenresService {
     return { data };
   }
 
-  async findAll({ limit = 10, page = 1, search }: { limit?: number, page?: number, search?: string } = {}) {
+  async findAll({
+    limit = 10,
+    page = 1,
+    search,
+  }: { limit?: number; page?: number; search?: string } = {}) {
     this.logger.info('Fetching all genres');
 
-    const data = await this.genresRepository.findAll({ limit, page, search: search ? search : undefined });
+    const data = await this.genresRepository.findAll({
+      limit,
+      page,
+      search: search ? search : undefined,
+    });
 
     this.logger.info(`Found ${data.totalItems} genres`);
 
     return {
-      ...data
+      ...data,
     };
   }
 

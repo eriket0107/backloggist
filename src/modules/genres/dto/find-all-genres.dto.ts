@@ -15,11 +15,8 @@ export class FindAllGenresDto {
   @Transform(({ value }) => parseInt(value))
   page?: number;
 
-
-  @ApiProperty({ required: false, example: "Action" })
+  @ApiProperty({ required: false, example: 'Action' })
   @IsOptional()
   @IsString()
   search?: string;
 }
-
-

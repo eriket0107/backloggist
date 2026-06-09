@@ -22,4 +22,3 @@ export class AdminOrSelfGuard implements CanActivate {
     throw new ForbiddenException('You can only edit your own profile or must be an admin');
   }
 }
-

@@ -20,5 +20,4 @@ export class FindAllItemsDto {
   @IsBoolean()
   @Transform(({ value }) => Boolean(value))
   isPublic?: boolean;
-
 }

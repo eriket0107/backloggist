@@ -1,6 +1,6 @@
-import { DATE_CONFIG } from "./date";
+import { DATE_CONFIG } from './date';
 
 export const accessTokenCookie = {
   KEY: 'accessToken',
-  EXPIRATION: DATE_CONFIG.ONE_DAY
-}
+  EXPIRATION: DATE_CONFIG.ONE_DAY,
+};

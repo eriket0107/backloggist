@@ -1,4 +1,10 @@
-import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, Global } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  UnauthorizedException,
+  Global,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
 
 @Global()
@@ -18,7 +24,7 @@ export class BasicAuthGuard implements CanActivate {
     const credentials = Buffer.from(auth.slice(6), 'base64').toString('ascii');
     const [username, password] = credentials.split(':');
 
-    // Use environment variables for credentials  
+    // Use environment variables for credentials
     const validUsername = process.env.LOG_USERNAME || 'admin';
     const validPassword = process.env.LOG_PASSWORD || 'secure123';
 

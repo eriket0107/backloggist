@@ -1,7 +1,7 @@
-import { Global, Module } from "@nestjs/common";
-import { APP_GUARD } from "@nestjs/core";
-import { RolesGuard } from "./roles.guard";
-import { AdminOrSelfGuard } from "./admin-or-self.guard";
+import { Global, Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
+import { RolesGuard } from './roles.guard';
+import { AdminOrSelfGuard } from './admin-or-self.guard';
 
 @Global()
 @Module({
@@ -13,4 +13,4 @@ import { AdminOrSelfGuard } from "./admin-or-self.guard";
     AdminOrSelfGuard,
   ],
 })
-export class RolesModule { }
+export class RolesModule {}

@@ -12,7 +12,7 @@ describe('UsersService', () => {
   let repository: UsersMemoryRepository;
   let mockLoggerService: jest.Mocked<LoggerService>;
   let passwordHandler: PasswordHandler;
-  let mockLogger: { info: jest.Mock; warn: jest.Mock; error: jest.Mock; };
+  let mockLogger: { info: jest.Mock; warn: jest.Mock; error: jest.Mock };
 
   const mockCreateUserDto: CreateUserDto = {
     name: 'John Doe',
@@ -84,7 +84,7 @@ describe('UsersService', () => {
 
       await expect(service.create(shortPasswordDto)).rejects.toThrow(BadRequestException);
       expect(mockLogger.warn).toHaveBeenCalledWith(
-        `The password ${shortPasswordDto.password.length} must equal or greater than 8.`
+        `The password ${shortPasswordDto.password.length} must equal or greater than 8.`,
       );
 
       const allUsers = await repository.findAll();
@@ -117,8 +117,14 @@ describe('UsersService', () => {
     });
 
     it('should return all users from repository', async () => {
-      await service.create({ ...mockCreateUserDto, email: 'user1@example.com' });
-      await service.create({ ...mockCreateUserDto, email: 'user2@example.com' });
+      await service.create({
+        ...mockCreateUserDto,
+        email: 'user1@example.com',
+      });
+      await service.create({
+        ...mockCreateUserDto,
+        email: 'user2@example.com',
+      });
 
       const result = await service.findAll();
 
@@ -155,7 +161,9 @@ describe('UsersService', () => {
       const result = await service.findByEmail('nonexistent@example.com');
 
       expect(result.data).toBeNull();
-      expect(mockLogger.warn).toHaveBeenCalledWith('User with email nonexistent@example.com not found');
+      expect(mockLogger.warn).toHaveBeenCalledWith(
+        'User with email nonexistent@example.com not found',
+      );
     });
 
     it('should return user when found by email in repository', async () => {
@@ -193,7 +201,9 @@ describe('UsersService', () => {
       expect(result.data!.name).toBe(mockUpdateUserDto.name);
       expect(result.data!.email).toBe(mockUpdateUserDto.email);
       expect(result.data!.password).toBeUndefined();
-      expect(result.data!.updatedAt.getTime()).toBeGreaterThanOrEqual(existingUser.updatedAt.getTime());
+      expect(result.data!.updatedAt.getTime()).toBeGreaterThanOrEqual(
+        existingUser.updatedAt.getTime(),
+      );
 
       const updatedUser = await repository.findById('1');
       expect(updatedUser!.name).toBe(mockUpdateUserDto.name);
@@ -208,7 +218,8 @@ describe('UsersService', () => {
         newPassword: 'newPassword123',
       };
 
-      jest.spyOn(passwordHandler, 'comparePassword')
+      jest
+        .spyOn(passwordHandler, 'comparePassword')
         .mockResolvedValueOnce(true)
         .mockResolvedValueOnce(false);
       jest.spyOn(passwordHandler, 'hashPassword').mockResolvedValue('newHashedPassword123');
@@ -228,7 +239,9 @@ describe('UsersService', () => {
       };
 
       await expect(service.update('1', updateDto)).rejects.toThrow(BadRequestException);
-      expect(mockLogger.warn).toHaveBeenCalledWith('Current password is required to change password');
+      expect(mockLogger.warn).toHaveBeenCalledWith(
+        'Current password is required to change password',
+      );
 
       const unchangedUser = await repository.findById('1');
       expect(unchangedUser).toEqual(existingUser);
@@ -242,7 +255,7 @@ describe('UsersService', () => {
 
       await expect(service.update('1', updateDto)).rejects.toThrow(BadRequestException);
       expect(mockLogger.warn).toHaveBeenCalledWith(
-        'New password length 7 must be equal or greater than 8'
+        'New password length 7 must be equal or greater than 8',
       );
 
       const unchangedUser = await repository.findById('1');
@@ -272,7 +285,9 @@ describe('UsersService', () => {
       jest.spyOn(passwordHandler, 'comparePassword').mockResolvedValueOnce(true); // New password is same
 
       await expect(service.update('1', updateDto)).rejects.toThrow(BadRequestException);
-      expect(mockLogger.warn).toHaveBeenCalledWith('New password must be different from current password');
+      expect(mockLogger.warn).toHaveBeenCalledWith(
+        'New password must be different from current password',
+      );
 
       const unchangedUser = await repository.findById('1');
       expect(unchangedUser).toEqual(existingUser);
@@ -313,9 +328,18 @@ describe('UsersService', () => {
       const hashedPassword = 'hashedPassword123';
       jest.spyOn(passwordHandler, 'hashPassword').mockResolvedValue(hashedPassword);
 
-      await service.create({ ...mockCreateUserDto, email: 'user1@example.com' });
-      await service.create({ ...mockCreateUserDto, email: 'user2@example.com' });
-      await service.create({ ...mockCreateUserDto, email: 'user3@example.com' });
+      await service.create({
+        ...mockCreateUserDto,
+        email: 'user1@example.com',
+      });
+      await service.create({
+        ...mockCreateUserDto,
+        email: 'user2@example.com',
+      });
+      await service.create({
+        ...mockCreateUserDto,
+        email: 'user3@example.com',
+      });
 
       const result = await service.remove('2');
 
@@ -325,9 +349,9 @@ describe('UsersService', () => {
 
       const allUsers = await repository.findAll();
       expect(allUsers).toHaveLength(2);
-      expect(allUsers.find(u => u.id === '1')).toBeDefined();
-      expect(allUsers.find(u => u.id === '2')).toBeUndefined();
-      expect(allUsers.find(u => u.id === '3')).toBeDefined();
+      expect(allUsers.find((u) => u.id === '1')).toBeDefined();
+      expect(allUsers.find((u) => u.id === '2')).toBeUndefined();
+      expect(allUsers.find((u) => u.id === '3')).toBeDefined();
     });
   });
 
@@ -374,9 +398,18 @@ describe('UsersService', () => {
       const hashedPassword = 'hashedPassword123';
       jest.spyOn(passwordHandler, 'hashPassword').mockResolvedValue(hashedPassword);
 
-      const user1Promise = service.create({ ...mockCreateUserDto, email: 'user1@example.com' });
-      const user2Promise = service.create({ ...mockCreateUserDto, email: 'user2@example.com' });
-      const user3Promise = service.create({ ...mockCreateUserDto, email: 'user3@example.com' });
+      const user1Promise = service.create({
+        ...mockCreateUserDto,
+        email: 'user1@example.com',
+      });
+      const user2Promise = service.create({
+        ...mockCreateUserDto,
+        email: 'user2@example.com',
+      });
+      const user3Promise = service.create({
+        ...mockCreateUserDto,
+        email: 'user3@example.com',
+      });
 
       const [user1, user2, user3] = await Promise.all([user1Promise, user2Promise, user3Promise]);
 

@@ -22,7 +22,7 @@ import { AdminOrSelfGuard } from '../roles/admin-or-self.guard';
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new user' })
