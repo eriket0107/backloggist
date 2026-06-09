@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { IItemsRepository, CreateItemData, UpdateItemData } from '@/repositories/interfaces/items.repository.interface';
+import {
+  IItemsRepository,
+  CreateItemData,
+  UpdateItemData,
+} from '@/repositories/interfaces/items.repository.interface';
 import { Item } from '@/types/entities';
 import { PaginatedResult } from '@/types/pagination';
 
@@ -25,8 +29,16 @@ export class ItemsMemoryRepository implements IItemsRepository {
     return item;
   }
 
-  async findAll({ limit, page, userId }: { limit?: number, page?: number, userId: string }): Promise<PaginatedResult<Item>> {
-    const filteredItems = this.items.filter(item => item.userId === userId);
+  async findAll({
+    limit,
+    page,
+    userId,
+  }: {
+    limit?: number;
+    page?: number;
+    userId: string;
+  }): Promise<PaginatedResult<Item>> {
+    const filteredItems = this.items.filter((item) => item.userId === userId);
     const totalItems = filteredItems.length;
     const currentPage = page || 1;
     const itemsPerPage = limit || totalItems;
@@ -47,11 +59,11 @@ export class ItemsMemoryRepository implements IItemsRepository {
   }
 
   async findById(id: string, userId: string): Promise<Item | null> {
-    return this.items.find(item => item.id === id && item.userId === userId) || null;
+    return this.items.find((item) => item.id === id && item.userId === userId) || null;
   }
 
   async update(id: string, itemData: UpdateItemData): Promise<Item | null> {
-    const itemIndex = this.items.findIndex(item => item.id === id);
+    const itemIndex = this.items.findIndex((item) => item.id === id);
     if (itemIndex === -1) {
       return null;
     }
@@ -66,7 +78,7 @@ export class ItemsMemoryRepository implements IItemsRepository {
   }
 
   async delete(id: string): Promise<Item | null> {
-    const itemIndex = this.items.findIndex(item => item.id === id);
+    const itemIndex = this.items.findIndex((item) => item.id === id);
     if (itemIndex === -1) {
       return null;
     }

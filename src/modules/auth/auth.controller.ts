@@ -1,4 +1,14 @@
-import { Body, Controller, Post, HttpCode, HttpStatus, UseGuards, Get, Request, Response } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  HttpCode,
+  HttpStatus,
+  UseGuards,
+  Get,
+  Request,
+  Response,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiTags } from '@nestjs/swagger';
 import { SignInDto } from './dto/sign-in.dto';
@@ -9,7 +19,7 @@ import { accessTokenCookie } from '@/constants/cookies';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {}
 
   @HttpCode(HttpStatus.CREATED)
   @Post('login')
@@ -20,17 +30,17 @@ export class AuthController {
       httpOnly: true,
       secure: true,
       sameSite: 'strict',
-      maxAge: accessTokenCookie.EXPIRATION
+      maxAge: accessTokenCookie.EXPIRATION,
     });
 
-    return res.send('Created')
+    return res.send('Created');
   }
 
   @UseGuards(AuthGuard)
   @Post('logout')
   signOut(@Request() req) {
-    const user = this.getProfile(req)
-    return this.authService.signOut(user.accessToken)
+    const user = this.getProfile(req);
+    return this.authService.signOut(user.accessToken);
   }
 
   @UseGuards(AuthGuard)

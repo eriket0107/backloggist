@@ -9,12 +9,16 @@ import { RepositoryConfigModule } from '../repository-config/repository-config.m
 
 @Global()
 @Module({
-  imports: [UsersModule, JwtModule.register({
-    global: true,
-    secret: jwtConstants.secret,
-    signOptions: { expiresIn: jwtConstants.expiresIn },
-  }), RepositoryConfigModule],
+  imports: [
+    UsersModule,
+    JwtModule.register({
+      global: true,
+      secret: jwtConstants.secret,
+      signOptions: { expiresIn: jwtConstants.expiresIn },
+    }),
+    RepositoryConfigModule,
+  ],
   providers: [AuthService, AuthGuard],
   controllers: [AuthController],
 })
-export class AuthModule { }
+export class AuthModule {}

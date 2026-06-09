@@ -2,23 +2,31 @@ import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '@/modules/database/database.service';
 import { eq, ilike } from 'drizzle-orm';
 import { genresTable } from '../../../db/schema';
-import { IGenresRepository, CreateGenreData, UpdateGenreData } from '@/repositories/interfaces/genres.repository.interface';
+import {
+  IGenresRepository,
+  CreateGenreData,
+  UpdateGenreData,
+} from '@/repositories/interfaces/genres.repository.interface';
 
 @Injectable()
 export class GenresRepository implements IGenresRepository {
-  constructor(private readonly databaseService: DatabaseService) { }
+  constructor(private readonly databaseService: DatabaseService) {}
 
   async create(genreData: CreateGenreData) {
-    const [genre] = await this.databaseService.db
-      .insert(genresTable)
-      .values(genreData)
-      .returning();
+    const [genre] = await this.databaseService.db.insert(genresTable).values(genreData).returning();
     return genre;
   }
 
-  async findAll({ limit = 10, page = 1, search }: { limit?: number, page?: number, search: string }) {
+  async findAll({
+    limit = 10,
+    page = 1,
+    search,
+  }: {
+    limit?: number;
+    page?: number;
+    search: string;
+  }) {
     const offset = (page - 1) * limit;
-
 
     const genreList = await this.databaseService.db
       .select()
@@ -28,7 +36,10 @@ export class GenresRepository implements IGenresRepository {
       .offset(offset)
       .orderBy(genresTable.name);
 
-    const totalCount = await this.databaseService.db.$count(genresTable, search && ilike(genresTable.name, `${search}%`));
+    const totalCount = await this.databaseService.db.$count(
+      genresTable,
+      search && ilike(genresTable.name, `${search}%`),
+    );
     const totalPages = Math.ceil(totalCount / limit);
 
     return {

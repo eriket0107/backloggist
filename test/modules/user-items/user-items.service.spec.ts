@@ -8,7 +8,7 @@ describe('UserItemsService', () => {
   let service: UserItemsService;
   let userItemsRepository: UserItemsMemoryRepository;
   let mockLoggerService: jest.Mocked<LoggerService>;
-  let mockLogger: { info: jest.Mock; warn: jest.Mock; error: jest.Mock; };
+  let mockLogger: { info: jest.Mock; warn: jest.Mock; error: jest.Mock };
 
   const mockUserId = 'user-1';
   const mockItemId = 'item-1';
@@ -26,10 +26,7 @@ describe('UserItemsService', () => {
       createEntityLogger: jest.fn().mockReturnValue(mockLogger),
     } as unknown as jest.Mocked<LoggerService>;
 
-    service = new UserItemsService(
-      userItemsRepository,
-      mockLoggerService,
-    );
+    service = new UserItemsService(userItemsRepository, mockLoggerService);
   });
 
   afterEach(() => {
@@ -51,8 +48,12 @@ describe('UserItemsService', () => {
       expect(result.data.itemId).toBe(mockItemId);
       expect(result.data.status).toBe('pending');
       expect(result.data.id).toBe('1');
-      expect(mockLogger.info).toHaveBeenCalledWith(`Adding item ${mockItemId} to user ${mockUserId} backlog`);
-      expect(mockLogger.info).toHaveBeenCalledWith(`Item added to backlog with ID: ${result.data.id}`);
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        `Adding item ${mockItemId} to user ${mockUserId} backlog`,
+      );
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        `Item added to backlog with ID: ${result.data.id}`,
+      );
     });
 
     it('should add item to backlog with custom status', async () => {
@@ -206,7 +207,9 @@ describe('UserItemsService', () => {
       expect(result.data!.status).toBe('in_progress');
       expect(result.data!.rating).toBe(5);
       expect(result.data!.order).toBe(1);
-      expect(mockLogger.info).toHaveBeenCalledWith(`Updating user item for user ${mockUserId}, item ${createdItem.id}`);
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        `Updating user item for user ${mockUserId}, item ${createdItem.id}`,
+      );
       expect(mockLogger.info).toHaveBeenCalledWith(`User item updated: ${result.data!.id}`);
     });
 
@@ -218,7 +221,9 @@ describe('UserItemsService', () => {
       const result = await service.updateUserItem(mockUserId, 'non-existent-id', updateDto);
 
       expect(result.data).toBeNull();
-      expect(mockLogger.warn).toHaveBeenCalledWith(`User item not found for user ${mockUserId}, item non-existent-id`);
+      expect(mockLogger.warn).toHaveBeenCalledWith(
+        `User item not found for user ${mockUserId}, item non-existent-id`,
+      );
     });
 
     it('should update only provided fields', async () => {
@@ -253,7 +258,9 @@ describe('UserItemsService', () => {
 
       expect(result.data).toBeDefined();
       expect(result.data!.id).toBe(createdItem.id);
-      expect(mockLogger.info).toHaveBeenCalledWith(`Removing item ${createdItem.id} from user ${mockUserId} backlog`);
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        `Removing item ${createdItem.id} from user ${mockUserId} backlog`,
+      );
       expect(mockLogger.info).toHaveBeenCalledWith(`Item removed from backlog: ${result.data!.id}`);
     });
 
@@ -261,7 +268,9 @@ describe('UserItemsService', () => {
       const result = await service.removeFromBacklog(mockUserId, 'non-existent-id');
 
       expect(result.data).toBeNull();
-      expect(mockLogger.warn).toHaveBeenCalledWith(`User item not found for deletion: user ${mockUserId}, item non-existent-id`);
+      expect(mockLogger.warn).toHaveBeenCalledWith(
+        `User item not found for deletion: user ${mockUserId}, item non-existent-id`,
+      );
     });
   });
 

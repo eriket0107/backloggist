@@ -10,7 +10,7 @@ export class UpdateUserItemDto {
   @ApiProperty({
     example: 'in_progress',
     enum: ['completed', 'in_progress', 'pending'],
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsString()

@@ -13,10 +13,8 @@ export class LogIndexService {
       await fs.mkdir(this.logsPath, { recursive: true });
       const files = await fs.readdir(this.logsPath);
 
-      const logFiles = files.filter(file =>
-        file !== this.indexFileName &&
-        file !== 'index' &&
-        file.endsWith('.txt')
+      const logFiles = files.filter(
+        (file) => file !== this.indexFileName && file !== 'index' && file.endsWith('.txt'),
       );
 
       const indexContent = await this.createIndexContent(logFiles);
@@ -46,7 +44,7 @@ export class LogIndexService {
       } catch (error) {
         lines.push(`${file} (error reading file info)`);
         lines.push('');
-        console.error(error)
+        console.error(error);
       }
     }
 

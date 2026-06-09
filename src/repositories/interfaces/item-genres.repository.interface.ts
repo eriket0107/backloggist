@@ -8,7 +8,17 @@ export interface CreateItemGenreData {
 
 export interface IItemGenresRepository {
   create(itemGenreData: CreateItemGenreData): Promise<ItemGenre>;
-  findAll({ limit, page, genreId, itemId }: { limit?: number, page?: number, genreId?: string, itemId?: string }): Promise<PaginatedResult<ItemGenre>>;
+  findAll({
+    limit,
+    page,
+    genreId,
+    itemId,
+  }: {
+    limit?: number;
+    page?: number;
+    genreId?: string;
+    itemId?: string;
+  }): Promise<PaginatedResult<ItemGenre>>;
   findById(id: string): Promise<ItemGenre | null>;
   findByItemId(itemId: string): Promise<Partial<ItemGenreWithDetails>[]>;
   findByGenreId(genreId: string): Promise<Partial<ItemGenre>[]>;

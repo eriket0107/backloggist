@@ -15,4 +15,3 @@ export const mockPasswordHandler = {
   hashPassword: jest.fn().mockResolvedValue('hashed-password'),
   comparePassword: jest.fn().mockResolvedValue(true),
 };
-

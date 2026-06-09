@@ -1,4 +1,4 @@
-import { addOneHour } from "@/helpers/add-one-hour";
+import { addOneHour } from '@/helpers/add-one-hour';
 
 describe('addOneHour', () => {
   it('should add exactly one hour to a given date', () => {

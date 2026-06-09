@@ -12,7 +12,7 @@ describe('ItemGenresService', () => {
   let itemsRepository: ItemsMemoryRepository;
   let genresRepository: GenresMemoryRepository;
   let mockLoggerService: jest.Mocked<LoggerService>;
-  let mockLogger: { info: jest.Mock; warn: jest.Mock; error: jest.Mock; };
+  let mockLogger: { info: jest.Mock; warn: jest.Mock; error: jest.Mock };
 
   const mockItem: Item = {
     id: 'item-1',
@@ -55,8 +55,18 @@ describe('ItemGenresService', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
-    (itemGenresRepository as unknown as { itemGenres: unknown[]; nextId: number }).itemGenres = [];
-    (itemGenresRepository as unknown as { itemGenres: unknown[]; nextId: number }).nextId = 1;
+    (
+      itemGenresRepository as unknown as {
+        itemGenres: unknown[];
+        nextId: number;
+      }
+    ).itemGenres = [];
+    (
+      itemGenresRepository as unknown as {
+        itemGenres: unknown[];
+        nextId: number;
+      }
+    ).nextId = 1;
     (itemsRepository as unknown as { items: unknown[]; nextId: number }).items = [];
     (itemsRepository as unknown as { items: unknown[]; nextId: number }).nextId = 1;
     (genresRepository as unknown as { genres: unknown[]; nextId: number }).genres = [];

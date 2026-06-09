@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Genre } from '@/types/entities';
-import { IGenresRepository, CreateGenreData, UpdateGenreData } from '@/repositories/interfaces/genres.repository.interface';
+import {
+  IGenresRepository,
+  CreateGenreData,
+  UpdateGenreData,
+} from '@/repositories/interfaces/genres.repository.interface';
 
 @Injectable()
 export class GenresMemoryRepository implements IGenresRepository {
@@ -18,13 +22,21 @@ export class GenresMemoryRepository implements IGenresRepository {
     return genre;
   }
 
-  async findAll({ limit = 10, page = 1, search }: { limit?: number, page?: number, search: string }) {
+  async findAll({
+    limit = 10,
+    page = 1,
+    search,
+  }: {
+    limit?: number;
+    page?: number;
+    search: string;
+  }) {
     const offset = (page - 1) * limit;
 
     let filteredGenres = this.genres;
     if (search) {
-      filteredGenres = this.genres.filter(genre =>
-        genre.name.toLowerCase().startsWith(search.toLowerCase())
+      filteredGenres = this.genres.filter((genre) =>
+        genre.name.toLowerCase().startsWith(search.toLowerCase()),
       );
     }
 
@@ -45,15 +57,15 @@ export class GenresMemoryRepository implements IGenresRepository {
   }
 
   async findById(id: string): Promise<Genre | null> {
-    return this.genres.find(genre => genre.id === id) || null;
+    return this.genres.find((genre) => genre.id === id) || null;
   }
 
   async findByName(name: string): Promise<Genre | null> {
-    return this.genres.find(genre => genre.name.toLowerCase() === name.toLowerCase()) || null;
+    return this.genres.find((genre) => genre.name.toLowerCase() === name.toLowerCase()) || null;
   }
 
   async update(id: string, genreData: UpdateGenreData): Promise<Genre | null> {
-    const genreIndex = this.genres.findIndex(genre => genre.id === id);
+    const genreIndex = this.genres.findIndex((genre) => genre.id === id);
     if (genreIndex === -1) return null;
 
     this.genres[genreIndex] = {
@@ -66,7 +78,7 @@ export class GenresMemoryRepository implements IGenresRepository {
   }
 
   async delete(id: string): Promise<Genre | null> {
-    const genreIndex = this.genres.findIndex(genre => genre.id === id);
+    const genreIndex = this.genres.findIndex((genre) => genre.id === id);
     if (genreIndex === -1) return null;
 
     const deletedGenre = this.genres[genreIndex];

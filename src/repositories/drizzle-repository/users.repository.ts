@@ -2,24 +2,23 @@ import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '@/modules/database/database.service';
 import { eq } from 'drizzle-orm';
 import { usersTable } from '../../../db/schema';
-import { IUsersRepository, CreateUserData, UpdateUserData } from '@/repositories/interfaces/users.repository.interface';
+import {
+  IUsersRepository,
+  CreateUserData,
+  UpdateUserData,
+} from '@/repositories/interfaces/users.repository.interface';
 
 @Injectable()
 export class UsersRepository implements IUsersRepository {
-  constructor(private readonly databaseService: DatabaseService) { }
+  constructor(private readonly databaseService: DatabaseService) {}
 
   async create(userData: CreateUserData) {
-    const [user] = await this.databaseService.db
-      .insert(usersTable)
-      .values(userData)
-      .returning();
+    const [user] = await this.databaseService.db.insert(usersTable).values(userData).returning();
     return user;
   }
 
   async findAll() {
-    return await this.databaseService.db
-      .select()
-      .from(usersTable);
+    return await this.databaseService.db.select().from(usersTable);
   }
 
   async findById(id: string) {
