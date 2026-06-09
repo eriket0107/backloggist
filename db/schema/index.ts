@@ -1,6 +1,8 @@
 import { pgTable as table } from "drizzle-orm/pg-core";
 import * as t from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
+import type { Column } from "drizzle-orm/column";
+import type { ColumnBuilderExtraConfig } from "drizzle-orm/column-builder";
 
 export const userRoleEnum = t.pgEnum('user_roles', ['USER', 'ADMIN']);
 
