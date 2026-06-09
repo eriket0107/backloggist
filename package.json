@@ -21,7 +21,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "db-generate": "pnpm drizzle-kit generate",
     "db-migrate": "pnpm drizzle-kit migrate",
-    "db-seed": "pnpm tsx db/seed/index.ts"
+    "db-seed": "pnpm tsx db/seed/index.ts",
+    "prepare": "husky"
   },
   "keywords": [],
   "author": "",
