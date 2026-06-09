@@ -4,7 +4,9 @@ import { usersSeed } from './users'
 import { genresSeed } from './genres'
 import { itemGenresSeed } from './item-genres'
 import { userItemsSeed } from './user-items'
+import { ErrorHandlerService } from '@/utils/error-handler/error-handler.service'
 
+const errorHandler = new ErrorHandlerService()
 const loggerService = new LoggerService();
 
 const logger = loggerService.createEntityLogger('Seeds');
@@ -35,7 +37,8 @@ const logger = loggerService.createEntityLogger('Seeds');
 
   } catch (error) {
     console.error('❌ Database seeding failed:', error)
-    logger.error(`❌ Database seeding failed:  ${error.message}`)
+    const errorMessage = errorHandler.getMessage(error)
+    logger.error(`❌ Database seeding failed:  ${errorMessage}`)
     process.exit(1)
   }
 
