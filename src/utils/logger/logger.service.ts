@@ -20,21 +20,24 @@ export class LoggerService {
 
   createEntityLogger(entity: string) {
     return {
-      info: (message: string) => {
-        this.writeLog(entity, 'info', message);
-        console.log(`[${entity}] ${message}`);
+      info: (message: string, metadata?: unknown) => {
+        const fullMessage = metadata ? `${message} ${JSON.stringify(metadata)}` : message;
+        this.writeLog(entity, 'info', fullMessage);
+        console.log(`[${entity}] ${fullMessage}`);
       },
-      warn: (message: string) => {
-        this.writeLog(entity, 'warn', message);
-        console.warn(`[${entity}] ${message}`);
+      warn: (message: string, metadata?: unknown) => {
+        const fullMessage = metadata ? `${message} ${JSON.stringify(metadata)}` : message;
+        this.writeLog(entity, 'warn', fullMessage);
+        console.warn(`[${entity}] ${fullMessage}`);
       },
       error: (message: string) => {
         this.writeLog(entity, 'error', message);
         console.error(`[${entity}] ${message}`);
       },
-      debug: (message: string) => {
-        this.writeLog(entity, 'debug', message);
-        console.debug(`[${entity}] ${message}`);
+      debug: (message: string, metadata?: unknown) => {
+        const fullMessage = metadata ? `${message} ${JSON.stringify(metadata)}` : message;
+        this.writeLog(entity, 'debug', fullMessage);
+        console.debug(`[${entity}] ${fullMessage}`);
       },
       fatal: (message: string) => {
         this.writeLog(entity, 'fatal', message);
