@@ -3,8 +3,10 @@ import { usersTable } from "../schema"
 import { PasswordHandler } from "../../src/utils/password-handler/password-handler.service"
 import { LoggerService } from "@/utils/logger/logger.service"
 import { User } from "@/types/entities"
+import { ErrorHandlerService } from "@/utils/error-handler/error-handler.service"
 
 const passwordHandler = new PasswordHandler()
+const errorHandler = new ErrorHandlerService()
 const loggerService = new LoggerService()
 
 const logger = loggerService.createEntityLogger('UsersSeed')
@@ -66,7 +68,8 @@ export const usersSeed = async () => {
     })
 
   } catch (error) {
-    logger.error(`❌ Failed to seed users: ${error.message}`)
+    const errorMessage = errorHandler.getMessage(error)
+    logger.error(`❌ Failed to seed users: ${errorMessage}`)
     throw error
   }
 }

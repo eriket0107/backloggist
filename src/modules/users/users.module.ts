@@ -9,4 +9,4 @@ import { RepositoryConfigModule } from '@/modules/repository-config/repository-c
   providers: [UsersService],
   exports: [UsersService],
 })
-export class UsersModule { }
+export class UsersModule {}

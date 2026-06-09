@@ -1,4 +1,4 @@
-import { addOneDay } from "@/helpers/add-one-day";
+import { addOneDay } from '@/helpers/add-one-day';
 
 describe('addOneDay', () => {
   it('should add exactly one day to a given date', () => {

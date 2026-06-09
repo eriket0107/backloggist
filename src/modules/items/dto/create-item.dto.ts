@@ -9,7 +9,7 @@ export class CreateItemDto {
 
   @ApiProperty({
     example: 'game',
-    enum: ['game', 'book', 'serie', 'movie', 'course']
+    enum: ['game', 'book', 'serie', 'movie', 'course'],
   })
   @IsString()
   @IsIn(['game', 'book', 'serie', 'movie', 'course'])

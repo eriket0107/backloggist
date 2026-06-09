@@ -5,7 +5,6 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import cookieParser from 'cookie-parser';
 
-
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
@@ -16,12 +15,13 @@ async function bootstrap() {
 
   app.use(cookieParser());
 
-
-  app.useGlobalPipes(new ValidationPipe({
-    transform: true,
-    whitelist: true,
-    forbidNonWhitelisted: true,
-  }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  );
 
   const config = new DocumentBuilder()
     .setTitle('Backloggist API')
@@ -38,5 +38,11 @@ async function bootstrap() {
   console.log(`Application is running on: http://localhost:${port}`);
 }
 
-
-bootstrap();
+bootstrap()
+  .then(() => {
+    console.log('🚀 Application started successfully');
+  })
+  .catch((error) => {
+    console.error('🚀 Application failed to start:', error);
+    process.exit(1);
+  });

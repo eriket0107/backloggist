@@ -1,4 +1,3 @@
-
 import { Module } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
@@ -20,7 +19,6 @@ import { LogsController } from './logs.controller';
   providers: [LogIndexService],
   exports: [LogIndexService],
 })
-
 export class StaticModule {
   constructor(private logIndexService: LogIndexService) {
     this.logIndexService.generateLogIndex();

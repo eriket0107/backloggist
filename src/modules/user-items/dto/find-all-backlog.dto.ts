@@ -16,12 +16,12 @@ export class FindAllBacklogDto {
   @Transform(({ value }) => parseInt(value))
   page?: number;
 
-  @ApiProperty({ example: "Item title", required: false })
+  @ApiProperty({ example: 'Item title', required: false })
   @IsOptional()
   @IsString()
   search?: string;
 
-  @ApiProperty({ example: "Item type", required: false })
+  @ApiProperty({ example: 'Item type', required: false })
   @IsOptional()
   @IsString()
   type?: Item['type'];

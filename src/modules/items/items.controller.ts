@@ -30,7 +30,7 @@ import { AdminOrOwnerGuard } from '../roles/admin-or-owner.guard';
 @ApiTags('items')
 @Controller('items')
 export class ItemsController {
-  constructor(private readonly itemsService: ItemsService) { }
+  constructor(private readonly itemsService: ItemsService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -52,7 +52,7 @@ export class ItemsController {
   @ApiResponse({ status: 200, description: 'Items retrieved successfully' })
   findAll(@Query() query: FindAllItemsDto, @Request() request) {
     const userId = request.user.sub;
-    request.user.items_page = request.query.page
+    request.user.items_page = request.query.page;
     return this.itemsService.findAll({ ...query, userId });
   }
 
@@ -96,7 +96,7 @@ export class ItemsController {
 
     res.set({
       'Content-Type': fileData.contentType,
-      'Content-Disposition': `inline; filename="${fileData.fileName}"`
+      'Content-Disposition': `inline; filename="${fileData.fileName}"`,
     });
 
     fileData.stream.pipe(res);

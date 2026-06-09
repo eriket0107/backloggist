@@ -22,14 +22,17 @@ import { AuthGuard } from '../auth/auth.guard';
 @ApiTags('genres')
 @Controller('genres')
 export class GenresController {
-  constructor(private readonly genresService: GenresService) { }
+  constructor(private readonly genresService: GenresService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a new genre' })
   @ApiResponse({ status: 201, description: 'Genre created successfully' })
   @ApiResponse({ status: 400, description: 'Bad request' })
-  @ApiResponse({ status: 409, description: 'Genre with this name already exists' })
+  @ApiResponse({
+    status: 409,
+    description: 'Genre with this name already exists',
+  })
   create(@Body() createGenreDto: CreateGenreDto) {
     return this.genresService.create(createGenreDto);
   }
@@ -53,7 +56,10 @@ export class GenresController {
   @ApiOperation({ summary: 'Update genre' })
   @ApiResponse({ status: 200, description: 'Genre updated successfully' })
   @ApiResponse({ status: 404, description: 'Genre not found' })
-  @ApiResponse({ status: 409, description: 'Genre with this name already exists' })
+  @ApiResponse({
+    status: 409,
+    description: 'Genre with this name already exists',
+  })
   update(@Param('id') id: string, @Body() updateGenreDto: UpdateGenreDto) {
     return this.genresService.update(id, updateGenreDto);
   }

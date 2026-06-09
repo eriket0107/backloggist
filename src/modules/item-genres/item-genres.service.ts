@@ -24,7 +24,6 @@ export class ItemGenresService {
   async create(createItemGenreDto: CreateItemGenreDto, userId: string) {
     this.logger.info('Creating new item-genre relationship');
 
-
     const item = await this.itemsRepository.findById(createItemGenreDto.itemId, userId);
     if (!item) {
       this.logger.warn(`Item with ID ${createItemGenreDto.itemId} not found`);
@@ -39,7 +38,7 @@ export class ItemGenresService {
 
     const existingRelation = await this.itemGenresRepository.findByItemAndGenre(
       createItemGenreDto.itemId,
-      createItemGenreDto.genreId
+      createItemGenreDto.genreId,
     );
 
     if (existingRelation) {
@@ -53,7 +52,17 @@ export class ItemGenresService {
     return { data };
   }
 
-  async findAll({ limit = 10, page = 1, itemId, genreId }: { limit?: number, page?: number, itemId?: string, genreId?: string } = {}) {
+  async findAll({
+    limit = 10,
+    page = 1,
+    itemId,
+    genreId,
+  }: {
+    limit?: number;
+    page?: number;
+    itemId?: string;
+    genreId?: string;
+  } = {}) {
     this.logger.info('Fetching item-genre relationships');
 
     if (itemId) {
@@ -63,11 +72,16 @@ export class ItemGenresService {
       this.logger.info(`Filtering by genreId: ${genreId}`);
     }
 
-    const data = await this.itemGenresRepository.findAll({ limit, page, genreId, itemId });
+    const data = await this.itemGenresRepository.findAll({
+      limit,
+      page,
+      genreId,
+      itemId,
+    });
     this.logger.info(`Found ${data.totalItems} item-genre relationships`);
 
     return {
-      ...data
+      ...data,
     };
   }
 

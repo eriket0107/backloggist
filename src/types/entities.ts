@@ -1,4 +1,3 @@
-
 export interface User {
   id: string;
   name: string;
@@ -6,7 +5,7 @@ export interface User {
   password: string;
   createdAt: Date;
   updatedAt: Date;
-  roles?: ('USER' | 'ADMIN')[]
+  roles?: ('USER' | 'ADMIN')[];
 }
 
 export interface Item {
@@ -15,8 +14,8 @@ export interface Item {
   type: 'game' | 'book' | 'serie' | 'movie' | 'course';
   description?: string;
   imgUrl?: string;
-  isPublic?: boolean,
-  userId: User['id']
+  isPublic?: boolean;
+  userId: User['id'];
   createdAt?: Date;
   updatedAt: Date;
 }

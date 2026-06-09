@@ -15,12 +15,18 @@ export class FindAllItemGenresDto {
   @Transform(({ value }) => parseInt(value, 10))
   page?: number;
 
-  @ApiProperty({ required: false, example: '550e8400-e29b-41d4-a716-446655440000' })
+  @ApiProperty({
+    required: false,
+    example: '550e8400-e29b-41d4-a716-446655440000',
+  })
   @IsOptional()
   @IsUUID()
   itemId?: string;
 
-  @ApiProperty({ required: false, example: '550e8400-e29b-41d4-a716-446655440001' })
+  @ApiProperty({
+    required: false,
+    example: '550e8400-e29b-41d4-a716-446655440001',
+  })
   @IsOptional()
   @IsUUID()
   genreId?: string;

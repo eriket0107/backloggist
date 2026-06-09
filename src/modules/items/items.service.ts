@@ -1,6 +1,10 @@
 import { Injectable, Inject, NotFoundException, ConflictException } from '@nestjs/common';
 import { LoggerService } from '@/utils/logger/logger.service';
-import { IItemsRepository, UpdateItemData } from '@/repositories/interfaces/items.repository.interface';
+import {
+  IItemsRepository,
+  UpdateItemData,
+} from '@/repositories/interfaces/items.repository.interface';
+import { ErrorHandlerService } from '@/utils/error-handler/error-handler.service';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 import { createReadStream, existsSync, ReadStream, unlink } from 'fs';
@@ -16,8 +20,13 @@ export class ItemsService {
     @Inject('IItemsRepository')
     private readonly itemsRepository: IItemsRepository,
     private readonly loggerService: LoggerService,
+    private readonly errorHandler: ErrorHandlerService,
   ) {
     this.logger = this.loggerService.createEntityLogger('ItemsService');
+  }
+
+  private getErrorMessage(error: unknown): string {
+    return this.errorHandler.getMessage(error);
   }
 
   async create(createItemDto: CreateItemDto, userId: string) {
@@ -25,7 +34,7 @@ export class ItemsService {
 
     const data = await this.itemsRepository.create({
       ...createItemDto,
-      userId
+      userId,
     });
 
     this.logger.info(`Item created with ID: ${data.id}`);
@@ -39,7 +48,7 @@ export class ItemsService {
     this.logger.info(`Found ${data.totalItems} items`);
 
     return {
-      ...data
+      ...data,
     };
   }
 
@@ -60,7 +69,10 @@ export class ItemsService {
   async update(id: string, updateItemDto: UpdateItemDto) {
     this.logger.info(`Updating item with ID: ${id}`);
 
-    const updateData: UpdateItemData = { ...updateItemDto, updatedAt: new Date() };
+    const updateData: UpdateItemData = {
+      ...updateItemDto,
+      updatedAt: new Date(),
+    };
 
     const data = await this.itemsRepository.update(id, updateData);
 
@@ -138,7 +150,8 @@ export class ItemsService {
               this.logger.info(`Database updated with image URL for item: ${id}`);
               resolve({ fileName, filePath });
             } catch (dbError) {
-              this.logger.error(`Failed to update database for item ${id}: ${dbError.message}`);
+              const errorMessage = this.getErrorMessage(dbError);
+              this.logger.error(`Failed to update database for item ${id}: ${errorMessage}`);
               worker.terminate();
               reject(dbError);
             }
@@ -156,12 +169,18 @@ export class ItemsService {
         });
       });
     } catch (error) {
-      this.logger.error(`File upload failed for item ${id}: ${error.message}`);
+      const errorMessage = this.getErrorMessage(error);
+      this.logger.error(`Worker error for item ${id}: ${errorMessage}`);
       throw error;
     }
   }
 
-  async findImg(id: string): Promise<{ stream: ReadStream, fileName: string, filePath: string, contentType: string }> {
+  async findImg(id: string): Promise<{
+    stream: ReadStream;
+    fileName: string;
+    filePath: string;
+    contentType: string;
+  }> {
     const fileName = `${id}.webp`;
     const filePath = path.join(process.cwd(), 'uploads', fileName);
 
@@ -184,12 +203,12 @@ export class ItemsService {
       });
 
       readStream.on('error', (error) => {
-        this.logger.error(`Error reading file ${fileName}: ${error.message}`);
+        const errorMessage = this.getErrorMessage(error);
+        this.logger.error(`Error reading file ${fileName}: ${errorMessage}`);
         reject(error);
       });
     });
   }
-
 
   private validateFile(file: Express.Multer.File): void {
     const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
@@ -217,8 +236,12 @@ export class ItemsService {
     }
 
     if (!allowedMimeTypes.includes(file.mimetype)) {
-      this.logger.warn(`Invalid file format: ${file.mimetype}. Allowed: ${allowedMimeTypes.join(', ')}`);
-      throw new ConflictException(`Invalid file format. Allowed formats: ${allowedMimeTypes.join(', ')}`);
+      this.logger.warn(
+        `Invalid file format: ${file.mimetype}. Allowed: ${allowedMimeTypes.join(', ')}`,
+      );
+      throw new ConflictException(
+        `Invalid file format. Allowed formats: ${allowedMimeTypes.join(', ')}`,
+      );
     }
 
     if (!file.originalname || file.originalname.trim() === '') {
@@ -226,6 +249,8 @@ export class ItemsService {
       throw new ConflictException('Invalid filename');
     }
 
-    this.logger.info(`File validation passed: ${file.originalname} (${file.mimetype}, ${file.size} bytes)`);
+    this.logger.info(
+      `File validation passed: ${file.originalname} (${file.mimetype}, ${file.size} bytes)`,
+    );
   }
 }

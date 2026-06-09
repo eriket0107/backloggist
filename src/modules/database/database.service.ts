@@ -1,14 +1,15 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { drizzle } from 'drizzle-orm/postgres-js';
-import * as postgres from 'postgres';
-import * as schema from '../../../db/schema';
+import postgres = require('postgres');
+import * as schema from '@/db/schema';
+import { env } from '@/env';
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
   public db!: ReturnType<typeof drizzle>;
 
   async onModuleInit() {
-    const connectionString = process.env.DATABASE_URL;
+    const connectionString = env.DATABASE_URL;
 
     if (!connectionString) {
       throw new Error('DATABASE_URL environment variable is not set');

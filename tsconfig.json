@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "declaration": true,
+    "declaration": false,
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
@@ -9,27 +9,29 @@
     "target": "ES2022",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
+
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": false,
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
+    "esModuleInterop": true,
+    "types": ["jest", "node", "multer"],
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@/*": ["src/*"],
-      "@/env": ["./env/index.ts"],
-      "@/db": ["db/*", "db/index.ts"],
-      "@/db/schema": ["db/schema/index.ts"],
-      "@/types": ["src/types/*"],
-      "@/repositories": ["src/repositories/*"],
-      "@/repositories/interfaces": ["src/repositories/interfaces/*"],
-      "@/repositories/in-memory": ["src/repositories/in-memory/*"],
-      "@/modules": ["src/modules/*"],
-      "@/utils": ["src/utils/*"],
-      "@/helpers": ["src/helpers/*"],
-      "@/constants": ["src/constants/*"]
+      "@/*": ["./src/*"],
+      "@/env": ["./env/index"],
+      "@/db": ["./db/*", "./db/index"],
+      "@/db/schema": ["./db/schema/index"],
+      "@/types": ["./src/types/*"],
+      "@/repositories": ["./src/repositories/*"],
+      "@/repositories/interfaces": ["./src/repositories/interfaces/*"],
+      "@/repositories/in-memory": ["./src/repositories/in-memory/*"],
+      "@/modules": ["./src/modules/*"],
+      "@/utils": ["./src/utils/*"],
+      "@/helpers": ["./src/helpers/*"],
+      "@/constants": ["./src/constants/*"]
     }
   }
 }

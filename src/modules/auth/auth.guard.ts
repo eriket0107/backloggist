@@ -1,4 +1,3 @@
-
 import { jwtConstants } from '@/constants/jwt';
 import {
   CanActivate,
@@ -9,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { LoggerService } from '../../utils/logger/logger.service';
+import { ErrorHandlerService } from '@/utils/error-handler/error-handler.service';
 import { Request } from 'express';
 import { ISessionsRepository } from '@/repositories/interfaces/sessions.repository.interface';
 
@@ -20,8 +20,13 @@ export class AuthGuard implements CanActivate {
     @Inject('ISessionsRepository') private sessionService: ISessionsRepository,
     private jwtService: JwtService,
     private loggerService: LoggerService,
+    private errorHandler: ErrorHandlerService,
   ) {
     this.logger = this.loggerService.createEntityLogger('Auth');
+  }
+
+  private getErrorMessage(error: unknown): string {
+    return this.errorHandler.getMessage(error);
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -29,7 +34,7 @@ export class AuthGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest();
     const accessToken = this.extractTokenFromRequest(request);
-    const currentDate = new Date()
+    const currentDate = new Date();
 
     if (!accessToken) {
       this.logger.warn('No token provided in request');
@@ -37,28 +42,25 @@ export class AuthGuard implements CanActivate {
     }
 
     this.logger.info('Verifying JWT token');
-    let payload
+    let payload;
 
     try {
-      payload = this.jwtService.verify(
-        accessToken,
-        {
-          secret: jwtConstants.secret
-        }
-      );
+      payload = this.jwtService.verify(accessToken, {
+        secret: jwtConstants.secret,
+      });
     } catch (error) {
-      console.error(error)
-      this.logger.warn(`Session ${accessToken} has expired by time, marking as expired.`);
-      await this.sessionService.expireToken(accessToken)
+      const errorMessage = this.getErrorMessage(error);
+      this.logger.warn(`Session ${accessToken} error: ${errorMessage}. marking as expired.`);
+      await this.sessionService.expireToken(accessToken);
       throw new UnauthorizedException('Session has expired.');
     }
 
-    const session = await this.sessionService.findByUserId(payload.sub)
-    const isExpired: boolean = currentDate >= session.expiredAt
+    const session = await this.sessionService.findByUserId(payload.sub);
+    const isExpired: boolean = currentDate >= session.expiredAt;
 
     if (session.isExpired || isExpired) {
       this.logger.warn(`Session ${accessToken} was already marked as expired.`);
-      await this.sessionService.expireToken(accessToken)
+      await this.sessionService.expireToken(accessToken);
       throw new UnauthorizedException('Session has expired.');
     }
 

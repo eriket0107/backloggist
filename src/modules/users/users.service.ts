@@ -1,4 +1,10 @@
-import { Injectable, Inject, ConflictException, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  ConflictException,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { LoggerService } from '@/utils/logger/logger.service';
 import { IUsersRepository } from '@/repositories/interfaces/users.repository.interface';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -29,11 +35,13 @@ export class UsersService {
     }
 
     if (createUserDto.password.length < 8) {
-      this.logger.warn(`The password ${createUserDto.password.length} must equal or greater than 8.`);
-      throw new BadRequestException('Password must be equal to or greater than 8 characters.')
+      this.logger.warn(
+        `The password ${createUserDto.password.length} must equal or greater than 8.`,
+      );
+      throw new BadRequestException('Password must be equal to or greater than 8 characters.');
     }
 
-    const passwordHash = await this.passwordHandler.hashPassword(createUserDto.password)
+    const passwordHash = await this.passwordHandler.hashPassword(createUserDto.password);
 
     const data = await this.usersRepository.create({
       ...createUserDto,
@@ -105,13 +113,15 @@ export class UsersService {
       }
 
       if (updateUserDto.newPassword.length < 8) {
-        this.logger.warn(`New password length ${updateUserDto.newPassword.length} must be equal or greater than 8`);
+        this.logger.warn(
+          `New password length ${updateUserDto.newPassword.length} must be equal or greater than 8`,
+        );
         throw new BadRequestException('New password must be equal to or greater than 8 characters');
       }
 
       const isValidPassword = await this.passwordHandler.comparePassword(
         updateUserDto.password,
-        existingUser.password
+        existingUser.password,
       );
 
       if (!isValidPassword) {
@@ -121,7 +131,7 @@ export class UsersService {
 
       const isSamePassword = await this.passwordHandler.comparePassword(
         updateUserDto.newPassword,
-        existingUser.password
+        existingUser.password,
       );
 
       if (isSamePassword) {
@@ -134,7 +144,7 @@ export class UsersService {
 
     const data = {
       ...updateUserDto,
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     if (newPassword) {

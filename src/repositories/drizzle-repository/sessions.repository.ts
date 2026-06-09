@@ -2,18 +2,22 @@ import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '@/modules/database/database.service';
 import { and, desc, eq } from 'drizzle-orm';
 import { sessionsTable } from '../../../db/schema';
-import { ISessionsRepository, CreateSessionData, UpdateSessionData } from '@/repositories/interfaces/sessions.repository.interface';
+import {
+  ISessionsRepository,
+  CreateSessionData,
+  UpdateSessionData,
+} from '@/repositories/interfaces/sessions.repository.interface';
 
 @Injectable()
 export class SessionsRepository implements ISessionsRepository {
-  constructor(private readonly databaseService: DatabaseService) { }
+  constructor(private readonly databaseService: DatabaseService) {}
 
   async create(sessionData: CreateSessionData) {
     const [session] = await this.databaseService.db
       .insert(sessionsTable)
       .values({
         ...sessionData,
-        isExpired: false
+        isExpired: false,
       })
       .returning();
     return session;
@@ -32,7 +36,12 @@ export class SessionsRepository implements ISessionsRepository {
     const [session] = await this.databaseService.db
       .select()
       .from(sessionsTable)
-      .where(and(eq(sessionsTable.accessToken, accessToken), eq(sessionsTable.isExpired, isExpired ? isExpired : false)))
+      .where(
+        and(
+          eq(sessionsTable.accessToken, accessToken),
+          eq(sessionsTable.isExpired, isExpired ? isExpired : false),
+        ),
+      );
 
     return session;
   }
@@ -50,9 +59,9 @@ export class SessionsRepository implements ISessionsRepository {
     await this.databaseService.db
       .update(sessionsTable)
       .set({
-        isExpired: true
+        isExpired: true,
       })
-      .where(eq(sessionsTable.accessToken, accessToken))
+      .where(eq(sessionsTable.accessToken, accessToken));
   }
 
   async delete(id: string) {

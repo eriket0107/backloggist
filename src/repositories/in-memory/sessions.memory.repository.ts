@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { ISessionsRepository, CreateSessionData, UpdateSessionData } from '@/repositories/interfaces/sessions.repository.interface';
+import {
+  ISessionsRepository,
+  CreateSessionData,
+  UpdateSessionData,
+} from '@/repositories/interfaces/sessions.repository.interface';
 import { Session } from '@/types/entities';
 
 @Injectable()
@@ -21,17 +25,27 @@ export class SessionsMemoryRepository implements ISessionsRepository {
   }
 
   async findByUserId(userId: string): Promise<Session | null> {
-    return this.sessions.find(session => session.userId === userId) || null;
+    return this.sessions.find((session) => session.userId === userId) || null;
   }
 
   async findByAccessToken(id: string, isExpired?: boolean): Promise<Session | null> {
-    return this.sessions.find(session =>
-      session.accessToken === id && (isExpired === undefined || session.isExpired === isExpired)
-    ) || null;
+    return (
+      this.sessions.find(
+        (session) =>
+          session.accessToken === id &&
+          (isExpired === undefined || session.isExpired === isExpired),
+      ) || null
+    );
   }
 
-  async update(userId: string, accessToken: string, sessionData: UpdateSessionData): Promise<Session | null> {
-    const sessionIndex = this.sessions.findIndex(session => session.userId === userId && session.accessToken === accessToken);
+  async update(
+    userId: string,
+    accessToken: string,
+    sessionData: UpdateSessionData,
+  ): Promise<Session | null> {
+    const sessionIndex = this.sessions.findIndex(
+      (session) => session.userId === userId && session.accessToken === accessToken,
+    );
     if (sessionIndex === -1) {
       return null;
     }
@@ -45,7 +59,7 @@ export class SessionsMemoryRepository implements ISessionsRepository {
   }
 
   async delete(id: string): Promise<Session | null> {
-    const sessionIndex = this.sessions.findIndex(session => session.id === id);
+    const sessionIndex = this.sessions.findIndex((session) => session.id === id);
     if (sessionIndex === -1) {
       return null;
     }
@@ -56,7 +70,7 @@ export class SessionsMemoryRepository implements ISessionsRepository {
   }
 
   async deleteByUserId(userId: string): Promise<Session | null> {
-    const sessionIndex = this.sessions.findIndex(session => session.userId === userId);
+    const sessionIndex = this.sessions.findIndex((session) => session.userId === userId);
     if (sessionIndex === -1) {
       return null;
     }
@@ -67,7 +81,7 @@ export class SessionsMemoryRepository implements ISessionsRepository {
   }
 
   async expireToken(accessToken: string): Promise<void> {
-    const session = this.sessions.find(session => session.accessToken === accessToken);
+    const session = this.sessions.find((session) => session.accessToken === accessToken);
     if (session) {
       session.isExpired = true;
     }

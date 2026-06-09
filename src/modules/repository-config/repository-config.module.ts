@@ -38,7 +38,9 @@ const useMemory = process.env.NODE_ENV === 'test';
     {
       provide: 'IUserItemsRepository',
       useFactory: (databaseService: DatabaseService) => {
-        return useMemory ? new UserItemsMemoryRepository() : new UserItemsRepository(databaseService);
+        return useMemory
+          ? new UserItemsMemoryRepository()
+          : new UserItemsRepository(databaseService);
       },
       inject: [DatabaseService],
     },
@@ -59,11 +61,20 @@ const useMemory = process.env.NODE_ENV === 'test';
     {
       provide: 'IItemGenresRepository',
       useFactory: (databaseService: DatabaseService) => {
-        return useMemory ? new ItemGenresMemoryRepository() : new ItemGenresRepository(databaseService);
+        return useMemory
+          ? new ItemGenresMemoryRepository()
+          : new ItemGenresRepository(databaseService);
       },
       inject: [DatabaseService],
     },
   ],
-  exports: ['IUsersRepository', 'IItemsRepository', 'IUserItemsRepository', 'ISessionsRepository', 'IGenresRepository', 'IItemGenresRepository'],
+  exports: [
+    'IUsersRepository',
+    'IItemsRepository',
+    'IUserItemsRepository',
+    'ISessionsRepository',
+    'IGenresRepository',
+    'IItemGenresRepository',
+  ],
 })
-export class RepositoryConfigModule { }
+export class RepositoryConfigModule {}

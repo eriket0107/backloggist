@@ -11,7 +11,15 @@ export interface UpdateGenreData {
 
 export interface IGenresRepository {
   create(genreData: CreateGenreData): Promise<Genre>;
-  findAll({ limit, page, search }: { limit?: number, page?: number, search?: string }): Promise<PaginatedResult<Genre>>;
+  findAll({
+    limit,
+    page,
+    search,
+  }: {
+    limit?: number;
+    page?: number;
+    search?: string;
+  }): Promise<PaginatedResult<Genre>>;
   findById(id: string): Promise<Genre | null>;
   findByName(name: string): Promise<Genre | null>;
   update(id: string, genreData: UpdateGenreData): Promise<Genre | null>;

@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { IUsersRepository, CreateUserData, UpdateUserData } from '@/repositories/interfaces/users.repository.interface';
+import {
+  IUsersRepository,
+  CreateUserData,
+  UpdateUserData,
+} from '@/repositories/interfaces/users.repository.interface';
 import { User } from '@/types/entities';
 
 @Injectable()
@@ -28,17 +32,17 @@ export class UsersMemoryRepository implements IUsersRepository {
   }
 
   async findById(id: string): Promise<User | null> {
-    const user = this.users.find(user => user.id === id);
+    const user = this.users.find((user) => user.id === id);
     return user ? { ...user } : null;
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    const user = this.users.find(user => user.email === email);
+    const user = this.users.find((user) => user.email === email);
     return user ? { ...user } : null;
   }
 
   async update(id: string, userData: UpdateUserData): Promise<User | null> {
-    const userIndex = this.users.findIndex(user => user.id === id);
+    const userIndex = this.users.findIndex((user) => user.id === id);
     if (userIndex === -1) {
       return null;
     }
@@ -53,7 +57,7 @@ export class UsersMemoryRepository implements IUsersRepository {
   }
 
   async delete(id: string): Promise<User | null> {
-    const userIndex = this.users.findIndex(user => user.id === id);
+    const userIndex = this.users.findIndex((user) => user.id === id);
     if (userIndex === -1) {
       return null;
     }

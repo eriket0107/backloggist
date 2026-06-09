@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { IUserItemsRepository, CreateUserItemData, UpdateUserItemData } from '@/repositories/interfaces/user-items.repository.interface';
+import {
+  IUserItemsRepository,
+  CreateUserItemData,
+  UpdateUserItemData,
+} from '@/repositories/interfaces/user-items.repository.interface';
 import { UserItem, UserItemWithDetails, BacklogStats, Item } from '@/types/entities';
 import { PaginatedResult } from '@/types/pagination';
 
@@ -22,18 +26,29 @@ export class UserItemsMemoryRepository implements IUserItemsRepository {
     return userItem;
   }
 
-  async findByBacklogByUser({ userId, limit = 10, page = 1, search, type }: { limit?: number, page?: number, userId: string, type?: Item['type'], search?: string }): Promise<PaginatedResult<UserItemWithDetails>> {
-    let userItems = this.userItems.filter(ui => ui.userId === userId);
+  async findByBacklogByUser({
+    userId,
+    limit = 10,
+    page = 1,
+    search,
+    type,
+  }: {
+    limit?: number;
+    page?: number;
+    userId: string;
+    type?: Item['type'];
+    search?: string;
+  }): Promise<PaginatedResult<UserItemWithDetails>> {
+    let userItems = this.userItems.filter((ui) => ui.userId === userId);
 
     if (search) {
-      userItems = userItems.filter(ui =>
-        `Mock Item ${ui.itemId}`.toLowerCase().includes(search.toLowerCase())
+      userItems = userItems.filter((ui) =>
+        `Mock Item ${ui.itemId}`.toLowerCase().includes(search.toLowerCase()),
       );
     }
 
     if (type) {
       userItems = userItems.filter(() => {
-
         return type === 'game';
       });
     }
@@ -43,7 +58,7 @@ export class UserItemsMemoryRepository implements IUserItemsRepository {
     const offset = (page - 1) * limit;
     const paginatedItems = userItems.slice(offset, offset + limit);
 
-    const data = paginatedItems.map(ui => ({
+    const data = paginatedItems.map((ui) => ({
       ...ui,
       item: {
         id: ui.itemId,
@@ -54,7 +69,7 @@ export class UserItemsMemoryRepository implements IUserItemsRepository {
         imgUrl: `https://example.com/image-${ui.itemId}.jpg`,
         createdAt: new Date(),
         updatedAt: new Date(),
-      }
+      },
     }));
 
     return {
@@ -67,12 +82,22 @@ export class UserItemsMemoryRepository implements IUserItemsRepository {
     };
   }
 
-  async findByUserAndItem({ id, userId }: { userId: string, id: string }): Promise<UserItem | null> {
-    return this.userItems.find(ui => ui.userId === userId && ui.id === id) || null;
+  async findByUserAndItem({
+    id,
+    userId,
+  }: {
+    userId: string;
+    id: string;
+  }): Promise<UserItem | null> {
+    return this.userItems.find((ui) => ui.userId === userId && ui.id === id) || null;
   }
 
-  async updateByUserAndItem(userId: string, id: string, userItemData: UpdateUserItemData): Promise<UserItem | null> {
-    const userItemIndex = this.userItems.findIndex(ui => ui.userId === userId && ui.id === id);
+  async updateByUserAndItem(
+    userId: string,
+    id: string,
+    userItemData: UpdateUserItemData,
+  ): Promise<UserItem | null> {
+    const userItemIndex = this.userItems.findIndex((ui) => ui.userId === userId && ui.id === id);
     if (userItemIndex === -1) {
       return null;
     }
@@ -86,7 +111,7 @@ export class UserItemsMemoryRepository implements IUserItemsRepository {
   }
 
   async deleteByUserAndItem(userId: string, id: string): Promise<UserItem | null> {
-    const userItemIndex = this.userItems.findIndex(ui => ui.userId === userId && ui.id === id);
+    const userItemIndex = this.userItems.findIndex((ui) => ui.userId === userId && ui.id === id);
     if (userItemIndex === -1) {
       return null;
     }
@@ -97,13 +122,13 @@ export class UserItemsMemoryRepository implements IUserItemsRepository {
   }
 
   async getStatsByUserId(userId: string): Promise<BacklogStats> {
-    const userItems = this.userItems.filter(ui => ui.userId === userId);
+    const userItems = this.userItems.filter((ui) => ui.userId === userId);
 
     return {
       total: userItems.length,
-      completed: userItems.filter(ui => ui.status === 'completed').length,
-      in_progress: userItems.filter(ui => ui.status === 'in_progress').length,
-      pending: userItems.filter(ui => ui.status === 'pending').length,
+      completed: userItems.filter((ui) => ui.status === 'completed').length,
+      in_progress: userItems.filter((ui) => ui.status === 'in_progress').length,
+      pending: userItems.filter((ui) => ui.status === 'pending').length,
     };
   }
 }

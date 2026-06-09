@@ -10,7 +10,7 @@ export class AddToBacklogDto {
   @ApiProperty({
     example: 'pending',
     enum: ['completed', 'in_progress', 'pending'],
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsString()
