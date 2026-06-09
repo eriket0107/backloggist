@@ -1,6 +1,10 @@
 import { Injectable, Inject, NotFoundException, ConflictException } from '@nestjs/common';
 import { LoggerService } from '@/utils/logger/logger.service';
-import { IItemsRepository, UpdateItemData } from '@/repositories/interfaces/items.repository.interface';
+import {
+  IItemsRepository,
+  UpdateItemData,
+} from '@/repositories/interfaces/items.repository.interface';
+import { ErrorHandlerService } from '@/utils/error-handler/error-handler.service';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 import { createReadStream, existsSync, ReadStream, unlink } from 'fs';
@@ -16,8 +20,13 @@ export class ItemsService {
     @Inject('IItemsRepository')
     private readonly itemsRepository: IItemsRepository,
     private readonly loggerService: LoggerService,
+    private readonly errorHandler: ErrorHandlerService,
   ) {
     this.logger = this.loggerService.createEntityLogger('ItemsService');
+  }
+
+  private getErrorMessage(error: unknown): string {
+    return this.errorHandler.getMessage(error);
   }
 
   async create(createItemDto: CreateItemDto, userId: string) {
@@ -25,21 +34,27 @@ export class ItemsService {
 
     const data = await this.itemsRepository.create({
       ...createItemDto,
-      userId
+      userId,
     });
 
     this.logger.info(`Item created with ID: ${data.id}`);
     return { data };
   }
 
-  async findAll({ limit = 10, page = 1, userId }: { limit?: number, page?: number, userId: string } = { limit: 10, page: 1, userId: '' }) {
+  async findAll(
+    { limit = 10, page = 1, userId }: { limit?: number; page?: number; userId: string } = {
+      limit: 10,
+      page: 1,
+      userId: '',
+    },
+  ) {
     this.logger.info(`Fetching items for user ${userId}`);
     const data = await this.itemsRepository.findAll({ limit, page, userId });
 
     this.logger.info(`Found ${data.totalItems} items`);
 
     return {
-      ...data
+      ...data,
     };
   }
 
@@ -60,7 +75,10 @@ export class ItemsService {
   async update(id: string, updateItemDto: UpdateItemDto) {
     this.logger.info(`Updating item with ID: ${id}`);
 
-    const updateData: UpdateItemData = { ...updateItemDto, updatedAt: new Date() };
+    const updateData: UpdateItemData = {
+      ...updateItemDto,
+      updatedAt: new Date(),
+    };
 
     const data = await this.itemsRepository.update(id, updateData);
 
@@ -90,15 +108,14 @@ export class ItemsService {
   async saveImg(id: string, file: Express.Multer.File) {
     this.logger.info(`Starting file upload for item ID: ${id}`);
 
-
-    this.validateFile(file)
+    this.validateFile(file);
 
     const pathUpload = path.join(process.cwd(), 'uploads');
 
     if (!existsSync(pathUpload)) {
       this.logger.info('Creating uploads directory');
       await mkdir(pathUpload, {
-        recursive: true
+        recursive: true,
       });
     }
 
@@ -109,14 +126,13 @@ export class ItemsService {
       this.logger.info(`Deleting existing file: ${fileName}`);
       unlink(filePath, (err) => {
         if (err) {
-          this.logger.error(`Failed to delete old file: ${err.message}`);
-          throw new Error((err as Error).message);
+          const errorMessage = this.getErrorMessage(err);
+          this.logger.error(`Failed to delete old file: ${errorMessage}`);
+          throw new Error(errorMessage);
         }
         this.logger.info('Old file deleted successfully');
       });
     }
-
-
 
     return new Promise((resolve, reject) => {
       this.logger.info(`Starting image processing with worker for item: ${id}`);
@@ -125,40 +141,47 @@ export class ItemsService {
         workerData: {
           fileBuffer: file.buffer,
           filePath,
-          quality: 80
-        }
+          quality: 80,
+        },
       });
 
       worker.on('message', async ({ success, error }) => {
         if (success) {
           this.logger.info(`Image processed successfully for item: ${id}`);
           try {
-
             const filePath = `/${path.join('uploads', fileName)}`;
             await this.itemsRepository.update(id, {
-              imgUrl: filePath
+              imgUrl: filePath,
             });
             this.logger.info(`Database updated with image URL for item: ${id}`);
             resolve({ fileName, filePath });
           } catch (dbError) {
-            this.logger.error(`Failed to update database for item ${id}: ${dbError.message}`);
+            const errorMessage = this.getErrorMessage(dbError);
+            this.logger.error(`Failed to update database for item ${id}: ${errorMessage}`);
             reject(dbError);
           }
         } else {
-          this.logger.error(`Image processing failed for item ${id}: ${error}`);
-          reject(new Error(error));
+          const errorMessage = this.getErrorMessage(error);
+          this.logger.error(`Image processing failed for item ${id}: ${errorMessage}`);
+          reject(new Error(errorMessage));
         }
         worker.terminate();
       });
 
       worker.on('error', (workerError) => {
-        this.logger.error(`Worker error for item ${id}: ${workerError.message}`);
+        const errorMessage = this.getErrorMessage(workerError);
+        this.logger.error(`Worker error for item ${id}: ${errorMessage}`);
         reject(workerError);
       });
     });
   }
 
-  async findImg(id: string): Promise<{ stream: ReadStream, fileName: string, filePath: string, contentType: string }> {
+  async findImg(id: string): Promise<{
+    stream: ReadStream;
+    fileName: string;
+    filePath: string;
+    contentType: string;
+  }> {
     const fileName = `${id}.webp`;
     const filePath = path.join(process.cwd(), 'uploads', fileName);
 
@@ -181,12 +204,12 @@ export class ItemsService {
       });
 
       readStream.on('error', (error) => {
-        this.logger.error(`Error reading file ${fileName}: ${error.message}`);
+        const errorMessage = this.getErrorMessage(error);
+        this.logger.error(`Error reading file ${fileName}: ${errorMessage}`);
         reject(error);
       });
     });
   }
-
 
   private validateFile(file: Express.Multer.File): void {
     const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
@@ -214,8 +237,12 @@ export class ItemsService {
     }
 
     if (!allowedMimeTypes.includes(file.mimetype)) {
-      this.logger.warn(`Invalid file format: ${file.mimetype}. Allowed: ${allowedMimeTypes.join(', ')}`);
-      throw new ConflictException(`Invalid file format. Allowed formats: ${allowedMimeTypes.join(', ')}`);
+      this.logger.warn(
+        `Invalid file format: ${file.mimetype}. Allowed: ${allowedMimeTypes.join(', ')}`,
+      );
+      throw new ConflictException(
+        `Invalid file format. Allowed formats: ${allowedMimeTypes.join(', ')}`,
+      );
     }
 
     if (!file.originalname || file.originalname.trim() === '') {
@@ -223,6 +250,8 @@ export class ItemsService {
       throw new ConflictException('Invalid filename');
     }
 
-    this.logger.info(`File validation passed: ${file.originalname} (${file.mimetype}, ${file.size} bytes)`);
+    this.logger.info(
+      `File validation passed: ${file.originalname} (${file.mimetype}, ${file.size} bytes)`,
+    );
   }
 }

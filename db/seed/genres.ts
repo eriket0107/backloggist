@@ -2,7 +2,9 @@ import { db } from ".."
 import { genresTable } from "../schema"
 import { LoggerService } from "@/utils/logger/logger.service"
 import { Genre } from "@/types/entities"
+import { ErrorHandlerService } from "@/utils/error-handler/error-handler.service"
 
+const errorHandler = new ErrorHandlerService()
 const loggerService = new LoggerService()
 
 const logger = loggerService.createEntityLogger('GenresSeed')
@@ -77,7 +79,8 @@ export const genresSeed = async () => {
     }
 
   } catch (error) {
-    logger.error(`❌ Failed to seed genres: ${error.message}`)
+    const errorMessage = errorHandler.getMessage(error)
+    logger.error(`❌ Failed to seed genres: ${errorMessage}`)
     throw error
   }
 }
