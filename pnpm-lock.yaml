@@ -59,6 +59,9 @@ importers:
       sharp:
         specifier: 0.34.4
         version: 0.34.4
+      swagger-themes:
+        specifier: ^1.4.3
+        version: 1.4.3
       zod:
         specifier: 4.1.9
         version: 4.1.9
@@ -3598,6 +3601,9 @@ packages:
   supports-color@8.1.1:
     resolution: {integrity: sha512-MpUEN2OodtUzxvKQl72cUF7RQ5EiHsGvSsVG0ia9c5RbWGL2CI4C7EpPS8UTBIplnlzZiNuV56w+FuNxy3ty2Q==}
     engines: {node: '>=10'}
+
+  swagger-themes@1.4.3:
+    resolution: {integrity: sha512-1G0CqJC1IBbNxkAOyJoREd9hfwXH1R6+3GOFxLhQho2w2i+AbaJqkF4mTJhkce4yhaEMUXvv4KKu1YO/qpe6nQ==}
 
   swagger-ui-dist@5.21.0:
     resolution: {integrity: sha512-E0K3AB6HvQd8yQNSMR7eE5bk+323AUxjtCz/4ZNKiahOlPhPJxqn3UPIGs00cyY/dhrTDJ61L7C/a8u6zhGrZg==}
@@ -7511,6 +7517,8 @@ snapshots:
   supports-color@8.1.1:
     dependencies:
       has-flag: 4.0.0
+
+  swagger-themes@1.4.3: {}
 
   swagger-ui-dist@5.21.0:
     dependencies:
