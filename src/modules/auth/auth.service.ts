@@ -35,6 +35,7 @@ export class AuthService {
   async signIn(email: string, pass: string): Promise<{ accessToken: string }> {
     this.logger.info('Attempting sign in', { email });
     const { data: user } = await this.usersService.findByEmail(email);
+    
     if (!user) {
       this.logger.warn('Sign in failed - user not found', { email });
       throw new UnauthorizedException();
