@@ -32,6 +32,16 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
+
+  if (process.env.NODE_ENV !== 'production') {
+    const fs = await import('fs');
+    const path = await import('path');
+    fs.writeFileSync(
+      path.resolve(process.cwd(), 'swagger.json'),
+      JSON.stringify(document, null, 2),
+    );
+  }
+
   SwaggerModule.setup('docs', app, document, {
     swaggerUrl: '/docs',
     customSiteTitle: 'Backloggist API',

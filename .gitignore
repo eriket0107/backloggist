@@ -71,3 +71,6 @@ dist/
 
 # uploads
 uploads/*
+
+# docs
+swagger.json

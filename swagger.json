@@ -1,12 +1,1144 @@
 {
   "openapi": "3.0.0",
+  "paths": {
+    "/users": {
+      "post": {
+        "operationId": "UsersController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        },
+        "summary": "Create a new user",
+        "tags": [
+          "users"
+        ]
+      },
+      "get": {
+        "operationId": "UsersController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Users retrieved successfully"
+          }
+        },
+        "summary": "Get all users",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "operationId": "UsersController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User found"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        },
+        "summary": "Get user by ID",
+        "tags": [
+          "users"
+        ]
+      },
+      "patch": {
+        "operationId": "UsersController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User updated successfully"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        },
+        "summary": "Update user",
+        "tags": [
+          "users"
+        ]
+      },
+      "delete": {
+        "operationId": "UsersController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "User deleted successfully"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        },
+        "summary": "Delete user",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/items": {
+      "post": {
+        "operationId": "ItemsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateItemDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Item created successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        },
+        "summary": "Create a new item",
+        "tags": [
+          "items"
+        ]
+      },
+      "get": {
+        "operationId": "ItemsController_findAll",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "isPublic",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": false,
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Items retrieved successfully"
+          }
+        },
+        "summary": "Get all items",
+        "tags": [
+          "items"
+        ]
+      }
+    },
+    "/items/{id}": {
+      "get": {
+        "operationId": "ItemsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item found"
+          },
+          "404": {
+            "description": "Item not found"
+          }
+        },
+        "summary": "Get item by ID",
+        "tags": [
+          "items"
+        ]
+      },
+      "patch": {
+        "operationId": "ItemsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateItemDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Item updated successfully"
+          },
+          "404": {
+            "description": "Item not found"
+          }
+        },
+        "summary": "Update item",
+        "tags": [
+          "items"
+        ]
+      },
+      "delete": {
+        "operationId": "ItemsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Item deleted successfully"
+          },
+          "404": {
+            "description": "Item not found"
+          }
+        },
+        "summary": "Delete item",
+        "tags": [
+          "items"
+        ]
+      }
+    },
+    "/items/{id}/img": {
+      "get": {
+        "operationId": "ItemsController_findImg",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Image retrieved successfully"
+          },
+          "404": {
+            "description": "Image not found"
+          }
+        },
+        "summary": "Get item image",
+        "tags": [
+          "items"
+        ]
+      }
+    },
+    "/backlog": {
+      "post": {
+        "operationId": "UserItemsController_addToBacklog",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddToBacklogDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Item added to backlog successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        },
+        "summary": "Add item to user backlog",
+        "tags": [
+          "user-items"
+        ]
+      },
+      "get": {
+        "operationId": "UserItemsController_getUserBacklog",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "Item title",
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User backlog retrieved successfully"
+          }
+        },
+        "summary": "Get user backlog",
+        "tags": [
+          "user-items"
+        ]
+      }
+    },
+    "/backlog/stats": {
+      "get": {
+        "operationId": "UserItemsController_getBacklogStats",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Backlog statistics retrieved successfully"
+          }
+        },
+        "summary": "Get user backlog statistics",
+        "tags": [
+          "user-items"
+        ]
+      }
+    },
+    "/backlog/{id}": {
+      "patch": {
+        "operationId": "UserItemsController_updateUserItem",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserItemDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User item updated successfully"
+          },
+          "404": {
+            "description": "User item not found"
+          }
+        },
+        "summary": "Update user item",
+        "tags": [
+          "user-items"
+        ]
+      }
+    },
+    "/backlog/{itemId}": {
+      "delete": {
+        "operationId": "UserItemsController_removeFromBacklog",
+        "parameters": [
+          {
+            "name": "itemId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Item removed from backlog successfully"
+          },
+          "404": {
+            "description": "User item not found"
+          }
+        },
+        "summary": "Remove item from user backlog",
+        "tags": [
+          "user-items"
+        ]
+      }
+    },
+    "/genres": {
+      "post": {
+        "operationId": "GenresController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateGenreDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Genre created successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "409": {
+            "description": "Genre with this name already exists"
+          }
+        },
+        "summary": "Create a new genre",
+        "tags": [
+          "genres"
+        ]
+      },
+      "get": {
+        "operationId": "GenresController_findAll",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "10",
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "1",
+              "type": "number"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "Action",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Genres retrieved successfully"
+          }
+        },
+        "summary": "Get all genres",
+        "tags": [
+          "genres"
+        ]
+      }
+    },
+    "/genres/{id}": {
+      "get": {
+        "operationId": "GenresController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Genre found"
+          },
+          "404": {
+            "description": "Genre not found"
+          }
+        },
+        "summary": "Get genre by ID",
+        "tags": [
+          "genres"
+        ]
+      },
+      "patch": {
+        "operationId": "GenresController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateGenreDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Genre updated successfully"
+          },
+          "404": {
+            "description": "Genre not found"
+          },
+          "409": {
+            "description": "Genre with this name already exists"
+          }
+        },
+        "summary": "Update genre",
+        "tags": [
+          "genres"
+        ]
+      },
+      "delete": {
+        "operationId": "GenresController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Genre deleted successfully"
+          },
+          "404": {
+            "description": "Genre not found"
+          }
+        },
+        "summary": "Delete genre",
+        "tags": [
+          "genres"
+        ]
+      }
+    },
+    "/item-genres": {
+      "post": {
+        "operationId": "ItemGenresController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateItemGenreDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Item-Genre relationship created successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Item or Genre not found"
+          },
+          "409": {
+            "description": "Item-Genre relationship already exists"
+          }
+        },
+        "summary": "Create a new item-genre relationship",
+        "tags": [
+          "item-genres"
+        ]
+      },
+      "get": {
+        "operationId": "ItemGenresController_findAll",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "10",
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "1",
+              "type": "number"
+            }
+          },
+          {
+            "name": "itemId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "550e8400-e29b-41d4-a716-446655440000",
+              "type": "string"
+            }
+          },
+          {
+            "name": "genreId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "550e8400-e29b-41d4-a716-446655440001",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item-Genre relationships retrieved successfully"
+          }
+        },
+        "summary": "Get all item-genre relationships",
+        "tags": [
+          "item-genres"
+        ]
+      }
+    },
+    "/item-genres/item/{itemId}": {
+      "get": {
+        "operationId": "ItemGenresController_findByItem",
+        "parameters": [
+          {
+            "name": "itemId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Genres for item retrieved successfully"
+          },
+          "404": {
+            "description": "Item not found"
+          }
+        },
+        "summary": "Get all genres for a specific item",
+        "tags": [
+          "item-genres"
+        ]
+      }
+    },
+    "/item-genres/{id}": {
+      "get": {
+        "operationId": "ItemGenresController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item-Genre relationship found"
+          },
+          "404": {
+            "description": "Item-Genre relationship not found"
+          }
+        },
+        "summary": "Get item-genre relationship by ID",
+        "tags": [
+          "item-genres"
+        ]
+      },
+      "delete": {
+        "operationId": "ItemGenresController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Item-Genre relationship deleted successfully"
+          },
+          "404": {
+            "description": "Item-Genre relationship not found"
+          }
+        },
+        "summary": "Delete item-genre relationship by ID",
+        "tags": [
+          "item-genres"
+        ]
+      }
+    },
+    "/item-genres/genre/{genreId}": {
+      "get": {
+        "operationId": "ItemGenresController_findByGenre",
+        "parameters": [
+          {
+            "name": "genreId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item-Genre relationship found"
+          },
+          "404": {
+            "description": "Item-Genre relationship not found"
+          }
+        },
+        "summary": "Get item-genre relationship by ID",
+        "tags": [
+          "item-genres"
+        ]
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "AuthController_signIn",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignInDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "operationId": "AuthController_signOut",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/profile": {
+      "get": {
+        "operationId": "AuthController_getProfile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/logs/index.txt": {
+      "get": {
+        "operationId": "LogsController_getIndex",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Logs"
+        ]
+      }
+    },
+    "/logs/{filename}": {
+      "get": {
+        "operationId": "LogsController_getLogFile",
+        "parameters": [
+          {
+            "name": "filename",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Logs"
+        ]
+      }
+    }
+  },
   "info": {
-    "title": "Backloggist",
-    "description": "Backend for an Application of backlog",
-    "version": "1.0.0"
+    "title": "Backloggist API",
+    "description": "API for managing your backlog of games, books, movies, etc.",
+    "version": "1.0",
+    "contact": {}
   },
+  "tags": [],
+  "servers": [],
   "components": {
-    "schemas": {}
-  },
-  "paths": {}
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "CreateUserDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "example": "john@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "password123",
+            "minLength": 8
+          }
+        },
+        "required": [
+          "name",
+          "email",
+          "password"
+        ]
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "example": "john@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "password123",
+            "minLength": 8
+          },
+          "newPassword": {
+            "type": "string",
+            "example": "password123",
+            "minLength": 8
+          }
+        },
+        "required": [
+          "newPassword"
+        ]
+      },
+      "CreateItemDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "The Witcher 3"
+          },
+          "type": {
+            "type": "string",
+            "example": "game",
+            "enum": [
+              "game",
+              "book",
+              "serie",
+              "movie",
+              "course"
+            ]
+          },
+          "description": {
+            "type": "string",
+            "example": "An amazing RPG game"
+          },
+          "imgUrl": {
+            "type": "string",
+            "example": "https://example.com/image.jpg"
+          }
+        },
+        "required": [
+          "title",
+          "type"
+        ]
+      },
+      "UpdateItemDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "The Witcher 3"
+          },
+          "type": {
+            "type": "string",
+            "example": "game",
+            "enum": [
+              "game",
+              "book",
+              "serie",
+              "movie",
+              "course"
+            ]
+          },
+          "description": {
+            "type": "string",
+            "example": "An amazing RPG game"
+          },
+          "imgUrl": {
+            "type": "string",
+            "example": "https://example.com/image.jpg"
+          }
+        }
+      },
+      "AddToBacklogDto": {
+        "type": "object",
+        "properties": {
+          "itemId": {
+            "type": "string",
+            "example": "item-uuid-here"
+          },
+          "status": {
+            "type": "string",
+            "example": "pending",
+            "enum": [
+              "completed",
+              "in_progress",
+              "pending"
+            ]
+          }
+        },
+        "required": [
+          "itemId"
+        ]
+      },
+      "Object": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateUserItemDto": {
+        "type": "object",
+        "properties": {
+          "order": {
+            "type": "number",
+            "example": 1
+          },
+          "status": {
+            "type": "string",
+            "example": "in_progress",
+            "enum": [
+              "completed",
+              "in_progress",
+              "pending"
+            ]
+          },
+          "rating": {
+            "type": "number",
+            "example": 5
+          }
+        }
+      },
+      "CreateGenreDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Action"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "UpdateGenreDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Adventure"
+          }
+        }
+      },
+      "CreateItemGenreDto": {
+        "type": "object",
+        "properties": {
+          "itemId": {
+            "type": "string",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "genreId": {
+            "type": "string",
+            "example": "550e8400-e29b-41d4-a716-446655440001"
+          }
+        },
+        "required": [
+          "itemId",
+          "genreId"
+        ]
+      },
+      "SignInDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "john@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "password123",
+            "minLength": 8
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      }
+    }
+  }
 }
