@@ -42,14 +42,20 @@ export class ItemsService {
   }
 
   async findAll(
-    { limit = 10, page = 1, userId }: { limit?: number; page?: number; userId: string } = {
+    {
+      limit = 10,
+      page = 1,
+      userId,
+      searchTerm = '',
+    }: { limit?: number; page?: number; userId: string; searchTerm?: string } = {
       limit: 10,
       page: 1,
       userId: '',
+      searchTerm: '',
     },
   ) {
     this.logger.info(`Fetching items for user ${userId}`);
-    const data = await this.itemsRepository.findAll({ limit, page, userId });
+    const data = await this.itemsRepository.findAll({ limit, page, userId, searchTerm });
 
     this.logger.info(`Found ${data.totalItems} items`);
 
@@ -108,72 +114,77 @@ export class ItemsService {
   async saveImg(id: string, file: Express.Multer.File) {
     this.logger.info(`Starting file upload for item ID: ${id}`);
 
-    this.validateFile(file);
+    try {
+      this.validateFile(file);
 
-    const pathUpload = path.join(process.cwd(), 'uploads');
+      const pathUpload = path.join(process.cwd(), 'uploads');
 
-    if (!existsSync(pathUpload)) {
-      this.logger.info('Creating uploads directory');
-      await mkdir(pathUpload, {
-        recursive: true,
-      });
-    }
+      if (!existsSync(pathUpload)) {
+        this.logger.info('Creating uploads directory');
+        await mkdir(pathUpload, {
+          recursive: true,
+        });
+      }
 
-    const fileName = `${id}.webp`;
-    const filePath = path.join(pathUpload, fileName);
+      const fileName = `${id}.webp`;
+      const filePath = path.join(pathUpload, fileName);
 
-    if (existsSync(filePath)) {
-      this.logger.info(`Deleting existing file: ${fileName}`);
-      unlink(filePath, (err) => {
-        if (err) {
-          const errorMessage = this.getErrorMessage(err);
-          this.logger.error(`Failed to delete old file: ${errorMessage}`);
-          throw new Error(errorMessage);
-        }
-        this.logger.info('Old file deleted successfully');
-      });
-    }
-
-    return new Promise((resolve, reject) => {
-      this.logger.info(`Starting image processing with worker for item: ${id}`);
-
-      const worker = new Worker(path.join(process.cwd(), 'src/workers/image-processor.js'), {
-        workerData: {
-          fileBuffer: file.buffer,
-          filePath,
-          quality: 80,
-        },
-      });
-
-      worker.on('message', async ({ success, error }) => {
-        if (success) {
-          this.logger.info(`Image processed successfully for item: ${id}`);
-          try {
-            const filePath = `/${path.join('uploads', fileName)}`;
-            await this.itemsRepository.update(id, {
-              imgUrl: filePath,
-            });
-            this.logger.info(`Database updated with image URL for item: ${id}`);
-            resolve({ fileName, filePath });
-          } catch (dbError) {
-            const errorMessage = this.getErrorMessage(dbError);
-            this.logger.error(`Failed to update database for item ${id}: ${errorMessage}`);
-            reject(dbError);
+      if (existsSync(filePath)) {
+        this.logger.info(`Deleting existing file: ${fileName}`);
+        unlink(filePath, (err) => {
+          if (err) {
+            this.logger.error(`Failed to delete old file: ${err.message}`);
+            throw new Error((err as Error).message);
           }
-        } else {
-          const errorMessage = this.getErrorMessage(error);
-          this.logger.error(`Image processing failed for item ${id}: ${errorMessage}`);
-          reject(new Error(errorMessage));
-        }
-        worker.terminate();
-      });
+          this.logger.info('Old file deleted successfully');
+        });
+      }
 
-      worker.on('error', (workerError) => {
-        const errorMessage = this.getErrorMessage(workerError);
-        this.logger.error(`Worker error for item ${id}: ${errorMessage}`);
-        reject(workerError);
+      return new Promise((resolve, reject) => {
+        this.logger.info(`Starting image processing with worker for item: ${id}`);
+
+        const worker = new Worker(path.join(process.cwd(), 'src/workers/image-processor.js'), {
+          workerData: {
+            fileBuffer: file.buffer,
+            filePath,
+            quality: 80,
+          },
+        });
+
+        worker.on('message', async ({ success, error }) => {
+          if (success) {
+            this.logger.info(`Image processed successfully for item: ${id}`);
+            try {
+              const filePath = `/${path.join('uploads', fileName)}`;
+              await this.itemsRepository.update(id, {
+                imgUrl: filePath,
+              });
+              this.logger.info(`Database updated with image URL for item: ${id}`);
+              resolve({ fileName, filePath });
+            } catch (dbError) {
+              const errorMessage = this.getErrorMessage(dbError);
+              this.logger.error(`Failed to update database for item ${id}: ${errorMessage}`);
+              worker.terminate();
+              reject(dbError);
+            }
+          } else {
+            this.logger.error(`Image processing failed for item ${id}: ${error}`);
+            worker.terminate();
+            reject(new Error(error));
+          }
+        });
+
+        worker.on('error', (workerError) => {
+          this.logger.error(`Worker error for item ${id}: ${workerError.message}`);
+          worker.terminate();
+          reject(workerError);
+        });
       });
-    });
+    } catch (error) {
+      const errorMessage = this.getErrorMessage(error);
+      this.logger.error(`Worker error for item ${id}: ${errorMessage}`);
+      throw error;
+    }
   }
 
   async findImg(id: string): Promise<{

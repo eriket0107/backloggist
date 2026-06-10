@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '@/modules/database/database.service';
-import { desc, eq, or, and, count } from 'drizzle-orm';
+import { desc, eq, or, and, count, ilike } from 'drizzle-orm';
 import { itemsTable } from '../../../db/schema';
 import {
   IItemsRepository,
@@ -21,14 +21,20 @@ export class ItemsRepository implements IItemsRepository {
     limit = 10,
     page = 1,
     userId,
+    searchTerm,
   }: {
     limit?: number;
     page?: number;
     userId: string;
+    searchTerm?: string;
   }) {
     const offset = (page - 1) * limit;
 
-    const whereCondition = and(eq(itemsTable.userId, userId), eq(itemsTable.isPublic, false));
+    const whereCondition = and(
+      eq(itemsTable.userId, userId),
+      eq(itemsTable.isPublic, false),
+      ...(searchTerm ? [ilike(itemsTable.title, `${searchTerm}%`)] : []),
+    );
 
     const [{ totalItems: totalCount }] = await this.databaseService.db
       .select({ totalItems: count() })
@@ -39,8 +45,8 @@ export class ItemsRepository implements IItemsRepository {
       .select()
       .from(itemsTable)
       .where(whereCondition)
-      .limit(limit)
       .offset(offset)
+      .limit(limit)
       .orderBy(desc(itemsTable.createdAt));
 
     const totalPages = Math.ceil(totalCount / limit);

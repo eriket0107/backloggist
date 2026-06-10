@@ -14,6 +14,7 @@ import {
   UseInterceptors,
   UploadedFile,
   Res,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ItemsService } from './items.service';
@@ -36,9 +37,18 @@ export class ItemsController {
   @ApiOperation({ summary: 'Create a new item' })
   @ApiResponse({ status: 201, description: 'Item created successfully' })
   @ApiResponse({ status: 400, description: 'Bad request' })
-  create(@Body() createItemDto: CreateItemDto, @Request() request) {
+  @UseInterceptors(FileInterceptor('file'))
+  async create(
+    @Body() createItemDto: CreateItemDto,
+    @Request() request,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
     const userId = request.user.sub;
-    return this.itemsService.create(createItemDto, userId);
+
+    const data = await this.itemsService.create(createItemDto, userId);
+    if (file) await this.itemsService.saveImg(data.data.id, file);
+
+    return data;
   }
 
   @Get()
@@ -71,9 +81,16 @@ export class ItemsController {
     @Body() updateItemDto: UpdateItemDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    if (file) await this.itemsService.saveImg(id, file);
+    const updatedItem = await this.itemsService.update(id, updateItemDto);
 
-    return this.itemsService.update(id, updateItemDto);
+    if (file) {
+      try {
+        await this.itemsService.saveImg(id, file);
+      } catch {
+        throw new InternalServerErrorException('Failed to update item with image');
+      }
+    }
+    return updatedItem;
   }
 
   @Get(':id/img')

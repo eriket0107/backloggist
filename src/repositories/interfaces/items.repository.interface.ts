@@ -23,10 +23,12 @@ export interface IItemsRepository {
     limit,
     page,
     userId,
+    searchTerm,
   }: {
     limit?: number;
     page?: number;
     userId: string;
+    searchTerm: string;
   }): Promise<PaginatedResult<Item>>;
   findById(id: string, userId: string): Promise<Item | null>;
   update(id: string, itemData: UpdateItemData): Promise<Item | null>;
