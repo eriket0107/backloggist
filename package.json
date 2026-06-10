@@ -46,6 +46,7 @@
     "postgres": "3.4.4",
     "reflect-metadata": "0.2.2",
     "sharp": "0.34.4",
+    "swagger-themes": "^1.4.3",
     "zod": "4.1.9"
   },
   "devDependencies": {
