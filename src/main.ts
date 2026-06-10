@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { SwaggerTheme, SwaggerThemeNameEnum } from 'swagger-themes';
 import { AppModule } from './app.module';
 import cookieParser from 'cookie-parser';
 
@@ -22,7 +23,7 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
-
+  const theme = new SwaggerTheme();
   const config = new DocumentBuilder()
     .setTitle('Backloggist API')
     .setDescription('API for managing your backlog of games, books, movies, etc.')
@@ -31,7 +32,16 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('docs', app, document, {
+    swaggerUrl: '/docs',
+    customSiteTitle: 'Backloggist API',
+    customfavIcon: 'https://nestjs.com/img/logo-small.svg',
+    swaggerOptions: {
+      persistAuthorization: true,
+      docExpansion: 'none',
+    },
+    customCss: theme.getBuffer(SwaggerThemeNameEnum.NORD_DARK),
+  });
 
   const port = process.env.PORT || 3000;
   await app.listen(port, '0.0.0.0');
