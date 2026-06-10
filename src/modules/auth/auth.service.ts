@@ -50,13 +50,7 @@ export class AuthService {
       throw new UnauthorizedException('Missing loggin information.');
     }
 
-    this.logger.info('User found, decodeding Password');
-    const decodedPassword = this.passwordHandler.decodePassword(pass);
-
-    const comparePassword = await this.passwordHandler.comparePassword(
-      decodedPassword,
-      user.password,
-    );
+    const comparePassword = await this.passwordHandler.comparePassword(pass, user.password);
 
     if (!comparePassword) {
       this.logger.warn('Sign in failed - invalid password', { email });
